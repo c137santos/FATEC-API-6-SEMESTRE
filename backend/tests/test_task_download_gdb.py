@@ -22,6 +22,14 @@ def _mock_celery_retry():
         task_download_gdb.pop_request()
 
 
+@pytest.fixture(autouse=True)
+def _mock_next_task_dispatch():
+    with patch(f'{TASK_MODULE}.signature') as mock_signature:
+        mock_sig_obj = MagicMock()
+        mock_signature.return_value = mock_sig_obj
+        yield mock_signature
+
+
 @pytest.fixture
 def download_dir(tmp_path, monkeypatch):
     """Redireciona DOWNLOAD_DIR para diretório temporário."""

@@ -1,0 +1,30 @@
+{
+  "name": "FATEC API 6 Semestre",
+  "dockerComposeFile": [
+    "docker-compose.yml"
+  ],
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/FATEC-API-6-SEMESTRE",
+  "shutdownAction": "stopCompose",
+  "forwardPorts": [8000, 5433, 27017, 6379],
+  "waitFor": "postCreateCommand",
+  "postStartCommand": "bash .devcontainer/start-services.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "ms-azuretools.vscode-docker"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/workspaces/FATEC-API-6-SEMESTRE/backend/.venv/bin/python",
+        "python.testing.pytestEnabled": true,
+        "python.testing.pytestArgs": [
+          "backend/tests"
+        ]
+      }
+    }
+  },
+  "postCreateCommand": "cd backend && ([ -x .venv/bin/python ] || uv sync --frozen)"
+}

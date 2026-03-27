@@ -1,11 +1,15 @@
-from fastapi import HTTPException
 import uuid
 
-from backend.app import app
+from fastapi import APIRouter, HTTPException
+
 from backend.schemas import DownloadRequest
 from backend.tasks.task_download_gdb import task_download_gdb
 
-@app.post('/download-gdb')
+
+router = APIRouter()
+
+
+@router.post('/download-gdb')
 def download_gdb(request: DownloadRequest):
     job_id = str(uuid.uuid4())
     try:
@@ -14,3 +18,4 @@ def download_gdb(request: DownloadRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+

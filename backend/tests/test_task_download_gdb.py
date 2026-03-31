@@ -106,130 +106,141 @@ class _FakeStreamHttpError:
 # Cenários de Sucesso
 # ═════════════════════════════════════
 
-class TestDownloadGdbSuccess:
-    def test_retorna_status_downloaded(self, download_dir):
-        zip_path = download_dir / 'abc-123.zip'
-        with patch(
-            f'{TASK_MODULE}.httpx.stream',
-            return_value=_FakeStreamOk(zip_path),
-        ):
-            result = task_download_gdb.run(
-                'abc-123', 'https://example.com/file.zip'
-            )
+def test_retorna_status_downloaded(download_dir):
+    zip_path = download_dir / 'abc-123.zip'
+    with patch(
+        f'{TASK_MODULE}.httpx.stream',
+        return_value=_FakeStreamOk(zip_path),
+    ):
+        result = task_download_gdb.run(
+            'abc-123', 'https://example.com/file.zip'
+        )
 
-        assert result['job_id'] == 'abc-123'
-        assert result['status'] == 'downloaded'
-        assert 'abc-123.zip' in result['zip_path']
+    assert result['job_id'] == 'abc-123'
+    assert result['status'] == 'downloaded'
+    assert 'abc-123.zip' in result['zip_path']
 
-    def test_arquivo_zip_valido_no_disco(self, download_dir):
-        zip_path = download_dir / 'job-42.zip'
-        with patch(
-            f'{TASK_MODULE}.httpx.stream',
-            return_value=_FakeStreamOk(zip_path),
-        ):
-            task_download_gdb.run(
-                'job-42', 'https://example.com/file.zip'
-            )
+def test_arquivo_zip_valido_no_disco(download_dir):
+    zip_path = download_dir / 'job-42.zip'
+    with patch(
+        f'{TASK_MODULE}.httpx.stream',
+        return_value=_FakeStreamOk(zip_path),
+    ):
+        task_download_gdb.run(
+            'job-42', 'https://example.com/file.zip'
+        )
 
-        assert zip_path.exists()
-        assert zipfile.is_zipfile(zip_path)
+    assert zip_path.exists()
+    assert zipfile.is_zipfile(zip_path)
 
 
 # ═════════════════════════════════════
 # Validação de entrada
 # ═════════════════════════════════════
 
-class TestDownloadGdbValidation:
-    def test_url_vazia_lanca_runtime_error(self):
-        with pytest.raises(RuntimeError, match='URL de download'):
-            task_download_gdb.run('job-1', '')
+def test_url_vazia_lanca_runtime_error():
+    with pytest.raises(RuntimeError, match='URL de download'):
+        task_download_gdb.run('job-1', '')
 
 
 # ═════════════════════════════════════
 # Erros de rede → retry
 # ═════════════════════════════════════
 
-class TestDownloadGdbNetworkErrors:
-    def test_http_error_dispara_retry(
-        self, download_dir, _mock_celery_retry
+def test_http_error_dispara_retry(
+    download_dir, _mock_celery_retry
+):
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            return_value=_FakeStreamHttpError(500),
+        ),
+        pytest.raises(httpx.HTTPError),
     ):
-        with (
-            patch(
-                f'{TASK_MODULE}.httpx.stream',
-                return_value=_FakeStreamHttpError(500),
-            ),
-            pytest.raises(httpx.HTTPError),
-        ):
-            task_download_gdb.run(
-                'net-err', 'https://example.com/file.zip'
-            )
+        task_download_gdb.run(
+            'net-err', 'https://example.com/file.zip'
+        )
 
-        _mock_celery_retry.assert_called_once()
+    _mock_celery_retry.assert_called_once()
 
-    def test_timeout_dispara_retry(
-        self, download_dir, _mock_celery_retry
+def test_timeout_dispara_retry(
+    download_dir, _mock_celery_retry
+):
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            side_effect=httpx.TimeoutException('timeout'),
+        ),
+        pytest.raises(httpx.HTTPError),
     ):
-        with (
-            patch(
-                f'{TASK_MODULE}.httpx.stream',
-                side_effect=httpx.TimeoutException('timeout'),
+        task_download_gdb.run(
+            'timeout-job', 'https://example.com/file.zip'
+        )
+
+    _mock_celery_retry.assert_called_once()
+
+
+def test_connect_error_ssl_dispara_retry(download_dir, _mock_celery_retry):
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            side_effect=httpx.ConnectError(
+                '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol'
             ),
-            pytest.raises(httpx.HTTPError),
-        ):
-            task_download_gdb.run(
-                'timeout-job', 'https://example.com/file.zip'
-            )
+        ),
+        pytest.raises(httpx.HTTPError),
+    ):
+        task_download_gdb.run('ssl-eof-job', 'https://example.com/file.zip')
 
-        _mock_celery_retry.assert_called_once()
+    _mock_celery_retry.assert_called_once()
 
-    def test_arquivo_parcial_deletado_apos_erro_http(self, download_dir):
-        # Cria arquivo "parcial" antes do download falhar
-        zip_path = download_dir / 'partial-job.zip'
-        zip_path.write_bytes(b'lixo parcial')
+def test_arquivo_parcial_deletado_apos_erro_http(download_dir):
+    # Cria arquivo "parcial" antes do download falhar
+    zip_path = download_dir / 'partial-job.zip'
+    zip_path.write_bytes(b'lixo parcial')
 
-        with (
-            patch(
-                f'{TASK_MODULE}.httpx.stream',
-                return_value=_FakeStreamHttpError(502),
-            ),
-            pytest.raises(httpx.HTTPError),
-        ):
-            task_download_gdb.run(
-                'partial-job', 'https://example.com/file.zip'
-            )
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            return_value=_FakeStreamHttpError(502),
+        ),
+        pytest.raises(httpx.HTTPError),
+    ):
+        task_download_gdb.run(
+            'partial-job', 'https://example.com/file.zip'
+        )
 
-        assert not zip_path.exists()
+    assert not zip_path.exists()
 
 
 # ═════════════════════════════════════
 # ZIP inválido
 # ═════════════════════════════════════
 
-class TestDownloadGdbInvalidZip:
-    def test_zip_invalido_lanca_runtime_error(self, download_dir):
-        with (
-            patch(
-                f'{TASK_MODULE}.httpx.stream',
-                return_value=_FakeStreamBadZip(),
-            ),
-            pytest.raises(RuntimeError, match='ZIP válido'),
-        ):
-            task_download_gdb.run(
-                'bad-zip', 'https://example.com/file.zip'
-            )
+def test_zip_invalido_lanca_runtime_error(download_dir):
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            return_value=_FakeStreamBadZip(),
+        ),
+        pytest.raises(RuntimeError, match='ZIP válido'),
+    ):
+        task_download_gdb.run(
+            'bad-zip', 'https://example.com/file.zip'
+        )
 
-    def test_arquivo_deletado_quando_zip_invalido(self, download_dir):
-        zip_path = download_dir / 'bad-zip.zip'
+def test_arquivo_deletado_quando_zip_invalido(download_dir):
+    zip_path = download_dir / 'bad-zip.zip'
 
-        with (
-            patch(
-                f'{TASK_MODULE}.httpx.stream',
-                return_value=_FakeStreamBadZip(),
-            ),
-            pytest.raises(RuntimeError),
-        ):
-            task_download_gdb.run(
-                'bad-zip', 'https://example.com/file.zip'
-            )
+    with (
+        patch(
+            f'{TASK_MODULE}.httpx.stream',
+            return_value=_FakeStreamBadZip(),
+        ),
+        pytest.raises(RuntimeError),
+    ):
+        task_download_gdb.run(
+            'bad-zip', 'https://example.com/file.zip'
+        )
 
-        assert not zip_path.exists()
+    assert not zip_path.exists()

@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 DOWNLOAD_DIR = Path(os.getenv('DOWNLOAD_DIR', '/data/downloads/'))
 
+
+def _retry_countdown(retries: int) -> int:
+    """Exponential backoff capped at 10 minutes."""
+    return min(60 * (2 ** retries), 600)
+
 @celery_app.task(bind=True, max_retries=2, default_retry_delay=60, name="etl.download_gdb")
 def task_download_gdb(self, job_id: str, url: str) -> dict:
     logger.info("[task_download_gdb] Inicio do download. job_id=%s url=%s", job_id, url)
@@ -22,9 +27,17 @@ def task_download_gdb(self, job_id: str, url: str) -> dict:
 
     DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
     zip_path = DOWNLOAD_DIR / f"{job_id}.zip"
+    attempt = self.request.retries + 1
+    max_attempts = self.max_retries + 1
 
     try:
-        with httpx.stream("GET", url, follow_redirects=True, timeout=300) as r:
+        with httpx.stream(
+            'GET',
+            url,
+            follow_redirects=True,
+            timeout=300,
+            headers={'User-Agent': 'fatec-etl-downloader/1.0'},
+        ) as r:
             r.raise_for_status()
             headers = getattr(r, "headers", {}) or {}
             content_length = headers.get("content-length", "unknown")
@@ -69,16 +82,18 @@ def task_download_gdb(self, job_id: str, url: str) -> dict:
 
         return {"job_id": job_id, "zip_path": str(zip_path), "status": "downloaded"}
 
-    except (httpx.HTTPError, httpx.TimeoutException) as exc:
+    except httpx.HTTPError as exc:
+        countdown = _retry_countdown(self.request.retries)
         logger.warning(
-            "[task_download_gdb] Erro de rede. job_id=%s tentativa=%s/%s erro=%s",
+            '[task_download_gdb] Erro de rede/transporte. job_id=%s tentativa=%s/%s countdown=%ss erro=%s',
             job_id,
-            self.request.retries + 1,
-            self.max_retries,
+            attempt,
+            max_attempts,
+            countdown,
             exc,
         )
         zip_path.unlink(missing_ok=True)
-        raise self.retry(exc=exc)
+        raise self.retry(exc=exc, countdown=countdown)
     except Exception as exc:
         logger.exception("[task_download_gdb] Falha inesperada. job_id=%s erro=%s", job_id, exc)
         zip_path.unlink(missing_ok=True)

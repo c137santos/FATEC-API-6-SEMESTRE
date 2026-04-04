@@ -4,10 +4,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from backend.tasks.task_descompact_gdb import REQUIRED_SCHEMA, task_descompact_gdb
+from backend.tasks.task_descompact_gdb import (
+    REQUIRED_SCHEMA,
+    task_descompact_gdb,
+)
 
 TASK_MODULE = 'backend.tasks.task_descompact_gdb'
-
 
 
 @pytest.fixture(autouse=True)
@@ -85,7 +87,9 @@ def _fiona_layers(missing_layer: str | None = None) -> list[str]:
 class TestDescompactGdbSuccess:
     def test_retorna_status_extracted(self, tmp_dir, valid_zip):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
         ):
@@ -97,7 +101,9 @@ class TestDescompactGdbSuccess:
 
     def test_gdb_path_no_retorno_e_string(self, tmp_dir, valid_zip):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
         ):
@@ -109,7 +115,9 @@ class TestDescompactGdbSuccess:
 
     def test_gdb_extraido_no_diretorio_tmp(self, tmp_dir, valid_zip):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
         ):
@@ -120,7 +128,9 @@ class TestDescompactGdbSuccess:
 
     def test_chord_disparado_uma_vez(self, tmp_dir, valid_zip):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
         ):
@@ -133,7 +143,9 @@ class TestDescompactGdbSuccess:
 
     def test_chord_header_tem_tres_tasks(self, tmp_dir, valid_zip):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
         ):
@@ -143,9 +155,13 @@ class TestDescompactGdbSuccess:
         header, _callback = mock_chord.call_args.args
         assert len(header) == 3
 
-    def test_gdb_path_passado_como_string_para_cada_task(self, tmp_dir, valid_zip):
+    def test_gdb_path_passado_como_string_para_cada_task(
+        self, tmp_dir, valid_zip
+    ):
         with (
-            patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
             patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
             patch(f'{TASK_MODULE}.chord') as mock_chord,
             patch(f'{TASK_MODULE}.signature') as mock_sig,
@@ -156,7 +172,8 @@ class TestDescompactGdbSuccess:
         gdb_path = result['gdb_path']
         # As três tasks de processamento recebem gdb_path (str) como argumento
         calls_with_gdb = [
-            c for c in mock_sig.call_args_list
+            c
+            for c in mock_sig.call_args_list
             if c.kwargs.get('args') and gdb_path in c.kwargs['args']
         ]
         assert len(calls_with_gdb) == 3

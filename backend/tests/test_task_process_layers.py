@@ -165,6 +165,7 @@ def test_retorna_records_com_colunas_necessarias():
     assert record['job_id'] == 'job-1'
     assert 'processed_at' in record
 
+
 def test_descarta_registro_sem_cod_id():
     dataset = _FakeDataset(
         columns=set(REQUIRED_CONJ_COLUMNS),
@@ -181,12 +182,16 @@ def test_descarta_registro_sem_cod_id():
     assert result['descartados'] == 1
     assert result['records'][0]['cod_id'] == 3
 
+
 def test_lanca_erro_quando_faltam_colunas():
-    dataset = _FakeDataset(columns={'COD_ID', 'NOME'}, rows=[_feature(1, 'A', 1)])
+    dataset = _FakeDataset(
+        columns={'COD_ID', 'NOME'}, rows=[_feature(1, 'A', 1)]
+    )
 
     with patch(f'{TASK_MODULE}.fiona.open', return_value=dataset):
         with pytest.raises(RuntimeError, match='Camada CONJ sem colunas'):
             task_processar_conj.run('job-3', '/tmp/arquivo.gdb')
+
 
 def test_lanca_erro_sem_registros_validos():
     dataset = _FakeDataset(

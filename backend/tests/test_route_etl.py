@@ -3,6 +3,7 @@
 Cria um app FastAPI mínimo com a rota registrada para evitar
 dependências de módulos ausentes (database, core.models).
 """
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -15,6 +16,7 @@ import uuid
 from backend.tasks.task_download_gdb import task_download_gdb
 
 _test_app = FastAPI()
+
 
 class _DownloadRequest(BaseModel):
     url: HttpUrl
@@ -55,6 +57,7 @@ def test_retorna_job_id_e_task_id(client):
     assert body['task_id'] == 'celery-task-id-123'
     assert body['status'] == 'queued'
 
+
 def test_url_invalida_retorna_422(client):
     response = client.post(
         '/download-gdb',
@@ -62,9 +65,11 @@ def test_url_invalida_retorna_422(client):
     )
     assert response.status_code == 422
 
+
 def test_payload_vazio_retorna_422(client):
     response = client.post('/download-gdb', json={})
     assert response.status_code == 422
+
 
 def test_erro_no_celery_retorna_500(client):
     with patch(

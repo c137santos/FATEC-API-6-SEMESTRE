@@ -69,6 +69,7 @@ CSV_LIMITE = _csv_bytes(
 class _FakeStream:
     def __init__(self, content: bytes):
         self._content = content
+        self.headers = {'content-type': 'text/csv'}
 
     def __enter__(self):
         return self
@@ -85,6 +86,9 @@ class _FakeStream:
 
 
 class _FakeStreamHttpError:
+    def __init__(self):
+        self.headers = {}
+
     def __enter__(self):
         return self
 

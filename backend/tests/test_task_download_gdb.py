@@ -1,4 +1,5 @@
 import zipfile
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import httpx
@@ -122,6 +123,21 @@ def test_retorna_status_downloaded(download_dir):
     assert result['job_id'] == 'abc-123'
     assert result['status'] == 'downloaded'
     assert 'abc-123.zip' in result['zip_path']
+
+
+def test_normaliza_url_arcgis_data_com_barra_final(download_dir):
+    zip_path = download_dir / 'arcgis-job.zip'
+    with patch(
+        f'{TASK_MODULE}.httpx.stream',
+        return_value=_FakeStreamOk(zip_path),
+    ) as stream_mock:
+        task_download_gdb.run(
+            'arcgis-job',
+            'https://www.arcgis.com/sharing/rest/content/items/abc123/data/',
+        )
+
+    called_url = stream_mock.call_args[0][1]
+    assert called_url.endswith('/data')
 
 
 def test_arquivo_zip_valido_no_disco(download_dir):

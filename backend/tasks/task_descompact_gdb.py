@@ -11,6 +11,7 @@ from backend.tasks.celery_app import celery_app
 logger = logging.getLogger(__name__)
 
 TMP_DIR = Path(os.getenv('TMP_DIR', '/data/tmp/'))
+SSDMT_PARALLEL_CHUNK_SIZE = int(os.getenv('SSDMT_PARALLEL_CHUNK_SIZE', '0'))
 
 REQUIRED_SCHEMA: dict[str, set[str]] = {
     'CTMT': {
@@ -49,6 +50,14 @@ REQUIRED_SCHEMA: dict[str, set[str]] = {
     },
     'CONJ': {'COD_ID', 'NOME', 'DIST'},
 }
+
+
+def _get_layer_feature_count(gdb_path: str, layer: str) -> int:
+    with fiona.open(gdb_path, layer=layer) as src:
+        try:
+            return int(len(src))
+        except TypeError:
+            return sum(1 for _ in src)
 
 
 @celery_app.task(bind=True, name='etl.extrair_gdb')
@@ -122,17 +131,55 @@ def task_descompact_gdb(self, job_id: str, zip_path: str) -> dict:
                 len(present_cols),
             )
 
+        header_tasks = [
+            signature('etl.processar_ctmt', args=(job_id, gdb_path)),
+            signature('etl.processar_conj', args=(job_id, gdb_path)),
+        ]
+
+        if SSDMT_PARALLEL_CHUNK_SIZE > 0:
+            total_ssdmt = _get_layer_feature_count(gdb_path, 'SSDMT')
+            if total_ssdmt > SSDMT_PARALLEL_CHUNK_SIZE:
+                total_chunks = (
+                    total_ssdmt + SSDMT_PARALLEL_CHUNK_SIZE - 1
+                ) // SSDMT_PARALLEL_CHUNK_SIZE
+                logger.info(
+                    '[task_descompact_gdb] SSDMT em modo paralelo por chunks. job_id=%s total_features=%s chunk_size=%s total_chunks=%s',
+                    job_id,
+                    total_ssdmt,
+                    SSDMT_PARALLEL_CHUNK_SIZE,
+                    total_chunks,
+                )
+                for chunk_index in range(total_chunks):
+                    start_index = chunk_index * SSDMT_PARALLEL_CHUNK_SIZE
+                    header_tasks.append(
+                        signature(
+                            'etl.processar_ssdmt_chunk',
+                            args=(
+                                job_id,
+                                gdb_path,
+                                chunk_index,
+                                start_index,
+                                SSDMT_PARALLEL_CHUNK_SIZE,
+                            ),
+                        )
+                    )
+            else:
+                header_tasks.append(
+                    signature('etl.processar_ssdmt', args=(job_id, gdb_path))
+                )
+        else:
+            header_tasks.append(
+                signature('etl.processar_ssdmt', args=(job_id, gdb_path))
+            )
+
         chord(
-            [
-                signature('etl.processar_ctmt', args=(job_id, gdb_path)),
-                signature('etl.processar_ssdmt', args=(job_id, gdb_path)),
-                signature('etl.processar_conj', args=(job_id, gdb_path)),
-            ],
+            header_tasks,
             signature('etl.finalizar', args=(job_id, zip_path, str(tmp_dir))),
         ).delay()
         logger.info(
-            '[task_descompact_gdb] Chord disparado. job_id=%s callbacks=etl.finalizar',
+            '[task_descompact_gdb] Chord disparado. job_id=%s callbacks=etl.finalizar tasks=%s',
             job_id,
+            len(header_tasks),
         )
 
         result = {

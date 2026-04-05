@@ -17,16 +17,30 @@ services:
 
   worker:
     build: .
-    command: uv run celery -A backend.tasks.celery_app worker --loglevel=info
+    command: >
+      uv run celery -A backend.tasks.celery_app worker
+      --loglevel=info
+      --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
+      --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
+      --max-tasks-per-child=${CELERY_MAX_TASKS_PER_CHILD:-20}
+      -O fair
     env_file:
       - .env
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_PREFETCH_MULTIPLIER=${CELERY_PREFETCH_MULTIPLIER:-1}
+      - CELERY_TASK_ACKS_LATE=${CELERY_TASK_ACKS_LATE:-true}
+      - CELERY_TASK_REJECT_ON_WORKER_LOST=${CELERY_TASK_REJECT_ON_WORKER_LOST:-true}
+      - SSDMT_BATCH_SIZE=${SSDMT_BATCH_SIZE:-10000}
+      - SSDMT_PROGRESS_LOG_INTERVAL_BATCHES=${SSDMT_PROGRESS_LOG_INTERVAL_BATCHES:-25}
+      - SSDMT_PARALLEL_CHUNK_SIZE=${SSDMT_PARALLEL_CHUNK_SIZE:-0}
     depends_on:
       - redis
     volumes:
       - gdb_data:/data
+    cpus: ${WORKER_CPUS:-4.0}
+    mem_limit: ${WORKER_MEMORY:-8g}
 
   redis:
     image: redis:7-alpine

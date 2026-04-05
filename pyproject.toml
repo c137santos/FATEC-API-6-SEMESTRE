@@ -15,10 +15,12 @@ dependencies = [
     "psycopg[binary]>=3.3.3",
     "pwdlib[argon2]>=0.3.0",
     "pydantic-settings>=2.13.1",
+    "pyproj>=3.7.2",
     "pyjwt>=2.11.0",
     "pymongo>=4.16.0",
     "python-multipart>=0.0.22",
     "sqlalchemy>=2.0.48",
+    "shapely>=2.1.2",
 ]
 
 [dependency-groups]

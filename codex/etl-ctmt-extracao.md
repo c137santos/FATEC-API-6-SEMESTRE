@@ -111,4 +111,33 @@ Cenarios cobertos para CTMT:
 - erro quando faltam colunas obrigatorias
 - erro quando nenhum registro valido sobra apos limpeza
 
+---
+
+## Decisoes Arquiteturais do Pipeline
+
+### Decisao 2026-04 - Saida da task SSDMT
+
+Contexto:
+- A camada `SSDMT` pode ter ~999k registros com geometria.
+- Retornar todas as geometrias no payload do chord aumenta muito o tempo de serializacao e o uso de memoria no worker/broker.
+
+Decisao registrada para avaliacao:
+- Evoluir de retorno completo para um desenho em dois produtos:
+  - `ssdmt_tabular`: colunas para analytics e joins (`COD_ID`, `CTMT`, `CONJ`, `COMP`, `DIST`)
+  - `ssdmt_geo`: geometria reprojetada persistida fora do payload (DB/arquivo/objeto), acessada por referencia
+
+Compatibilidade esperada:
+- Notebooks tabulares (PT/PNT e parte relevante de TAM) continuam atendidos sem depender do retorno completo de geometria.
+- Notebooks de mapa continuam atendidos ao ler geometria da base persistida.
+
+Criterios de avaliacao:
+1. Tempo total da `etl.processar_ssdmt`.
+2. Pico de memoria do worker.
+3. Tamanho do payload no broker/backend.
+4. Tempo de callback (`etl.finalizar`) e estabilidade do chord.
+5. Equivalencia funcional dos notebooks (tabular e mapa).
+
+Documento detalhado:
+- `codex/task_ssdmt.md`
+
 

@@ -50,14 +50,21 @@ def no_gdb_zip(tmp_path):
 
 
 class _FakeDataset:
-    def __init__(self, columns: set[str]):
+    def __init__(self, columns: set[str], rows: list[dict] | None = None):
         self.schema = {'properties': {col: 'str' for col in columns}}
+        self._rows = rows or []
 
     def __enter__(self):
         return self
 
     def __exit__(self, *args):
         return False
+
+    def __iter__(self):
+        return iter(self._rows)
+
+    def __len__(self):
+        return len(self._rows)
 
 
 def _fiona_open_ok(missing_cols: dict[str, set[str]] | None = None):
@@ -177,6 +184,41 @@ class TestDescompactGdbSuccess:
             if c.kwargs.get('args') and gdb_path in c.kwargs['args']
         ]
         assert len(calls_with_gdb) == 3
+
+    def test_usa_tasks_chunk_de_ssdmt_quando_habilitado(
+        self, tmp_dir, valid_zip, monkeypatch
+    ):
+        monkeypatch.setattr(
+            f'{TASK_MODULE}.SSDMT_PARALLEL_CHUNK_SIZE',
+            2,
+        )
+
+        def open_fn(path, layer=None):
+            cols = set(REQUIRED_SCHEMA.get(layer, set()))
+            if layer == 'SSDMT':
+                rows = [
+                    {'properties': {'COD_ID': f'SS-{i}'}} for i in range(5)
+                ]
+                return _FakeDataset(cols, rows=rows)
+            return _FakeDataset(cols)
+
+        with (
+            patch(
+                f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
+            ),
+            patch(f'{TASK_MODULE}.fiona.open', side_effect=open_fn),
+            patch(f'{TASK_MODULE}.chord') as mock_chord,
+            patch(f'{TASK_MODULE}.signature') as mock_sig,
+        ):
+            mock_chord.return_value.delay = MagicMock()
+            task_descompact_gdb.run('job-1', str(valid_zip))
+
+        chunk_calls = [
+            c
+            for c in mock_sig.call_args_list
+            if c.args and c.args[0] == 'etl.processar_ssdmt_chunk'
+        ]
+        assert len(chunk_calls) == 3
 
 
 # ═════════════════════════════════════

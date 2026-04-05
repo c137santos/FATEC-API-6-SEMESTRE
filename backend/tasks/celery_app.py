@@ -1,6 +1,13 @@
 from celery import Celery
 import os
 
+
+def _env_bool(name: str, default: bool) -> bool:
+    value = os.getenv(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
 # Instancia Celery
 celery_app = Celery(
     'etl',
@@ -19,4 +26,12 @@ celery_app.conf.update(
     accept_content=['json'],
     timezone='UTC',
     enable_utc=True,
+    worker_prefetch_multiplier=int(
+        os.getenv('CELERY_PREFETCH_MULTIPLIER', '1')
+    ),
+    task_acks_late=_env_bool('CELERY_TASK_ACKS_LATE', True),
+    task_reject_on_worker_lost=_env_bool(
+        'CELERY_TASK_REJECT_ON_WORKER_LOST', True
+    ),
+    task_track_started=True,
 )

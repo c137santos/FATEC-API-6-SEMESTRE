@@ -7,12 +7,38 @@ from pathlib import Path
 
 import fiona
 import pyproj
+from pymongo import MongoClient
 from shapely.geometry import mapping, shape
 from shapely.ops import transform
 
+from backend.settings import Settings
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
+
+
+def _get_collection(name: str):
+    settings = Settings()
+    client = MongoClient(settings.MONGO_URI)
+    return client[settings.MONGO_DB][name]
+
+
+def _persist_ctmt(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+    col = _get_collection('circuitos_mt')
+    col.create_index('job_id', unique=True, background=True)
+    col.replace_one(
+        {'job_id': job_id},
+        {
+            'job_id': job_id,
+            'processed_at': processed_at,
+            'total': len(records),
+            'descartados': descartados,
+            'records': records,
+        },
+        upsert=True,
+    )
+    return len(records)
+
 
 REQUIRED_CTMT_COLUMNS: set[str] = {
     'COD_ID',
@@ -40,6 +66,30 @@ REQUIRED_CTMT_COLUMNS: set[str] = {
     'PERD_A4_B',
     'PERD_B_A3a',
     'PERD_B_A4',
+    'PNTMT_01',
+    'PNTMT_02',
+    'PNTMT_03',
+    'PNTMT_04',
+    'PNTMT_05',
+    'PNTMT_06',
+    'PNTMT_07',
+    'PNTMT_08',
+    'PNTMT_09',
+    'PNTMT_10',
+    'PNTMT_11',
+    'PNTMT_12',
+    'PNTBT_01',
+    'PNTBT_02',
+    'PNTBT_03',
+    'PNTBT_04',
+    'PNTBT_05',
+    'PNTBT_06',
+    'PNTBT_07',
+    'PNTBT_08',
+    'PNTBT_09',
+    'PNTBT_10',
+    'PNTBT_11',
+    'PNTBT_12',
 }
 
 REQUIRED_CONJ_COLUMNS: set[str] = {'COD_ID', 'NOME', 'DIST'}
@@ -297,31 +347,55 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
                 nome = nome.strip()
 
             records.append({
-                'cod_id': cod_id,
-                'nome': nome,
-                'dist': row.get('DIST'),
-                'ene_01': row.get('ENE_01'),
-                'ene_02': row.get('ENE_02'),
-                'ene_03': row.get('ENE_03'),
-                'ene_04': row.get('ENE_04'),
-                'ene_05': row.get('ENE_05'),
-                'ene_06': row.get('ENE_06'),
-                'ene_07': row.get('ENE_07'),
-                'ene_08': row.get('ENE_08'),
-                'ene_09': row.get('ENE_09'),
-                'ene_10': row.get('ENE_10'),
-                'ene_11': row.get('ENE_11'),
-                'ene_12': row.get('ENE_12'),
-                'perd_a3a': row.get('PERD_A3a'),
-                'perd_a4': row.get('PERD_A4'),
-                'perd_b': row.get('PERD_B'),
-                'perd_med': row.get('PERD_MED'),
-                'perd_a3aa4': row.get('PERD_A3aA4'),
-                'perd_a3a_b': row.get('PERD_A3a_B'),
-                'perd_a4a3a': row.get('PERD_A4A3a'),
-                'perd_a4_b': row.get('PERD_A4_B'),
-                'perd_b_a3a': row.get('PERD_B_A3a'),
-                'perd_b_a4': row.get('PERD_B_A4'),
+                'COD_ID': cod_id,
+                'NOME': nome,
+                'DIST': row.get('DIST'),
+                'ENE_01': row.get('ENE_01'),
+                'ENE_02': row.get('ENE_02'),
+                'ENE_03': row.get('ENE_03'),
+                'ENE_04': row.get('ENE_04'),
+                'ENE_05': row.get('ENE_05'),
+                'ENE_06': row.get('ENE_06'),
+                'ENE_07': row.get('ENE_07'),
+                'ENE_08': row.get('ENE_08'),
+                'ENE_09': row.get('ENE_09'),
+                'ENE_10': row.get('ENE_10'),
+                'ENE_11': row.get('ENE_11'),
+                'ENE_12': row.get('ENE_12'),
+                'PERD_A3a': row.get('PERD_A3a'),
+                'PERD_A4': row.get('PERD_A4'),
+                'PERD_B': row.get('PERD_B'),
+                'PERD_MED': row.get('PERD_MED'),
+                'PERD_A3aA4': row.get('PERD_A3aA4'),
+                'PERD_A3a_B': row.get('PERD_A3a_B'),
+                'PERD_A4A3a': row.get('PERD_A4A3a'),
+                'PERD_A4_B': row.get('PERD_A4_B'),
+                'PERD_B_A3a': row.get('PERD_B_A3a'),
+                'PERD_B_A4': row.get('PERD_B_A4'),
+                'PNTMT_01': row.get('PNTMT_01'),
+                'PNTMT_02': row.get('PNTMT_02'),
+                'PNTMT_03': row.get('PNTMT_03'),
+                'PNTMT_04': row.get('PNTMT_04'),
+                'PNTMT_05': row.get('PNTMT_05'),
+                'PNTMT_06': row.get('PNTMT_06'),
+                'PNTMT_07': row.get('PNTMT_07'),
+                'PNTMT_08': row.get('PNTMT_08'),
+                'PNTMT_09': row.get('PNTMT_09'),
+                'PNTMT_10': row.get('PNTMT_10'),
+                'PNTMT_11': row.get('PNTMT_11'),
+                'PNTMT_12': row.get('PNTMT_12'),
+                'PNTBT_01': row.get('PNTBT_01'),
+                'PNTBT_02': row.get('PNTBT_02'),
+                'PNTBT_03': row.get('PNTBT_03'),
+                'PNTBT_04': row.get('PNTBT_04'),
+                'PNTBT_05': row.get('PNTBT_05'),
+                'PNTBT_06': row.get('PNTBT_06'),
+                'PNTBT_07': row.get('PNTBT_07'),
+                'PNTBT_08': row.get('PNTBT_08'),
+                'PNTBT_09': row.get('PNTBT_09'),
+                'PNTBT_10': row.get('PNTBT_10'),
+                'PNTBT_11': row.get('PNTBT_11'),
+                'PNTBT_12': row.get('PNTBT_12'),
                 'job_id': job_id,
                 'processed_at': processed_at,
             })
@@ -455,18 +529,67 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
 def task_finalizar(
     results: list[dict], job_id: str, zip_path: str, tmp_dir: str
 ) -> dict:
-    """Recebe resultados do chord e retorna um resumo da finalizacao."""
+    """Persiste resultados do chord no MongoDB e atualiza o status do job."""
     logger.info(
-        '[task_finalizar] Finalizacao placeholder. job_id=%s resultados=%s zip_path=%s tmp_dir=%s',
+        '[task_finalizar] Inicio. job_id=%s resultados=%s',
         job_id,
         len(results or []),
-        zip_path,
-        tmp_dir,
     )
-    return {
-        'job_id': job_id,
-        'status': 'finished',
-        'results_count': len(results or []),
-        'zip_path': zip_path,
-        'tmp_dir': tmp_dir,
-    }
+
+    processed_at = datetime.now(timezone.utc).isoformat()
+    ctmt_total = 0
+
+    try:
+        ctmt_result = next((r for r in (results or []) if r.get('layer') == 'CTMT'), None)
+        if ctmt_result:
+            ctmt_total = _persist_ctmt(
+                records=ctmt_result['records'],
+                job_id=job_id,
+                descartados=ctmt_result['descartados'],
+                processed_at=processed_at,
+            )
+            logger.info(
+                '[task_finalizar] CTMT persistido. job_id=%s total=%s',
+                job_id,
+                ctmt_total,
+            )
+
+        _get_collection('jobs').update_one(
+            {'job_id': job_id},
+            {'$set': {
+                'job_id': job_id,
+                'status': 'completed',
+                'ctmt_total': ctmt_total,
+                'completed_at': processed_at,
+                'updated_at': processed_at,
+                'error_message': None,
+            }},
+            upsert=True,
+        )
+
+        logger.info('[task_finalizar] Concluido. job_id=%s ctmt_total=%s', job_id, ctmt_total)
+        return {
+            'job_id': job_id,
+            'status': 'completed',
+            'ctmt_total': ctmt_total,
+        }
+
+    except Exception as exc:
+        logger.error('[task_finalizar] Falha na persistencia. job_id=%s erro=%s', job_id, exc)
+        try:
+            _get_collection('circuitos_mt').delete_many({'job_id': job_id})
+        except Exception:
+            pass
+        try:
+            _get_collection('jobs').update_one(
+                {'job_id': job_id},
+                {'$set': {
+                    'status': 'failed',
+                    'updated_at': datetime.now(timezone.utc).isoformat(),
+                    'error_message': str(exc),
+                }},
+                upsert=True,
+            )
+        except Exception:
+            pass
+        raise

@@ -75,11 +75,11 @@ Uma User Story será considerada **pronta para desenvolvimento** quando atender 
 
 ## 📅 Cronograma de Sprints <a id="sprint"></a>
 
-| Sprint          |    Período    | Documentação                                     |
-| --------------- | :-----------: | ------------------------------------------------ |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 |🚧|
-| 🔖 **SPRINT 2** | 13/04 - 03/05 |🚧|
-| 🔖 **SPRINT 3** | 11/05 - 31/05 |🚧 |
+| Sprint          |    Período    | Documentação                                     | Vídeo Entrega                                     |
+| --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------------ |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 |[doc](https://github.com/c137santos/FATEC-API-6-SEMESTRE/blob/main/process/sprints-backlog/sprint-1.md)| [video](https://drive.google.com/file/d/14Rk7tpzycikkkxXpeZZ4nF5BHbvCanvW/view?usp=drive_link)
+| 🔖 **SPRINT 2** | 13/04 - 03/05 |🚧||
+| 🔖 **SPRINT 3** | 11/05 - 31/05 |🚧 ||
 
 ## 💻 Tecnologias <a id="tecnologias"></a>
 

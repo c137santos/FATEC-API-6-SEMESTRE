@@ -134,11 +134,11 @@ def test_ctmt_retorna_records_com_colunas_necessarias():
     assert result['descartados'] == 0
 
     record = result['records'][0]
-    assert record['cod_id'] == 'CT-01'
-    assert record['nome'] == 'Centro'
-    assert record['dist'] == '404'
-    assert record['ene_01'] == 100
-    assert record['perd_a3a'] == 1.1
+    assert record['COD_ID'] == 'CT-01'
+    assert record['NOME'] == 'Centro'
+    assert record['DIST'] == '404'
+    assert record['ENE_01'] == 100
+    assert record['PERD_A3a'] == 1.1
     assert 'processed_at' in record
 
 
@@ -157,8 +157,8 @@ def test_ctmt_descarta_registro_sem_cod_id():
 
     assert result['total'] == 1
     assert result['descartados'] == 2
-    assert result['records'][0]['cod_id'] == 'CT-VALIDO'
-    assert result['records'][0]['nome'] == 'Sul'
+    assert result['records'][0]['COD_ID'] == 'CT-VALIDO'
+    assert result['records'][0]['NOME'] == 'Sul'
 
 
 def test_ctmt_lanca_erro_quando_faltam_colunas():

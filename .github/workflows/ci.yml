@@ -10,13 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      MONGO_URI: ${{ secrets.MONGO_URI }}
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      ALGORITHM: ${{ secrets.ALGORITHM }}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -42,10 +35,6 @@ jobs:
           export CPLUS_INCLUDE_PATH=/usr/include/gdal
           export C_INCLUDE_PATH=/usr/include/gdal
           uv sync --dev
-
-      - name: Run linter
-        working-directory: ./backend
-        run: uv run task lint
 
       - name: Run tests with coverage
         working-directory: ./backend

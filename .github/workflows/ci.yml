@@ -11,6 +11,10 @@ jobs:
     timeout-minutes: 15
     env:
       DATABASE_URL: postgresql://test:test@localhost:5432/test
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      MONGO_URI: mongodb://localhost:27017/test
       SECRET_KEY: test-secret-key
       ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 30

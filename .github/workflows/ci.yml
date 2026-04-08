@@ -1,27 +1,58 @@
-name: pipeline/CI
-on: ['pull_request']
+name: CI Pipeline
+on:
+  pull_request:
+    branches: [ main, master, develop ]
+  push:
+    branches: [ main, master, develop ]
 
 jobs:
   test:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
-      - name: Copy archives from repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install python
+      - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14' 
+          python-version: '3.14'
+          cache: 'uv'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin libgdal-dev
 
       - name: Install uv
         run: pip install uv
 
-      - name: Execute  linter
-        run: uv run task lint
+      - name: Install dependencies
+        run: |
+          cd backend
+          export GDAL_CONFIG=/usr/bin/gdal-config
+          export CPLUS_INCLUDE_PATH=/usr/include/gdal
+          export C_INCLUDE_PATH=/usr/include/gdal
+          uv sync --dev
 
-      - name: Execute tests
-        run: uv run task test
+      - name: Run linter
+        run: |
+          cd backend
+          uv run task lint
+
+      - name: Run tests with coverage
+        run: |
+          cd backend
+          uv run task test --cov-report=xml --cov-report=term-missing
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./backend/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        continue-on-error: true
 
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -29,3 +60,18 @@ jobs:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+
+  check-required:
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    
+    steps:
+      - name: Check test results
+        run: |
+          if [ "${{ needs.test.result }}" != "success" ]; then
+            echo "Tests failed! Blocking merge."
+            exit 1
+          else
+            echo "All tests passed! Ready for merge."
+          fi

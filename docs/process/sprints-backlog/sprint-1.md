@@ -1,72 +1,91 @@
-# Backlog da Sprint 1
+# Sprint 1 Backlog
 
-| Rank | Prioridade | User Story | Requisitos Relacionados | Estimativa (Story Points) | Sprint |
+
+| Rank | Priority | User Story | Related Requirements | Estimate (Story Points) | Sprint |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| Spike | - | Como um sistema de ingestão de dados geoespaciais, Eu quero processar arquivos .gdb.zip de forma assíncrona e eficiente,Para que eu possa disponibilizar dados tratados e georreferenciados no banco de dados para análise e visualização. | - | 1 |
-| 1 |  Alta | Como um consultor comercial/técnico da Tecsys, eu quero visualizar uma tabela de classificação calculando o Índice de Criticidade (desvio percentual de DEC e FEC com base nos limites da ANEEL) de cada conjunto elétrico, para que eu possa identificar e priorizar rapidamente quais regiões possuem a pior eficiência estrutural. | [`RF1-DATA-INGEST`](../requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios), [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 18 | 1 | 
-| 2 |  Alta | Como um membro do time comercial/técnico, eu quero visualizar um gráfico de barras ordenado pelos conjuntos elétricos com maior índice SAM, para que eu saiba rapidamente quais regiões têm prioridade máxima de implantação de sensores. | [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 10 | 1 |  
-| 3 |  Alta | Como um membro do time comercial/técnico, eu quero visualizar um gráfico de barras empilhadas que compare o volume absoluto (em MWh) das Perdas Técnicas (PT) e Não Técnicas (PNT) de cada conjunto elétrico, para evidenciar a magnitude das falhas estruturais da rede.| [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 10 | 1 |
-| 4 |  Alta | Como um consultor comercial/técnico da Tecsys, eu quero visualizar um ranking com os 10 conjuntos elétricos com maior extensão de média tensão (TAM), para demonstrar os pontos de maior vulnerabilidade operacional.| [`RF1-DATA-INGEST`](../requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios), [`RF2-ANALYTICS-TAM`](../requisitos.md#rf2-analytics-tam---dimensionamento-físico-tam) | 12 | 1 | 
-| 5 |  Média | Como um consultor comercial/técnico da Tecsys, eu quero visualizar um mapa de calor georreferenciado indicando os circuitos mais críticos com base no Índice de Criticidade, para justificar investimentos em sensores inteligentes. | [`RF4-MAPS-HEATMAP`](../requisitos.md#rf4-maps-heatmap---mapas-de-calor-e-polígonos) | 8 | 2 | 
+| Spike | - | As a geospatial data ingestion system, I want to process .gdb.zip files asynchronously and efficiently, so that I can provide cleaned and georeferenced data in the database for analysis and visualization. | - | 1 | 1 |
+| 1 | High | As a Tecsys sales/technical consultant, I want to view a ranking table that calculates the Criticality Index (percentage deviation of DEC and FEC based on ANEEL limits) for each electrical set, so that I can quickly identify and prioritize which regions have the worst structural efficiency. | [`RF1-DATA-INGEST`](../requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios), [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 18 | 1 | 
+| 2 | High | As a member of the sales/technical team, I want to view a bar chart ordered by the electrical sets with the highest SAM score, so that I can quickly know which regions have the highest priority for sensor deployment. | [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 10 | 1 |  
+| 3 | High | As a member of the sales/technical team, I want to view a stacked bar chart comparing the absolute volume (in MWh) of Technical Losses (PT) and Non-Technical Losses (PNT) for each electrical set, in order to show the magnitude of the grid’s structural failures. | [`RF2-ANALYTICS-CRIT`](../requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | 10 | 1 |
+| 4 | High | As a Tecsys sales/technical consultant, I want to view a ranking with the 10 electrical sets with the greatest medium-voltage extension (TAM), to demonstrate the points with the highest operational vulnerability. | [`RF1-DATA-INGEST`](../requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios), [`RF2-ANALYTICS-TAM`](../requisitos.md#rf2-analytics-tam---dimensionamento-físico-tam) | 12 | 1 | 
+| 5 | Medium | As a Tecsys sales/technical consultant, I want to view a georeferenced heatmap indicating the most critical circuits based on the Criticality Index, in order to justify investments in smart sensors. | [`RF4-MAPS-HEATMAP`](../requisitos.md#rf4-maps-heatmap---mapas-de-calor-e-polígonos) | 8 | 2 | 
 
-## Metas da sprint
 
-| **Capacidade estimada da Equipe por Sprint:** | 58 Story Points |
-|-----------------------------------------------|-----------------|
-| **Meta da Sprint:**                           | User Stories de rank 1, rank 2, rank 3, rank 4 (total de *50 Story Points*) |
-| **Previsão da Sprint (extras, sem compromisso de entrega):** | User Story de rank 5 (*8 Story Points*) |
+## Sprint Goals
 
----
-## [SPIKE] — Processamento assíncrono de arquivos .gdb.zip <a id="us1"></a>
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-01 no Confluence](https://jeanroodrigues.atlassian.net/wiki/x/CIDyAQ)**
+| **Estimated Team Capacity per Sprint:** | 58 Story Points |
+|-----------------------------------------|-----------------|
+| **Sprint Goal:**                        | User Stories rank 1, rank 2, rank 3, rank 4 (total of *50 Story Points*) |
+| **Sprint Forecast (extras, no delivery commitment):** | User Story rank 5 (*8 Story Points*) |
+
 
 ---
-## [01 - USER STORY] — Cálculo do Índice de Criticidade e Tabela de Classificação <a id="us1"></a>
+## [SPIKE] — Asynchronous processing of .gdb.zip files <a id="us1"></a>
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-01 no Confluence](https://jeanroodrigues.atlassian.net/wiki/x/AgByAQ)**
+
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-01 in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/CIDyAQ)**
+
 
 ---
+## [01 - USER STORY] — Criticality Index Calculation and Ranking Table <a id="us1"></a>
 
-## [02 - USER STORY] — Gráfico de Barras do Índice de Potencial de Sensoriamento (SAM) <a id="us2"></a>
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-02 no Confluence](https://jeanroodrigues.atlassian.net/wiki/spaces/~611d654d4016870069296c0d/pages/20742163)**
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-01 in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/AgByAQ)**
+
 
 ---
 
-## [03 - USER STORY] — Análise Comparativa de Perdas Técnicas (PT) e Não Técnicas (PNT) <a id="us3"></a>
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-03 no Confluence](https://jeanroodrigues.atlassian.net/wiki/x/AQBKAQ)**
+## [02 - USER STORY] — Bar Chart of Sensing Potential Index (SAM) <a id="us2"></a>
 
----
 
-## [04 - USER STORY] — Ranking Top 10 Conjuntos por TAM (Extensão de Média Tensão) <a id="us4"></a>
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-02 in Confluence](https://jeanroodrigues.atlassian.net/wiki/spaces/~611d654d4016870069296c0d/pages/20742163)**
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-04 no Confluence](https://jeanroodrigues.atlassian.net/wiki/x/CIBGAQ)**
 
 ---
 
-## [05 - USER STORY] — Mapa de Calor do Índice de Criticidade da concessionária <a id="us5"></a>
 
-> 📘 **Detalhamento no Confluence**  
-> Todas as informações detalhadas, regras de negócio e critérios de aceite desta User Story estão documentadas na nossa plataforma.
-> 
-> 🔗 **[Clique aqui para acessar a US-05 no Confluence](https://jeanroodrigues.atlassian.net/wiki/x/A4A4AQ)**
+## [03 - USER STORY] — Comparative Analysis of Technical Losses (PT) and Non-Technical Losses (PNT) <a id="us3"></a>
+
+
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-03 in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/AQBKAQ)**
+
 
 ---
 
+
+## [04 - USER STORY] — Top 10 Sets Ranking by TAM (Medium-Voltage Extension) <a id="us4"></a>
+
+
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-04 in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/CIBGAQ)**
+
+
+---
+
+
+## [05 - USER STORY] — Utility Criticality Index Heatmap <a id="us5"></a>
+
+
+> 📘 **Details in Confluence**  
+> All detailed information, business rules, and acceptance criteria for this User Story are documented in our platform.
+>
+> 🔗 **[Click here to access US-05 in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/A4A4AQ)**
+
+
+---

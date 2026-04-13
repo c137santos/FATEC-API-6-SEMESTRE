@@ -1,5 +1,6 @@
-﻿# Manual da Aplicação
+﻿# Application Manual
 
-> 🚧 **Em Construção**
-> 
-> Este documento está sendo elaborado pela equipe e em breve conterá todas as informações técnicas e de arquitetura da plataforma Thunderstone.
+
+> 🚧 **Under Construction**
+>
+> This document is being prepared by the team and will soon contain all the technical and architecture information about the Thunderstone platform.

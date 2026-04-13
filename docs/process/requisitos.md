@@ -1,101 +1,135 @@
-# Requisitos Funcionais
+# Functional Requirements
 
-## RF1 - Importação e Estruturação de Dados
-**ID Base:** RF1-DATA
 
-### RF1-DATA-INGEST - Ingestão de Dados Regulatórios
-- O sistema deve consumir arquivos CSV e Geodatabase compactados (ZIP) provenientes da ANEEL (BDGD, DEC, FEC e Perdas).
-- O sistema deve processar os dados dos arquivos, realizando limpeza e validação das colunas obrigatórias para os cálculos.
-- O sistema deve armazenar os dados processados no MongoDB.
+## RF1 - Data Import and Structuring
+**Base ID:** RF1-DATA
 
----
 
-## RF2 - Análise de Mercado e Criticidade
-**ID Base:** RF2-ANALYTICS
+### RF1-DATA-INGEST - Regulatory Data Ingestion
+- The system must consume CSV files and compressed Geodatabases (ZIP) from ANEEL (BDGD, DEC, FEC, and Losses).
+- The system must process the file data, performing cleaning and validation of the mandatory columns required for the calculations.
+- The system must store the processed data in MongoDB.
 
-### RF2-ANALYTICS-TAM - Dimensionamento Físico (TAM)
-- O sistema deve calcular a extensão das linhas de Média Tensão para identificar a potencialidade de mercado dos sensores da Tecsys.
-
-### RF2-ANALYTICS-PERD - Análise Comparativa Perdas
-- O sistema deve ranquear os conjuntos elétricos cruzando dados de DEC, FEC e limites regulatórios.
-- O sistema deve comparar visualmente (em MWh) as perdas técnicas e não técnicas.
-
-### RF2-ANALYTICS-SAM - Índice de Potencial de Sensoriamento (SAM)
-- O sistema deve cruzar os dados de extensão de rede, criticidade e presença de religadores para qualificar e ranquear as regiões com maior potencial de prioridade para instalação de sensores.
-
-### RF2-ANALYTICS-CRIT - Cálculo e Visualização de Criticidade e Perdas
-- O sistema deve calcular e ranquear os conjuntos elétricos cruzando dados de DEC, FEC e limites regulatórios da ANEEL.
-- O sistema deve exibir uma tabela (ou gráfico) de classificação listando os conjuntos elétricos ordenados do mais crítico (pior eficiência) para o menos crítico.
 
 ---
 
-## RF3 - Motor Preditivo e Inteligência Artificial
-**ID Base:** RF3-PREDICT
 
-### RF3-PREDICT-API - API de Aconselhamento (Machine Learning)
-- O sistema deve possuir uma API dedicada para execução do modelo preditivo.
+## RF2 - Market and Criticality Analysis
+**Base ID:** RF2-ANALYTICS
 
----
 
-## RF4 - Visualização Georreferenciada (GIS)
-**ID Base:** RF4-MAPS
+### RF2-ANALYTICS-TAM - Physical Sizing (TAM)
+- The system must calculate the length of Medium Voltage lines to identify the market potential for Tecsys sensors.
 
-### RF4-MAPS-HEATMAP - Mapas de Calor e Polígonos
-- O sistema deve renderizar um mapa georreferenciado, colorindo os segmentos de rede com base no Índice de Criticidade.
 
----
+### RF2-ANALYTICS-PERD - Comparative Loss Analysis
+- The system must rank the electrical sets by cross-referencing DEC, FEC, and regulatory limits.
+- The system must visually compare (in MWh) technical and non-technical losses.
 
-## RF5 - Gestão de Usuários e Autenticação
-**ID Base:** RF5-AUTH
 
-### RF5-AUTH-CRUD - Criação de Conta e Login
-- O sistema deve permitir que usuários criem suas próprias contas de forma autônoma.
-- O sistema deve autenticar usuários via e-mail e senha criptografada.
-- O sistema deve permitir a edição de dados básicos e exclusão da conta.
-- *Nota de Arquitetura:* Todos os dados de usuários e credenciais devem ser armazenados no banco de dados relacional (legado), compondo a parte estruturada da arquitetura híbrida.
----
+### RF2-ANALYTICS-SAM - Sensing Potential Index (SAM)
+- The system must cross-reference network length, criticality, and recloser presence data to qualify and rank the regions with the highest priority potential for sensor installation.
 
-# Requisitos Não Funcionais
 
-## RNF1 - Documentação Obrigatória do Projeto
-**ID Base:** RNF1-DOCS
+### RF2-ANALYTICS-CRIT - Criticality and Loss Calculation and Visualization
+- The system must calculate and rank the electrical sets by cross-referencing DEC, FEC, and ANEEL regulatory limits.
+- The system must display a classification table (or chart) listing the electrical sets ordered from the most critical (worst efficiency) to the least critical.
 
-### RNF1-DOCS-USER - Manuais de Instalação
-- A equipe deve elaborar um Manual de Instalação do sistema.
-- A equipe deve elaborar um Manual do Usuário detalhando o uso das funcionalidades.
-
-### RNF1-DOCS-TECH - Documentação Técnica
-- A equipe deve fornecer a documentação da API (Application Programming Interface), contendo os endpoints.
 
 ---
 
-## RNF2 - Arquitetura de Banco de Dados
-**ID Base:** RNF2-DATA
 
-### RNF2-DATA-BASE - Modelagem de Banco de Dados
-- A equipe deve entregar a modelagem de banco de dados ou a estrutura dos arquivos de dados.
+## RF3 - Predictive Engine and Artificial Intelligence
+**Base ID:** RF3-PREDICT
 
-### RNF2-DATA-TESTS - Integridade de Dados
-- O sistema deve possuir testes automatizados básicos para validar a integridade do banco de dados.
 
----
+### RF3-PREDICT-API - Advisory API (Machine Learning)
+- The system must have a dedicated API for executing the predictive model.
 
-## RNF3 - Conformidade LGPD e Segurança
-**ID Base:** RNF3-SEC
-
-### RNF3-SEC-LGPD - Privacidade e Anonimização
-- O sistema deve adicionar regras de conformidade com a LGPD.
-- O sistema deve implementar rotinas de anonimização de dados pessoais em caso de exclusão de conta, conforme exigido pela LGPD.
-
-### RNF3-SEC-AUDIT - Rastreabilidade (Logs)
-- O sistema deve realizar o registro obrigatório de logs de acesso.
-- O sistema deve registrar detalhadamente logs de manipulação de dados em uma tabela de auditoria.
 
 ---
 
-## RF6 - Relatórios e Exportação de Dados
-**ID Base:** RF6-EXPORT
 
-### RF6-EXPORT-PDF - Geração de Proposta Comercial em PDF
-- O sistema deve permitir a exportação das análises geradas (dashboards) para um documento em formato PDF.
-- O PDF gerado deve consolidar as informações de forma estruturada, servindo como um relatório técnico/comercial pronto para ser entregue à concessionária.
+## RF4 - Georeferenced Visualization (GIS)
+**Base ID:** RF4-MAPS
+
+
+### RF4-MAPS-HEATMAP - Heatmaps and Polygons
+- The system must render a georeferenced map, coloring the network segments based on the Criticality Index.
+
+
+---
+
+
+## RF5 - User Management and Authentication
+**Base ID:** RF5-AUTH
+
+
+### RF5-AUTH-CRUD - Account Creation and Login
+- The system must allow users to create their own accounts autonomously.
+- The system must authenticate users via email and encrypted password.
+- The system must allow editing of basic data and account deletion.
+- *Architecture Note:* All user and credential data must be stored in the relational (legacy) database, composing the structured part of the hybrid architecture.
+
+
+---
+
+
+# Non-Functional Requirements
+
+
+## RNF1 - Mandatory Project Documentation
+**Base ID:** RNF1-DOCS
+
+
+### RNF1-DOCS-USER - Installation Manuals
+- The team must produce a System Installation Manual.
+- The team must produce a User Manual detailing how to use the features.
+
+
+### RNF1-DOCS-TECH - Technical Documentation
+- The team must provide API (Application Programming Interface) documentation containing the endpoints.
+
+
+---
+
+
+## RNF2 - Database Architecture
+**Base ID:** RNF2-DATA
+
+
+### RNF2-DATA-BASE - Database Modeling
+- The team must deliver the database modeling or the data file structure.
+
+
+### RNF2-DATA-TESTS - Data Integrity
+- The system must include basic automated tests to validate database integrity.
+
+
+---
+
+
+## RNF3 - LGPD Compliance and Security
+**Base ID:** RNF3-SEC
+
+
+### RNF3-SEC-LGPD - Privacy and Anonymization
+- The system must add LGPD compliance rules.
+- The system must implement personal data anonymization routines in case of account deletion, as required by LGPD.
+
+
+### RNF3-SEC-AUDIT - Traceability (Logs)
+- The system must perform mandatory logging of access events.
+- The system must record detailed data manipulation logs in an audit table.
+
+
+---
+
+
+## RF6 - Reports and Data Export
+**Base ID:** RF6-EXPORT
+
+
+### RF6-EXPORT-PDF - Commercial Proposal Generation in PDF
+- The system must allow exporting the analyses generated (dashboards) to a PDF document.
+- The generated PDF must consolidate the information in a structured way, serving as a ready-to-deliver technical/commercial report for the utility company.

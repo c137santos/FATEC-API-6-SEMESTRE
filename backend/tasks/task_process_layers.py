@@ -800,12 +800,11 @@ def task_finalizar(
             _get_collection('circuitos_mt').delete_many({'job_id': job_id})
         except Exception:
             pass
-        try:
-            _get_collection('segmentos_mt_tabular').delete_many({'job_id': job_id})
-            _get_collection('segmentos_mt_geo').delete_many({'job_id': job_id})
-            _get_collection('conjuntos').delete_many({'job_id': job_id})
-        except Exception:
-            pass
+        for collection_name in ('segmentos_mt_tabular', 'segmentos_mt_geo', 'conjuntos'):
+            try:
+                _get_collection(collection_name).delete_many({'job_id': job_id})
+            except Exception:
+                pass
         try:
             _get_collection('jobs').update_one(
                 {'job_id': job_id},

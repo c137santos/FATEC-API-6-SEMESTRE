@@ -41,6 +41,23 @@ def _persist_ctmt(records: list[dict], job_id: str, descartados: int, processed_
     return len(records)
 
 
+def _persist_conj(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+    col = _get_collection('conjuntos')
+    col.create_index('job_id', unique=True, background=True)
+    col.replace_one(
+        {'job_id': job_id},
+        {
+            'job_id': job_id,
+            'processed_at': processed_at,
+            'total': len(records),
+            'descartados': descartados,
+            'records': records,
+        },
+        upsert=True,
+    )
+    return len(records)
+
+
 def _iter_ndjson(path: str):
     with Path(path).open('r', encoding='utf-8') as f:
         for line in f:
@@ -699,6 +716,7 @@ def task_finalizar(
 
     processed_at = datetime.now(timezone.utc).isoformat()
     ctmt_total = 0
+    conj_total = 0
     ssdmt_total = 0
     ssdmt_descartados = 0
     ssdmt_falhas_reprojecao = 0
@@ -716,6 +734,20 @@ def task_finalizar(
                 '[task_finalizar] CTMT persistido. job_id=%s total=%s',
                 job_id,
                 ctmt_total,
+            )
+
+        conj_result = next((r for r in (results or []) if r.get('layer') == 'CONJ'), None)
+        if conj_result:
+            conj_total = _persist_conj(
+                records=conj_result['records'],
+                job_id=job_id,
+                descartados=conj_result['descartados'],
+                processed_at=processed_at,
+            )
+            logger.info(
+                '[task_finalizar] CONJ persistido. job_id=%s total=%s',
+                job_id,
+                conj_total,
             )
 
         ssdmt_stats = _persist_ssdmt(results=results or [], job_id=job_id, processed_at=processed_at)
@@ -736,6 +768,7 @@ def task_finalizar(
                 'job_id': job_id,
                 'status': 'completed',
                 'ctmt_total': ctmt_total,
+                'conj_total': conj_total,
                 'ssdmt_total': ssdmt_total,
                 'ssdmt_descartados': ssdmt_descartados,
                 'ssdmt_falhas_reprojecao': ssdmt_falhas_reprojecao,
@@ -747,15 +780,17 @@ def task_finalizar(
         )
 
         logger.info(
-            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s ssdmt_total=%s',
+            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s conj_total=%s ssdmt_total=%s',
             job_id,
             ctmt_total,
+            conj_total,
             ssdmt_total,
         )
         return {
             'job_id': job_id,
             'status': 'completed',
             'ctmt_total': ctmt_total,
+            'conj_total': conj_total,
             'ssdmt_total': ssdmt_total,
         }
 
@@ -768,6 +803,7 @@ def task_finalizar(
         try:
             _get_collection('segmentos_mt_tabular').delete_many({'job_id': job_id})
             _get_collection('segmentos_mt_geo').delete_many({'job_id': job_id})
+            _get_collection('conjuntos').delete_many({'job_id': job_id})
         except Exception:
             pass
         try:

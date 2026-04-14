@@ -494,6 +494,7 @@ class _FakeMongoCollection:
         self.updates = []
         self.replaced = []
         self.fail_on_insert = False
+        self.fail_on_replace = False
 
     def create_index(self, keys, **kwargs):
         self.indexes.append((keys, kwargs))
@@ -508,6 +509,8 @@ class _FakeMongoCollection:
         self.docs.extend(docs)
 
     def replace_one(self, query, doc, upsert=False):
+        if self.fail_on_replace:
+            raise RuntimeError('falha replace_one')
         self.delete_many(query)
         self.docs.append(doc)
         self.replaced.append((query, doc, upsert))
@@ -581,6 +584,7 @@ def test_task_finalizar_persiste_ssdmt_full_em_mongo(tmp_path):
     collections = {
         'jobs': jobs_col,
         'circuitos_mt': ctmt_col,
+        'conjuntos': _FakeMongoCollection(),
         'segmentos_mt_tabular': tab_col,
         'segmentos_mt_geo': geo_col,
     }
@@ -661,6 +665,7 @@ def test_task_finalizar_consolida_ssdmt_chunk(tmp_path):
     collections = {
         'jobs': jobs_col,
         'circuitos_mt': _FakeMongoCollection(),
+        'conjuntos': _FakeMongoCollection(),
         'segmentos_mt_tabular': _FakeMongoCollection(),
         'segmentos_mt_geo': _FakeMongoCollection(),
     }
@@ -728,6 +733,7 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
     collections = {
         'jobs': jobs_col,
         'circuitos_mt': _FakeMongoCollection(),
+        'conjuntos': _FakeMongoCollection(),
         'segmentos_mt_tabular': tab_col,
         'segmentos_mt_geo': geo_col,
     }
@@ -756,3 +762,86 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
     assert tab_col.docs == []
     assert geo_col.docs == []
     assert jobs_col.updates[-1][1]['$set']['status'] == 'failed'
+
+
+def test_task_finalizar_persiste_conj_para_notebooks():
+    jobs_col = _FakeMongoCollection()
+    conj_col = _FakeMongoCollection()
+
+    collections = {
+        'jobs': jobs_col,
+        'circuitos_mt': _FakeMongoCollection(),
+        'conjuntos': conj_col,
+        'segmentos_mt_tabular': _FakeMongoCollection(),
+        'segmentos_mt_geo': _FakeMongoCollection(),
+    }
+
+    with patch(
+        f'{TASK_MODULE}._get_collection',
+        side_effect=lambda name: collections[name],
+    ):
+        result = task_finalizar.run(
+            [
+                {
+                    'layer': 'CONJ',
+                    'job_id': 'job-conj-1',
+                    'records': [
+                        {'cod_id': 12807, 'nome': 'CONJ A', 'dist': '404'},
+                        {'cod_id': 12808, 'nome': 'CONJ B', 'dist': '404'},
+                    ],
+                    'descartados': 1,
+                }
+            ],
+            'job-conj-1',
+            '/tmp/a.zip',
+            '/tmp',
+        )
+
+    assert result['status'] == 'completed'
+    assert result['conj_total'] == 2
+    assert len(conj_col.docs) == 1
+    assert conj_col.docs[0]['job_id'] == 'job-conj-1'
+    assert conj_col.docs[0]['total'] == 2
+    assert conj_col.docs[0]['descartados'] == 1
+
+    jobs_update = jobs_col.updates[-1][1]['$set']
+    assert jobs_update['conj_total'] == 2
+
+
+def test_task_finalizar_falha_no_conj_faz_rollback():
+    jobs_col = _FakeMongoCollection()
+    conj_col = _FakeMongoCollection()
+    conj_col.fail_on_replace = True
+    ssdmt_tab_col = _FakeMongoCollection()
+    ssdmt_geo_col = _FakeMongoCollection()
+
+    collections = {
+        'jobs': jobs_col,
+        'circuitos_mt': _FakeMongoCollection(),
+        'conjuntos': conj_col,
+        'segmentos_mt_tabular': ssdmt_tab_col,
+        'segmentos_mt_geo': ssdmt_geo_col,
+    }
+
+    with patch(
+        f'{TASK_MODULE}._get_collection',
+        side_effect=lambda name: collections[name],
+    ):
+        with pytest.raises(RuntimeError, match='falha replace_one'):
+            task_finalizar.run(
+                [
+                    {
+                        'layer': 'CONJ',
+                        'job_id': 'job-conj-2',
+                        'records': [{'cod_id': 99999, 'nome': 'X', 'dist': '404'}],
+                        'descartados': 0,
+                    }
+                ],
+                'job-conj-2',
+                '/tmp/a.zip',
+                '/tmp',
+            )
+
+    assert jobs_col.updates[-1][1]['$set']['status'] == 'failed'
+    assert ssdmt_tab_col.docs == []
+    assert ssdmt_geo_col.docs == []

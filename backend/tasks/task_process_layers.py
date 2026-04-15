@@ -7,7 +7,7 @@ from pathlib import Path
 
 import fiona
 import pyproj
-from pymongo import MongoClient
+from pymongo import MongoClient, results
 from shapely.geometry import mapping, shape
 from shapely.ops import transform
 
@@ -199,6 +199,22 @@ def _persist_ssdmt(results: list[dict], job_id: str, processed_at: str) -> dict:
         'tabular_paths': tabular_paths,
         'geo_paths': geo_paths,
     }
+
+def _persist_unsemt(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+    col = _get_collection('unsemt')
+    col.create_index('job_id', unique=True, background=True)
+    col.replace_one(
+        {'job_id': job_id},
+        {
+            'job_id': job_id,
+            'processed_at': processed_at,
+            'total': len(records),
+            'descartados': descartados,
+            'records': records,
+        },
+        upsert=True,
+    )
+    return len(records)
 
 
 REQUIRED_CTMT_COLUMNS: set[str] = {
@@ -701,7 +717,6 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
 
     records: list[dict] = []
     descartados = 0
-    coordinates = None
 
     with fiona.open(gdb_path, layer='UNSEMT') as src:
         properties = src.schema.get('properties', {})
@@ -720,7 +735,9 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
             if cod_id is None:
                 descartados += 1
                 continue
-
+            
+            coordinates = None
+            
             conj = row.get('CONJ')
             tip_unid = row.get('TIP_UNID')
             sit_ativ = row.get('SIT_ATIV')
@@ -730,8 +747,11 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
                 continue
             
             geometry = feature.get('geometry')
-            if geometry and geometry['type'] == 'Point':
-                coordinates = tuple(geometry['coordinates'])
+            if not geometry or geometry['type'] != 'Point':
+                descartados += 1
+                continue
+            
+            coordinates = tuple(geometry['coordinates'])
 
             records.append({
                 'cod_id': cod_id,
@@ -774,6 +794,7 @@ def task_finalizar(
     ssdmt_total = 0
     ssdmt_descartados = 0
     ssdmt_falhas_reprojecao = 0
+    unsemt_total = 0
 
     try:
         ctmt_result = next((r for r in (results or []) if r.get('layer') == 'CTMT'), None)
@@ -801,6 +822,23 @@ def task_finalizar(
             ssdmt_descartados,
             ssdmt_falhas_reprojecao,
         )
+        
+
+        unsemt_result = next((r for r in (results or []) if r.get('layer') == 'UNSEMT'), None)
+        if unsemt_result:
+            unsemt_total = _persist_unsemt(
+                records=unsemt_result['records'],
+                job_id=job_id,
+                descartados=unsemt_result['descartados'],
+                processed_at=processed_at,
+            )
+        logger.info(
+            '[task_finalizar] UNSEMT persistido. job_id=%s total=%s descartados=%s',
+            job_id,
+            unsemt_total,
+            unsemt_result['descartados'] if unsemt_result else 0,
+        )
+
 
         _get_collection('jobs').update_one(
             {'job_id': job_id},
@@ -810,6 +848,7 @@ def task_finalizar(
                 'ctmt_total': ctmt_total,
                 'ssdmt_total': ssdmt_total,
                 'ssdmt_descartados': ssdmt_descartados,
+                'unsemt_total': unsemt_total,
                 'ssdmt_falhas_reprojecao': ssdmt_falhas_reprojecao,
                 'completed_at': processed_at,
                 'updated_at': processed_at,
@@ -819,16 +858,18 @@ def task_finalizar(
         )
 
         logger.info(
-            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s ssdmt_total=%s',
+            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s ssdmt_total=%s unsemt_total=%s',
             job_id,
             ctmt_total,
             ssdmt_total,
+            unsemt_total,
         )
         return {
             'job_id': job_id,
             'status': 'completed',
             'ctmt_total': ctmt_total,
             'ssdmt_total': ssdmt_total,
+            'unsemt_total': unsemt_total,
         }
 
     except Exception as exc:

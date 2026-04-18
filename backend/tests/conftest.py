@@ -7,9 +7,12 @@ from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
+from pymongo import MongoClient
+import os
 from backend.database import get_session
 from backend.security import get_password_hash
-from core.models import User, table_registry
+from backend.routes.tam import get_db
+from ..core.models import User, table_registry
 
 
 class UserFactory(factory.Factory):
@@ -55,11 +58,12 @@ async def session(engine):
 
 
 @pytest_asyncio.fixture
-async def client(session):
+async def client(session, mongo_db):
     async def get_session_override():
         yield session
 
     app.dependency_overrides[get_session] = get_session_override
+    app.dependency_overrides[get_db] = lambda: mongo_db
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:
@@ -98,3 +102,38 @@ async def token(client, user):
         data={'username': user.email, 'password': user.clean_password},
     )
     return response.json()['access_token']
+
+
+@pytest.fixture(scope="session")
+def mongo_db():
+    """Cria o cliente e retorna o banco já autenticado."""
+    user = os.getenv("MONGO_ROOT_USER", "root")
+    pw = os.getenv("MONGO_ROOT_PASSWORD", "1234")
+    host = os.getenv("MONGO_HOST", "mongodb") 
+    db_name = os.getenv("MONGO_DB", "fatec_api")
+
+    uri = f"mongodb://{user}:{pw}@{host}:27017/?authSource=admin"
+    
+    client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+
+    yield client[db_name]
+    client.close()
+
+
+@pytest.fixture
+def setup_test_data(mongo_db):
+    """
+    Busca dinamicamente o primeiro job_id disponível no banco populado 
+    dentro da coleção de segmentos tabulares.
+    """
+    colecao = mongo_db["segmentos_mt_tabular"]
+    
+    registro = colecao.find_one({"job_id": {"$exists": True}})
+    
+    if not registro:
+        pytest.fail(
+            "Falha no setup: A coleção 'segmentos_mt_tabular' está vazia "
+            "ou não contém documentos com o campo 'job_id'."
+        )
+        
+    return registro["job_id"]

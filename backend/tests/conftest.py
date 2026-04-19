@@ -117,23 +117,17 @@ def mongo_db():
 
 @pytest.fixture
 def setup_test_data(mongo_db):
-    """
-    Busca dinamicamente o primeiro job_id disponível no banco populado 
-    dentro da coleção de segmentos tabulares.
-    """
     colecao = mongo_db["segmentos_mt_tabular"]
+    registro = colecao.find_one({"job_id": {"$exists": True}})
     
-    registro = colecao.find_one({"job_id": {"$exists": True}}, {"job_id": 1})
-
     if not registro:
         test_job_id = "test-job-123"
         colecao.insert_one({
             "job_id": test_job_id,
-            "CTMT": "CTMT_TESTE",
+            "CTMT": "ALIMENTADOR_TESTE",
+            "COMP": 1500.0,  
             "CONJ": "999",
-            "DIST": "DIST_TESTE",
-            "extensao_m": 1000.0,
-            "perdas_m_total": 0.1
+            "DIST": "DIST_TESTE"
         })
         return test_job_id
         

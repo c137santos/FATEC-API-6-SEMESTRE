@@ -4,9 +4,9 @@ import httpx
 import pytest
 from sqlalchemy import select
 
-from backend.listagem_dist.models import Distribuidora
-from backend.listagem_dist.schemas import DistribuidoraPayload
-from backend.listagem_dist.services import (
+from backend.models.distribuidora import Distribuidora
+from backend.schemas.distribuidoras import DistribuidoraPayload
+from backend.services.distribuidoras import (
     fetch_paginated_resources,
     upsert_distribuidoras,
 )

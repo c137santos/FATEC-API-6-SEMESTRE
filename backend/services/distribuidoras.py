@@ -5,8 +5,11 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from .models import Distribuidora
-from .schemas import DistribuidoraPayload, SyncDistribuidorasResponse
+from backend.models.distribuidora import Distribuidora
+from backend.schemas.distribuidoras import (
+    DistribuidoraPayload,
+    SyncDistribuidorasResponse,
+)
 
 INITIAL_URL = (
     'https://hub.arcgis.com/api/search/v1/collections/all/'

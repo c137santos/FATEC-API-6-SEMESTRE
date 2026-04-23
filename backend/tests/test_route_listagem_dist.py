@@ -1,6 +1,6 @@
 import pytest
 
-from backend.listagem_dist.schemas import DistribuidoraPayload
+from backend.schemas.distribuidoras import DistribuidoraPayload
 
 
 @pytest.mark.asyncio
@@ -20,7 +20,7 @@ async def test_sync_distribuidoras_endpoint_retorna_totais(client, monkeypatch):
         ]
 
     monkeypatch.setattr(
-        'backend.listagem_dist.services.fetch_paginated_resources',
+        'backend.services.distribuidoras.fetch_paginated_resources',
         fake_fetch,
     )
 
@@ -49,7 +49,7 @@ async def test_sync_distribuidoras_endpoint_erro_externo_retorna_502(
         raise RuntimeError('Falha ao consumir API ArcGIS Hub')
 
     monkeypatch.setattr(
-        'backend.listagem_dist.services.fetch_paginated_resources',
+        'backend.services.distribuidoras.fetch_paginated_resources',
         fake_fetch,
     )
 

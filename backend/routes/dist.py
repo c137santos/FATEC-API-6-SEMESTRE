@@ -2,9 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_session
-
-from .schemas import SyncDistribuidorasRequest, SyncDistribuidorasResponse
-from .services import INITIAL_URL, sync_distribuidoras
+from backend.schemas.distribuidoras import (
+    SyncDistribuidorasRequest,
+    SyncDistribuidorasResponse,
+)
+from backend.services.distribuidoras import INITIAL_URL, sync_distribuidoras
 
 router = APIRouter(tags=['distribuidoras'])
 

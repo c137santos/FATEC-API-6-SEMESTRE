@@ -8,7 +8,7 @@ from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from backend.database import get_session
-from backend.listagem_dist import models as _listagem_dist_models  # noqa: F401
+from backend.models import distribuidora as _distribuidora_models  # noqa: F401
 from backend.security import get_password_hash
 from core.models import User, table_registry
 

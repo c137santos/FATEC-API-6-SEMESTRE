@@ -12,9 +12,7 @@ router = APIRouter(tags=['distribuidoras'])
 async def sync_distribuidoras_endpoint(
     session: AsyncSession = Depends(get_session),
 ):
-    initial_url = INITIAL_URL
-
     try:
-        return await sync_distribuidoras(session=session, initial_url=initial_url)
+        return await sync_distribuidoras(session=session, initial_url=INITIAL_URL)
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc

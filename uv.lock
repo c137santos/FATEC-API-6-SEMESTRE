@@ -159,6 +159,7 @@ dependencies = [
     { name = "pymongo" },
     { name = "pyproj" },
     { name = "python-multipart" },
+    { name = "requests" },
     { name = "shapely" },
     { name = "sqlalchemy" },
 ]
@@ -192,6 +193,7 @@ requires-dist = [
     { name = "pymongo", specifier = ">=4.16.0" },
     { name = "pyproj", specifier = ">=3.7.2" },
     { name = "python-multipart", specifier = ">=0.0.22" },
+    { name = "requests", specifier = ">=2.33.1" },
     { name = "shapely", specifier = ">=2.1.2" },
     { name = "sqlalchemy", specifier = ">=2.0.48" },
 ]

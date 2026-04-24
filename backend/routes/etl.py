@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, HTTPException
 
-from backend.schemas import DecFecRequest, DownloadRequest
+from backend.core.schemas import DecFecRequest, DownloadRequest
 from backend.tasks.task_download_gdb import task_download_gdb
 from backend.tasks.task_load_dec_fec import (
     task_load_dec_fec_limite,

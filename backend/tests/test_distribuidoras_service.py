@@ -4,8 +4,8 @@ import httpx
 import pytest
 from sqlalchemy import select
 
-from backend.models.distribuidora import Distribuidora
-from backend.schemas.distribuidoras import DistribuidoraPayload
+from backend.core.models import Distribuidora
+from backend.core.schemas import DistribuidoraPayload
 from backend.services.distribuidoras import (
     fetch_paginated_resources,
     upsert_distribuidoras,

@@ -31,8 +31,8 @@ class Token(BaseModel):
 
 class DistribuidoraPayload(BaseModel):
     id: str | None
-    nome_distribuidora: str
-    data_gdb: date | None
+    dist_name: str
+    date_gdb: date | None
 
 
 class SyncDistribuidorasResponse(BaseModel):

@@ -9,19 +9,10 @@ from core.models import table_registry
 from settings import Settings
 
 
-def _sync_url_for_alembic(database_url: str) -> str:
-    """Alembic usa engine síncrona; converte URL async para driver sync."""
-    return (
-        database_url.replace('postgresql+asyncpg://', 'postgresql+psycopg://')
-        .replace('postgres+asyncpg://', 'postgresql+psycopg://')
-    )
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option(
-    'sqlalchemy.url', _sync_url_for_alembic(Settings().DATABASE_URL)
-)
+config.set_main_option('sqlalchemy.url', Settings().DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

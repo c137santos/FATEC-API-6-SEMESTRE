@@ -27,14 +27,14 @@ def extract_resources():
                 tags = r.get('properties', {}).get('tags', [])
                 
                 if tags and len(tags) >= 2:
-                    nome_distribuidora = tags[-2]
+                    dist_name = tags[-2]
                     data = tags[-1]
                 else:
-                    nome_distribuidora = "NÃO ENCONTRADO"
+                    dist_name = "NÃO ENCONTRADO"
 
                 all_resources.append({
                     "id": r.get("id"),
-                    "nome": nome_distribuidora,
+                    "nome": dist_name,
                     "data": data,
                     "tags_originais": tags
                 })

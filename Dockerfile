@@ -19,4 +19,4 @@ EXPOSE 8000
 
 ENV PYTHONPATH=/app:/app/backend
 
-CMD ["uv", "run", "uvicorn", "--host", "0.0.0.0", "backend.app:app"]
+CMD ["sh", "-c", "uv run alembic -c backend/alembic.ini upgrade head && uv run uvicorn --host 0.0.0.0 backend.app:app"]

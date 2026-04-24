@@ -57,8 +57,8 @@ async def test_fetch_paginated_resources_itera_links_de_paginacao():
 
     assert len(resources) == 2
     assert resources[0].id == 'dist-1'
-    assert resources[0].nome_distribuidora == 'DIST_A'
-    assert resources[0].data_gdb == date(2026, 1, 1)
+    assert resources[0].dist_name == 'DIST_A'
+    assert resources[0].date_gdb == date(2026, 1, 1)
     assert resources[1].id == 'dist-2'
 
 
@@ -67,16 +67,16 @@ async def test_upsert_distribuidoras_insere_e_atualiza(session):
     first_batch = [
         DistribuidoraPayload(
             id='dist-10',
-            nome_distribuidora='NOME_ANTIGO',
-            data_gdb=date(2026, 2, 10),
+            dist_name='NOME_ANTIGO',
+            date_gdb=date(2026, 2, 10),
         )
     ]
 
     second_batch = [
         DistribuidoraPayload(
             id='dist-10',
-            nome_distribuidora='NOME_ATUALIZADO',
-            data_gdb=date(2026, 2, 10),
+            dist_name='NOME_ATUALIZADO',
+            date_gdb=date(2026, 2, 10),
         )
     ]
 
@@ -95,8 +95,8 @@ async def test_upsert_distribuidoras_insere_e_atualiza(session):
 
     assert len(rows) == 1
     assert rows[0].id == 'dist-10'
-    assert rows[0].data_gdb == date(2026, 2, 10)
-    assert rows[0].nome_distribuidora == 'NOME_ATUALIZADO'
+    assert rows[0].date_gdb == date(2026, 2, 10)
+    assert rows[0].dist_name == 'NOME_ATUALIZADO'
 
 
 @pytest.mark.asyncio
@@ -104,18 +104,18 @@ async def test_upsert_distribuidoras_ignora_registros_invalidos(session):
     batch = [
         DistribuidoraPayload(
             id='dist-valida',
-            nome_distribuidora='DIST_VALIDA',
-            data_gdb=date(2026, 3, 1),
+            dist_name='DIST_VALIDA',
+            date_gdb=date(2026, 3, 1),
         ),
         DistribuidoraPayload(
             id=None,
-            nome_distribuidora='SEM_ID',
-            data_gdb=date(2026, 3, 2),
+            dist_name='SEM_ID',
+            date_gdb=date(2026, 3, 2),
         ),
         DistribuidoraPayload(
             id='sem-data',
-            nome_distribuidora='SEM_DATA',
-            data_gdb=None,
+            dist_name='SEM_DATA',
+            date_gdb=None,
         ),
     ]
 
@@ -133,3 +133,36 @@ async def test_upsert_distribuidoras_ignora_registros_invalidos(session):
     assert persisted == 1
     assert len(rows) == 1
     assert rows[0].id == 'dist-valida'
+
+
+@pytest.mark.asyncio
+async def test_upsert_distribuidoras_deduplica_chave_composta_no_mesmo_batch(session):
+    batch = [
+        DistribuidoraPayload(
+            id='dist-dup',
+            dist_name='NOME_1',
+            date_gdb=date(2026, 3, 5),
+        ),
+        DistribuidoraPayload(
+            id='dist-dup',
+            dist_name='NOME_2',
+            date_gdb=date(2026, 3, 5),
+        ),
+    ]
+
+    persisted = await upsert_distribuidoras(session, batch)
+    row = (
+        (
+            await session.execute(
+                select(Distribuidora).where(
+                    Distribuidora.id == 'dist-dup',
+                    Distribuidora.date_gdb == date(2026, 3, 5),
+                )
+            )
+        )
+        .scalars()
+        .one()
+    )
+
+    assert persisted == 1
+    assert row.dist_name == 'NOME_2'

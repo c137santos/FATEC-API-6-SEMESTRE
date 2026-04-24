@@ -44,19 +44,19 @@ def extract_resources():
                 tags = r.get('properties', {}).get('tags', [])
                 
                 if tags and len(tags) >= 2:
-                    nome_distribuidora = tags[-2]
+                    dist_name = tags[-2]
                     data_string = tags[-1]
                     try:
                         data_formatada = datetime.strptime(data_string, "%Y-%m-%d").date()
                     except ValueError:
                         data_formatada = None 
                 else:
-                    nome_distribuidora = "NÃO ENCONTRADO"
+                    dist_name = "NÃO ENCONTRADO"
                     data_formatada = None
 
                 all_resources.append({
                     "id": r.get("id"),
-                    "nome": nome_distribuidora,
+                    "nome": dist_name,
                     "data": data_formatada
                 })
             
@@ -78,9 +78,9 @@ def extract_resources():
 
 Crie o model para uma tabela chamada distribuidoras.
 
-Constraint de Chave: A tabela deve ter uma Chave Primária Composta (Composite Primary Key) formada pelas colunas id e data (nome da coluna no banco: data_gdb).
+Constraint de Chave: A tabela deve ter uma Chave Primária Composta (Composite Primary Key) formada pelas colunas id e data (nome da coluna no banco: date_gdb).
 
-Idempotência e Upsert: O endpoint pode ser acionado várias vezes. Ao salvar no banco, você PODE, ou algo que julgar melhor, utilizar uma instrução de Upsert nativa do PostgreSQL (from sqlalchemy.dialects.postgresql import insert). Se houver conflito na Primary Key, atualize o nome_distribuidora (ON CONFLICT DO UPDATE).
+Idempotência e Upsert: O endpoint pode ser acionado várias vezes. Ao salvar no banco, você PODE, ou algo que julgar melhor, utilizar uma instrução de Upsert nativa do PostgreSQL (from sqlalchemy.dialects.postgresql import insert). Se houver conflito na Primary Key, atualize o dist_name (ON CONFLICT DO UPDATE).
 
 4. Entregáveis Esperados:
 

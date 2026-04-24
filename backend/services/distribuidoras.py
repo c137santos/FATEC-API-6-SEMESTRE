@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 
 import httpx
 from sqlalchemy import func
@@ -27,21 +27,21 @@ def _extract_next_url(payload: dict) -> str | None:
 
 def _extract_distribuidora(resource: dict) -> DistribuidoraPayload:
     tags = resource.get('properties', {}).get('tags', [])
-    nome_distribuidora = 'NAO ENCONTRADO'
-    data_gdb = None
+    dist_name = 'NAO ENCONTRADO'
+    date_gdb = None
 
     if isinstance(tags, list) and len(tags) >= 2:
-        nome_distribuidora = str(tags[-2])
+        dist_name = str(tags[-2])
         data_string = str(tags[-1])
         try:
-            data_gdb = datetime.strptime(data_string, '%Y-%m-%d').date()
+            date_gdb = datetime.strptime(data_string, '%Y-%m-%d').date()
         except ValueError:
-            data_gdb = None
+            date_gdb = None
 
     return DistribuidoraPayload(
         id=resource.get('id'),
-        nome_distribuidora=nome_distribuidora,
-        data_gdb=data_gdb,
+        dist_name=dist_name,
+        date_gdb=date_gdb,
     )
 
 
@@ -83,26 +83,27 @@ async def upsert_distribuidoras(
     session: AsyncSession,
     resources: list[DistribuidoraPayload],
 ) -> int:
-    valid_resources = [
-        item for item in resources if item.id is not None and item.data_gdb is not None
-    ]
-    if not valid_resources:
-        return 0
+    # Avoid duplicate composite keys in the same INSERT statement.
+    deduplicated_rows: dict[tuple[str, date], dict[str, object]] = {}
+    for item in resources:
+        if item.id is None or item.date_gdb is None:
+            continue
 
-    rows = [
-        {
+        deduplicated_rows[(item.id, item.date_gdb)] = {
             'id': item.id,
-            'data_gdb': item.data_gdb,
-            'nome_distribuidora': item.nome_distribuidora,
+            'date_gdb': item.date_gdb,
+            'dist_name': item.dist_name,
         }
-        for item in valid_resources
-    ]
+
+    rows = list(deduplicated_rows.values())
+    if not rows:
+        return 0
 
     stmt = insert(Distribuidora).values(rows)
     stmt = stmt.on_conflict_do_update(
-        index_elements=[Distribuidora.id, Distribuidora.data_gdb],
+        index_elements=[Distribuidora.id, Distribuidora.date_gdb],
         set_={
-            'nome_distribuidora': stmt.excluded.nome_distribuidora,
+            'dist_name': stmt.excluded.dist_name,
             'updated_at': func.now(),
         },
     )

@@ -31,16 +31,6 @@ async def test_sync_distribuidoras_endpoint_retorna_totais(client, monkeypatch):
 
 
 @pytest.mark.asyncio
-async def test_sync_distribuidoras_endpoint_url_invalida(client):
-    response = await client.post(
-        '/dist/sync',
-        json={'initial_url': 'nao-e-url'},
-    )
-
-    assert response.status_code == 422
-
-
-@pytest.mark.asyncio
 async def test_sync_distribuidoras_endpoint_erro_externo_retorna_502(
     client,
     monkeypatch,

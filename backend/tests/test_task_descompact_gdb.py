@@ -148,7 +148,7 @@ class TestDescompactGdbSuccess:
         mock_chord.assert_called_once()
         mock_chord_instance.delay.assert_called_once()
 
-    def test_chord_header_tem_tres_tasks(self, tmp_dir, valid_zip):
+    def test_chord_header_tem_quatro_tasks(self, tmp_dir, valid_zip):
         with (
             patch(
                 f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()
@@ -160,7 +160,7 @@ class TestDescompactGdbSuccess:
             task_descompact_gdb.run('job-1', str(valid_zip))
 
         header, _callback = mock_chord.call_args.args
-        assert len(header) == 3
+        assert len(header) == 4
 
     def test_gdb_path_passado_como_string_para_cada_task(
         self, tmp_dir, valid_zip
@@ -183,7 +183,7 @@ class TestDescompactGdbSuccess:
             for c in mock_sig.call_args_list
             if c.kwargs.get('args') and gdb_path in c.kwargs['args']
         ]
-        assert len(calls_with_gdb) == 3
+        assert len(calls_with_gdb) == 4
 
     def test_usa_tasks_chunk_de_ssdmt_quando_habilitado(
         self, tmp_dir, valid_zip, monkeypatch

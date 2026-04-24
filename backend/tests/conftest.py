@@ -1,3 +1,5 @@
+import uuid
+
 import factory
 import pytest
 import pytest_asyncio
@@ -7,9 +9,12 @@ from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
 from backend.database import get_session
 from backend.core import models as _models  # noqa: F401
 from backend.security import get_password_hash
+from backend.routes.tam import get_db
 from backend.core.models import User, table_registry
 
 
@@ -56,11 +61,12 @@ async def session(engine):
 
 
 @pytest_asyncio.fixture
-async def client(session):
+async def client(session, mongo_db):
     async def get_session_override():
         yield session
 
     app.dependency_overrides[get_session] = get_session_override
+    app.dependency_overrides[get_db] = lambda: mongo_db
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:
@@ -99,3 +105,38 @@ async def token(client, user):
         data={'username': user.email, 'password': user.clean_password},
     )
     return response.json()['access_token']
+
+
+@pytest_asyncio.fixture
+async def mongo_db():
+    host = os.getenv("MONGO_HOST", "127.0.0.1")
+    user = os.getenv("MONGO_ROOT_USER", "root")
+    pw = os.getenv("MONGO_ROOT_PASSWORD", "1234")
+    db_name = os.getenv("MONGO_DB", "fatec_api")
+    uri = f"mongodb://{user}:{pw}@{host}:27017/?authSource=admin"
+    client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
+    yield client[db_name]
+    client.close()
+
+
+@pytest_asyncio.fixture
+async def setup_test_data(mongo_db):
+    colecao = mongo_db["segmentos_mt_tabular"]
+    
+    test_job_id = "test-job-" + str(uuid.uuid4()) 
+    
+    await colecao.insert_one({
+        "job_id": test_job_id,
+        "CTMT": "ALIMENTADOR_TESTE",
+        "COMP": 1500.0,  
+        "CONJ": "999",
+        "DIST": "DIST_TESTE"
+    })
+    
+    return test_job_id
+
+@pytest_asyncio.fixture
+async def api_response(client, setup_test_data):
+
+    response = await client.get(f"/tam/{setup_test_data}")
+    return response

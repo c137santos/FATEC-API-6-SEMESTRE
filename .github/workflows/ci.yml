@@ -9,16 +9,38 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+
+    services:
+      mongodb:
+        image: mongo:6.0
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: 1234
+
+      postgres:
+        image: postgres:16
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+
     env:
-      DATABASE_URL: postgresql+asyncpg://test:test@localhost:5432/test
+      DATABASE_URL: postgresql+asyncpg://test:test@127.0.0.1:5432/test
       POSTGRES_DB: test
       POSTGRES_USER: test
       POSTGRES_PASSWORD: test
-      MONGO_URI: mongodb://localhost:27017/test
+      MONGO_HOST: 127.0.0.1
+      MONGO_ROOT_USER: root
+      MONGO_ROOT_PASSWORD: 1234
+      MONGO_DB: fatec_api
+      MONGO_URI: mongodb://root:1234@127.0.0.1:27017/fatec_api?authSource=admin
       SECRET_KEY: test-secret-key
       ALGORITHM: HS256
       ACCESS_TOKEN_EXPIRE_MINUTES: 30
-
 
     steps:
       - name: Checkout repository

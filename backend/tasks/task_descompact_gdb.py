@@ -73,6 +73,7 @@ REQUIRED_SCHEMA: dict[str, set[str]] = {
         'DIST',
     },
     'CONJ': {'COD_ID', 'NOME', 'DIST'},
+    'UNSEMT': {'COD_ID','CONJ','TIP_UNID','SIT_ATIV'},
 }
 
 
@@ -158,6 +159,7 @@ def task_descompact_gdb(self, job_id: str, zip_path: str) -> dict:
         header_tasks = [
             signature('etl.processar_ctmt', args=(job_id, gdb_path)),
             signature('etl.processar_conj', args=(job_id, gdb_path)),
+            signature('etl.processar_unsemt', args=(job_id, gdb_path)),
         ]
 
         if SSDMT_PARALLEL_CHUNK_SIZE > 0:

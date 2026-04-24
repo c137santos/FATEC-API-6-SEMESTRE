@@ -7,7 +7,7 @@ from pathlib import Path
 
 import fiona
 import pyproj
-from pymongo import MongoClient
+from pymongo import MongoClient, results
 from shapely.geometry import mapping, shape
 from shapely.ops import transform
 
@@ -217,6 +217,27 @@ def _persist_ssdmt(results: list[dict], job_id: str, processed_at: str) -> dict:
         'geo_paths': geo_paths,
     }
 
+def _persist_unsemt(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+    col = _get_collection('unsemt')
+    col.create_index([('job_id', 1)], background=True)
+    col.create_index([('job_id', 1), ('cod_id', 1)], unique=True, background=True)
+    col.create_index([('job_id', 1), ('conj', 1)], background=True)
+    
+    col.delete_many({'job_id': job_id})
+
+    docs = []
+    for r in records:
+        doc = {
+            **r,
+            'job_id': job_id,
+            'processed_at': processed_at,
+        }
+        docs.append(doc)
+
+    if docs:
+        col.insert_many(docs, ordered=False)
+
+    return len(records)
 
 REQUIRED_CTMT_COLUMNS: set[str] = {
     'COD_ID',
@@ -270,6 +291,7 @@ REQUIRED_CTMT_COLUMNS: set[str] = {
     'PNTBT_12',
 }
 
+REQUIRED_UNSEMT_COLUMNS: set[str] = {'COD_ID', 'CONJ', 'TIP_UNID', 'SIT_ATIV'}
 REQUIRED_CONJ_COLUMNS: set[str] = {'COD_ID', 'NOME', 'DIST'}
 REQUIRED_SSDMT_COLUMNS: set[str] = {'COD_ID', 'CTMT', 'CONJ', 'COMP', 'DIST'}
 SSDMT_BATCH_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
@@ -506,6 +528,11 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
     with fiona.open(gdb_path, layer='CTMT') as src:
         properties = src.schema.get('properties', {})
         present_cols = set(properties.keys())
+        logger.info(
+            '[task_processar_ctmt] Colunas existentes na camada CTMT: %s',
+            present_cols
+        )
+
         missing = REQUIRED_CTMT_COLUMNS - present_cols
         if missing:
             raise RuntimeError(f'Camada CTMT sem colunas: {missing}')
@@ -702,6 +729,76 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
         'descartados': descartados,
     }
 
+@celery_app.task(name='etl.processar_unsemt')
+def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
+    logger.info(
+        '[task_processar_unsemt] Inicio do processamento. job_id=%s gdb_path=%s',
+        job_id,
+        gdb_path,
+    )
+
+    records: list[dict] = []
+    descartados = 0
+
+    with fiona.open(gdb_path, layer='UNSEMT') as src:
+        properties = src.schema.get('properties', {})
+        present_cols = set(properties.keys())
+        logger.info(
+            '[task_processar_unsemt] Colunas existentes na camada UNSEMT: %s',
+            present_cols
+        )
+        missing = REQUIRED_UNSEMT_COLUMNS - present_cols
+        if missing:
+            raise RuntimeError(f'Camada UNSEMT sem colunas: {missing}')
+
+        for feature in src:
+            row = feature.get('properties') or {}
+            cod_id = row.get('COD_ID')
+            if cod_id is None:
+                descartados += 1
+                continue
+            
+            coordinates = None
+            
+            conj = row.get('CONJ')
+            tip_unid = row.get('TIP_UNID')
+            sit_ativ = row.get('SIT_ATIV')
+            
+            if tip_unid != '32' or sit_ativ != 'AT':
+                descartados += 1
+                continue
+            
+            geometry = feature.get('geometry')
+            if not geometry or geometry['type'] != 'Point':
+                descartados += 1
+                continue
+            
+            coordinates = tuple(geometry['coordinates'])
+
+            records.append({
+                'cod_id': cod_id,
+                'conj': conj,
+                'coordinates': coordinates,
+                'job_id': job_id,
+            })
+
+    if not records:
+        raise RuntimeError('Camada UNSEMT sem registros validos apos limpeza')
+    
+    logger.info(
+        '[task_processar_unsemt] Processamento concluido. job_id=%s total=%s descartados=%s',
+        job_id,
+        len(records),
+        descartados,
+    )
+    return {
+        'layer': 'UNSEMT',
+        'job_id': job_id,
+        'records': records,
+        'total': len(records),
+        'descartados': descartados,
+    }
+
 
 @celery_app.task(name='etl.finalizar')
 def task_finalizar(
@@ -720,6 +817,7 @@ def task_finalizar(
     ssdmt_total = 0
     ssdmt_descartados = 0
     ssdmt_falhas_reprojecao = 0
+    unsemt_total = 0
 
     try:
         ctmt_result = next((r for r in (results or []) if r.get('layer') == 'CTMT'), None)
@@ -761,6 +859,23 @@ def task_finalizar(
             ssdmt_descartados,
             ssdmt_falhas_reprojecao,
         )
+        
+
+        unsemt_result = next((r for r in (results or []) if r.get('layer') == 'UNSEMT'), None)
+        if unsemt_result:
+            unsemt_total = _persist_unsemt(
+                records=unsemt_result['records'],
+                job_id=job_id,
+                descartados=unsemt_result['descartados'],
+                processed_at=processed_at,
+            )
+        logger.info(
+            '[task_finalizar] UNSEMT persistido. job_id=%s total=%s descartados=%s',
+            job_id,
+            unsemt_total,
+            unsemt_result['descartados'] if unsemt_result else 0,
+        )
+
 
         _get_collection('jobs').update_one(
             {'job_id': job_id},
@@ -771,6 +886,7 @@ def task_finalizar(
                 'conj_total': conj_total,
                 'ssdmt_total': ssdmt_total,
                 'ssdmt_descartados': ssdmt_descartados,
+                'unsemt_total': unsemt_total,
                 'ssdmt_falhas_reprojecao': ssdmt_falhas_reprojecao,
                 'completed_at': processed_at,
                 'updated_at': processed_at,
@@ -780,11 +896,12 @@ def task_finalizar(
         )
 
         logger.info(
-            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s conj_total=%s ssdmt_total=%s',
+            '[task_finalizar] Concluido. job_id=%s ctmt_total=%s conj_total=%s ssdmt_total=%s unsemt_total=%s',
             job_id,
             ctmt_total,
             conj_total,
             ssdmt_total,
+            unsemt_total,
         )
         return {
             'job_id': job_id,
@@ -792,6 +909,7 @@ def task_finalizar(
             'ctmt_total': ctmt_total,
             'conj_total': conj_total,
             'ssdmt_total': ssdmt_total,
+            'unsemt_total': unsemt_total,
         }
 
     except Exception as exc:
@@ -800,7 +918,7 @@ def task_finalizar(
             _get_collection('circuitos_mt').delete_many({'job_id': job_id})
         except Exception:
             pass
-        for collection_name in ('segmentos_mt_tabular', 'segmentos_mt_geo', 'conjuntos'):
+        for collection_name in ('segmentos_mt_tabular', 'segmentos_mt_geo', 'conjuntos', 'unsemt'):
             try:
                 _get_collection(collection_name).delete_many({'job_id': job_id})
             except Exception:

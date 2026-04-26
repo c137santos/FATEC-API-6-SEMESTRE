@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 
 import httpx
 from sqlalchemy import func
@@ -34,7 +34,7 @@ def _extract_distribuidora(resource: dict) -> DistribuidoraPayload:
         dist_name = str(tags[-2])
         data_string = str(tags[-1])
         try:
-            date_gdb = datetime.strptime(data_string, '%Y-%m-%d').date()
+            date_gdb = datetime.strptime(data_string, '%Y-%m-%d').year
         except ValueError:
             date_gdb = None
 
@@ -84,7 +84,7 @@ async def upsert_distribuidoras(
     resources: list[DistribuidoraPayload],
 ) -> int:
     # Avoid duplicate composite keys in the same INSERT statement.
-    deduplicated_rows: dict[tuple[str, date], dict[str, object]] = {}
+    deduplicated_rows: dict[tuple[str, int], dict[str, object]] = {}
     for item in resources:
         if item.id is None or item.date_gdb is None:
             continue

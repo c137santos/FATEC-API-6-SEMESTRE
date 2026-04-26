@@ -2,10 +2,10 @@
 
 ### Controle de Horas realizado pelo seguinte processo:
 1. Planning
-Com as histórias já definidas pelo PO, o time participa da Planning para entender o escopo da sprint e quebrar cada história em tarefas menores. Nessa etapa, o Scrum Master define a estimativa inicial em horas para as tarefas planejadas e distribui esse planejamento dentro dos dias/horas úteis da sprint (Calculados pelo Master). 
+Com as histórias já definidas pelo PO, o time participa da Planning para entender o escopo da sprint e quebrar cada história em tarefas menores. Nessa etapa, o Scrum Master define a estimativa inicial em horas para as tarefas planejadas e distribui esse planejamento dentro dos dias/horas úteis da sprint (Calculados pelo Master).
 
 2. Durante a sprint
-O papel do desenvolvedor é apenas registrar as horas realmente trabalhadas nas tarefas que já possuem hora dada e inserir uma EXPECTATIVA DE ENTREGA. Os desenvolvedores não devem alterar o controle de horas da task, ou seja, não devem mexer na estimativa já definida para a atividade. 
+O papel do desenvolvedor é apenas registrar as horas realmente trabalhadas nas tarefas que já possuem hora dada e inserir uma EXPECTATIVA DE ENTREGA. Os desenvolvedores não devem alterar o controle de horas da task, ou seja, não devem mexer na estimativa já definida para a atividade.
 
 3. Conclusão da tarefa
 Ao finalizar a atividade, a tarefa deve seguir normalmente pelo fluxo do board até Done, para que o andamento da sprint fique refletido corretamente nos relatórios. O burndown considera a configuração do board, a estimativa usada e a evolução dos itens no fluxo durante a sprint.

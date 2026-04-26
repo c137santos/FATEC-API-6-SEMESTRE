@@ -4,18 +4,20 @@ from backend.core.schemas import DistribuidoraPayload
 
 
 @pytest.mark.asyncio
-async def test_sync_distribuidoras_endpoint_retorna_totais(client, monkeypatch):
+async def test_sync_distribuidoras_endpoint_retorna_totais(
+    client, monkeypatch
+):
     async def fake_fetch(_initial_url):
         return [
             DistribuidoraPayload(
                 id='dist-1',
                 dist_name='DIST_A',
-                date_gdb='2026-01-01',
+                date_gdb=2026,
             ),
             DistribuidoraPayload(
                 id='dist-2',
                 dist_name='DIST_B',
-                date_gdb='2026-01-02',
+                date_gdb=2026,
             ),
         ]
 

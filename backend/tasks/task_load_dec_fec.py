@@ -123,7 +123,8 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
                 total += result.upserted_count + result.modified_count
                 logger.info(
                     '[task_load_dec_fec_realizado] Progresso. job_id=%s linhas_salvas=%s',
-                    job_id, total,
+                    job_id,
+                    total,
                 )
 
         logger.info(
@@ -131,7 +132,11 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
             job_id,
             total,
         )
-        return {'job_id': job_id, 'status': 'done', 'documents_upserted': total}
+        return {
+            'job_id': job_id,
+            'status': 'done',
+            'documents_upserted': total,
+        }
 
     except (httpx.HTTPError, httpx.TimeoutException) as exc:
         logger.warning(
@@ -143,12 +148,15 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
     except KeyError as exc:
         logger.exception(
             '[task_load_dec_fec_realizado] Coluna ausente. job_id=%s coluna=%s',
-            job_id, exc,
+            job_id,
+            exc,
         )
         raise
     except Exception as exc:
         logger.exception(
-            '[task_load_dec_fec_realizado] Falha. job_id=%s erro=%s', job_id, exc
+            '[task_load_dec_fec_realizado] Falha. job_id=%s erro=%s',
+            job_id,
+            exc,
         )
         raise
     finally:
@@ -205,7 +213,11 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
             job_id,
             total,
         )
-        return {'job_id': job_id, 'status': 'done', 'documents_upserted': total}
+        return {
+            'job_id': job_id,
+            'status': 'done',
+            'documents_upserted': total,
+        }
 
     except (httpx.HTTPError, httpx.TimeoutException) as exc:
         logger.warning(
@@ -217,7 +229,8 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
     except KeyError as exc:
         logger.exception(
             '[task_load_dec_fec_limite] Coluna ausente. job_id=%s coluna=%s',
-            job_id, exc,
+            job_id,
+            exc,
         )
         raise
     except Exception as exc:

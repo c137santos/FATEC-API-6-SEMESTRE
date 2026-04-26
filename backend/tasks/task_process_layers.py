@@ -24,7 +24,9 @@ def _get_collection(name: str):
     return client[settings.MONGO_DB][name]
 
 
-def _persist_ctmt(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+def _persist_ctmt(
+    records: list[dict], job_id: str, descartados: int, processed_at: str
+) -> int:
     col = _get_collection('circuitos_mt')
     col.create_index('job_id', unique=True, background=True)
     col.replace_one(
@@ -41,7 +43,9 @@ def _persist_ctmt(records: list[dict], job_id: str, descartados: int, processed_
     return len(records)
 
 
-def _persist_conj(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+def _persist_conj(
+    records: list[dict], job_id: str, descartados: int, processed_at: str
+) -> int:
     col = _get_collection('conjuntos')
     col.create_index('job_id', unique=True, background=True)
     col.replace_one(
@@ -67,7 +71,9 @@ def _iter_ndjson(path: str):
             yield json.loads(payload)
 
 
-def _to_notebook_ssdmt_tabular(raw: dict, job_id: str, processed_at: str) -> dict | None:
+def _to_notebook_ssdmt_tabular(
+    raw: dict, job_id: str, processed_at: str
+) -> dict | None:
     cod_id = _normalize_required_field(raw.get('COD_ID', raw.get('cod_id')))
     ctmt = _normalize_required_field(raw.get('CTMT', raw.get('ctmt')))
     if cod_id is None or ctmt is None:
@@ -84,7 +90,9 @@ def _to_notebook_ssdmt_tabular(raw: dict, job_id: str, processed_at: str) -> dic
     }
 
 
-def _to_notebook_ssdmt_geo(raw: dict, job_id: str, processed_at: str) -> dict | None:
+def _to_notebook_ssdmt_geo(
+    raw: dict, job_id: str, processed_at: str
+) -> dict | None:
     properties = raw.get('properties') or raw
     geometry = raw.get('geometry')
     if geometry is None:
@@ -111,9 +119,13 @@ def _to_notebook_ssdmt_geo(raw: dict, job_id: str, processed_at: str) -> dict | 
     }
 
 
-def _persist_ssdmt(results: list[dict], job_id: str, processed_at: str) -> dict:
+def _persist_ssdmt(
+    results: list[dict], job_id: str, processed_at: str
+) -> dict:
     ssdmt_results = [
-        r for r in (results or []) if r.get('layer') in {'SSDMT', 'SSDMT_CHUNK'}
+        r
+        for r in (results or [])
+        if r.get('layer') in {'SSDMT', 'SSDMT_CHUNK'}
     ]
     if not ssdmt_results:
         return {
@@ -217,12 +229,17 @@ def _persist_ssdmt(results: list[dict], job_id: str, processed_at: str) -> dict:
         'geo_paths': geo_paths,
     }
 
-def _persist_unsemt(records: list[dict], job_id: str, descartados: int, processed_at: str) -> int:
+
+def _persist_unsemt(
+    records: list[dict], job_id: str, descartados: int, processed_at: str
+) -> int:
     col = _get_collection('unsemt')
     col.create_index([('job_id', 1)], background=True)
-    col.create_index([('job_id', 1), ('cod_id', 1)], unique=True, background=True)
+    col.create_index(
+        [('job_id', 1), ('cod_id', 1)], unique=True, background=True
+    )
     col.create_index([('job_id', 1), ('conj', 1)], background=True)
-    
+
     col.delete_many({'job_id': job_id})
 
     docs = []
@@ -238,6 +255,7 @@ def _persist_unsemt(records: list[dict], job_id: str, descartados: int, processe
         col.insert_many(docs, ordered=False)
 
     return len(records)
+
 
 REQUIRED_CTMT_COLUMNS: set[str] = {
     'COD_ID',
@@ -460,7 +478,9 @@ def _process_ssdmt_window(
                     falhas_reprojecao,
                 )
 
-    percentual_falhas = (falhas_reprojecao / total_lidos) if total_lidos > 0 else 0.0
+    percentual_falhas = (
+        (falhas_reprojecao / total_lidos) if total_lidos > 0 else 0.0
+    )
 
     if percentual_falhas > SSDMT_REPROJECTION_FAILURE_LIMIT:
         raise RuntimeError(
@@ -530,7 +550,7 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
         present_cols = set(properties.keys())
         logger.info(
             '[task_processar_ctmt] Colunas existentes na camada CTMT: %s',
-            present_cols
+            present_cols,
         )
 
         missing = REQUIRED_CTMT_COLUMNS - present_cols
@@ -729,6 +749,7 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
         'descartados': descartados,
     }
 
+
 @celery_app.task(name='etl.processar_unsemt')
 def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
     logger.info(
@@ -745,7 +766,7 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
         present_cols = set(properties.keys())
         logger.info(
             '[task_processar_unsemt] Colunas existentes na camada UNSEMT: %s',
-            present_cols
+            present_cols,
         )
         missing = REQUIRED_UNSEMT_COLUMNS - present_cols
         if missing:
@@ -757,22 +778,22 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
             if cod_id is None:
                 descartados += 1
                 continue
-            
+
             coordinates = None
-            
+
             conj = row.get('CONJ')
             tip_unid = row.get('TIP_UNID')
             sit_ativ = row.get('SIT_ATIV')
-            
+
             if tip_unid != '32' or sit_ativ != 'AT':
                 descartados += 1
                 continue
-            
+
             geometry = feature.get('geometry')
             if not geometry or geometry['type'] != 'Point':
                 descartados += 1
                 continue
-            
+
             coordinates = tuple(geometry['coordinates'])
 
             records.append({
@@ -784,7 +805,7 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
 
     if not records:
         raise RuntimeError('Camada UNSEMT sem registros validos apos limpeza')
-    
+
     logger.info(
         '[task_processar_unsemt] Processamento concluido. job_id=%s total=%s descartados=%s',
         job_id,
@@ -820,7 +841,9 @@ def task_finalizar(
     unsemt_total = 0
 
     try:
-        ctmt_result = next((r for r in (results or []) if r.get('layer') == 'CTMT'), None)
+        ctmt_result = next(
+            (r for r in (results or []) if r.get('layer') == 'CTMT'), None
+        )
         if ctmt_result:
             ctmt_total = _persist_ctmt(
                 records=ctmt_result['records'],
@@ -834,7 +857,9 @@ def task_finalizar(
                 ctmt_total,
             )
 
-        conj_result = next((r for r in (results or []) if r.get('layer') == 'CONJ'), None)
+        conj_result = next(
+            (r for r in (results or []) if r.get('layer') == 'CONJ'), None
+        )
         if conj_result:
             conj_total = _persist_conj(
                 records=conj_result['records'],
@@ -848,7 +873,9 @@ def task_finalizar(
                 conj_total,
             )
 
-        ssdmt_stats = _persist_ssdmt(results=results or [], job_id=job_id, processed_at=processed_at)
+        ssdmt_stats = _persist_ssdmt(
+            results=results or [], job_id=job_id, processed_at=processed_at
+        )
         ssdmt_total = ssdmt_stats['total']
         ssdmt_descartados = ssdmt_stats['descartados']
         ssdmt_falhas_reprojecao = ssdmt_stats['falhas_reprojecao']
@@ -859,9 +886,10 @@ def task_finalizar(
             ssdmt_descartados,
             ssdmt_falhas_reprojecao,
         )
-        
 
-        unsemt_result = next((r for r in (results or []) if r.get('layer') == 'UNSEMT'), None)
+        unsemt_result = next(
+            (r for r in (results or []) if r.get('layer') == 'UNSEMT'), None
+        )
         if unsemt_result:
             unsemt_total = _persist_unsemt(
                 records=unsemt_result['records'],
@@ -876,22 +904,23 @@ def task_finalizar(
             unsemt_result['descartados'] if unsemt_result else 0,
         )
 
-
         _get_collection('jobs').update_one(
             {'job_id': job_id},
-            {'$set': {
-                'job_id': job_id,
-                'status': 'completed',
-                'ctmt_total': ctmt_total,
-                'conj_total': conj_total,
-                'ssdmt_total': ssdmt_total,
-                'ssdmt_descartados': ssdmt_descartados,
-                'unsemt_total': unsemt_total,
-                'ssdmt_falhas_reprojecao': ssdmt_falhas_reprojecao,
-                'completed_at': processed_at,
-                'updated_at': processed_at,
-                'error_message': None,
-            }},
+            {
+                '$set': {
+                    'job_id': job_id,
+                    'status': 'completed',
+                    'ctmt_total': ctmt_total,
+                    'conj_total': conj_total,
+                    'ssdmt_total': ssdmt_total,
+                    'ssdmt_descartados': ssdmt_descartados,
+                    'unsemt_total': unsemt_total,
+                    'ssdmt_falhas_reprojecao': ssdmt_falhas_reprojecao,
+                    'completed_at': processed_at,
+                    'updated_at': processed_at,
+                    'error_message': None,
+                }
+            },
             upsert=True,
         )
 
@@ -913,24 +942,37 @@ def task_finalizar(
         }
 
     except Exception as exc:
-        logger.error('[task_finalizar] Falha na persistencia. job_id=%s erro=%s', job_id, exc)
+        logger.error(
+            '[task_finalizar] Falha na persistencia. job_id=%s erro=%s',
+            job_id,
+            exc,
+        )
         try:
             _get_collection('circuitos_mt').delete_many({'job_id': job_id})
         except Exception:
             pass
-        for collection_name in ('segmentos_mt_tabular', 'segmentos_mt_geo', 'conjuntos', 'unsemt'):
+        for collection_name in (
+            'segmentos_mt_tabular',
+            'segmentos_mt_geo',
+            'conjuntos',
+            'unsemt',
+        ):
             try:
-                _get_collection(collection_name).delete_many({'job_id': job_id})
+                _get_collection(collection_name).delete_many({
+                    'job_id': job_id
+                })
             except Exception:
                 pass
         try:
             _get_collection('jobs').update_one(
                 {'job_id': job_id},
-                {'$set': {
-                    'status': 'failed',
-                    'updated_at': datetime.now(timezone.utc).isoformat(),
-                    'error_message': str(exc),
-                }},
+                {
+                    '$set': {
+                        'status': 'failed',
+                        'updated_at': datetime.now(timezone.utc).isoformat(),
+                        'error_message': str(exc),
+                    }
+                },
                 upsert=True,
             )
         except Exception:

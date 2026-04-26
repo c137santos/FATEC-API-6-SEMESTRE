@@ -109,11 +109,11 @@ async def token(client, user):
 
 @pytest_asyncio.fixture
 async def mongo_db():
-    host = os.getenv("MONGO_HOST", "127.0.0.1")
-    user = os.getenv("MONGO_ROOT_USER", "root")
-    pw = os.getenv("MONGO_ROOT_PASSWORD", "1234")
-    db_name = os.getenv("MONGO_DB", "fatec_api")
-    uri = f"mongodb://{user}:{pw}@{host}:27017/?authSource=admin"
+    host = os.getenv('MONGO_HOST', '127.0.0.1')
+    user = os.getenv('MONGO_ROOT_USER', 'root')
+    pw = os.getenv('MONGO_ROOT_PASSWORD', '1234')
+    db_name = os.getenv('MONGO_DB', 'fatec_api')
+    uri = f'mongodb://{user}:{pw}@{host}:27017/?authSource=admin'
     client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
     yield client[db_name]
     client.close()
@@ -121,22 +121,23 @@ async def mongo_db():
 
 @pytest_asyncio.fixture
 async def setup_test_data(mongo_db):
-    colecao = mongo_db["segmentos_mt_tabular"]
-    
-    test_job_id = "test-job-" + str(uuid.uuid4()) 
-    
+    colecao = mongo_db['segmentos_mt_tabular']
+
+    test_job_id = 'test-job-' + str(uuid.uuid4())
+
     await colecao.insert_one({
-        "job_id": test_job_id,
-        "CTMT": "ALIMENTADOR_TESTE",
-        "COMP": 1500.0,  
-        "CONJ": "999",
-        "DIST": "DIST_TESTE"
+        'job_id': test_job_id,
+        'CTMT': 'ALIMENTADOR_TESTE',
+        'COMP': 1500.0,
+        'CONJ': '999',
+        'DIST': 'DIST_TESTE',
     })
-    
+
     return test_job_id
+
 
 @pytest_asyncio.fixture
 async def api_response(client, setup_test_data):
 
-    response = await client.get(f"/tam/{setup_test_data}")
+    response = await client.get(f'/tam/{setup_test_data}')
     return response

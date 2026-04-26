@@ -17,8 +17,8 @@ ORM e Banco: SQLAlchemy (com asyncpg) e PostgreSQL
 Validação: Pydantic
 
 2. O Script de Prova de Conceito (Regra de Negócio):
-Abaixo está o script síncrono que já valida a paginação via "links" (padrão HATEOAS), a extração dos dados (id, nome, data) e o tratamento de erros. 
-Melhore e simplifique no que for necessário. 
+Abaixo está o script síncrono que já valida a paginação via "links" (padrão HATEOAS), a extração dos dados (id, nome, data) e o tratamento de erros.
+Melhore e simplifique no que for necessário.
 Utilize a lógica dele como base para o seu código assíncrono:
 
 ```
@@ -31,25 +31,25 @@ INITIAL_URL = "https://hub.arcgis.com/api/search/v1/collections/all/items?q=BDGD
 def extract_resources():
     all_resources = []
     next_url = INITIAL_URL
-    
+
     while next_url:
         try:
             response = requests.get(next_url)
             response.raise_for_status()
             payload = response.json()
-            
+
             data = payload.get("features", [])
-            
+
             for r in data:
                 tags = r.get('properties', {}).get('tags', [])
-                
+
                 if tags and len(tags) >= 2:
                     dist_name = tags[-2]
                     data_string = tags[-1]
                     try:
                         data_formatada = datetime.strptime(data_string, "%Y-%m-%d").date()
                     except ValueError:
-                        data_formatada = None 
+                        data_formatada = None
                 else:
                     dist_name = "NÃO ENCONTRADO"
                     data_formatada = None
@@ -59,17 +59,17 @@ def extract_resources():
                     "nome": dist_name,
                     "data": data_formatada
                 })
-            
+
             links = payload.get("links", [])
             next_url = None
             for link in links:
                 if link.get("rel") == "next":
                     next_url = link.get("href")
                     break
-                    
+
         except Exception as e:
-            break 
-            
+            break
+
     return all_resources
 
 ```

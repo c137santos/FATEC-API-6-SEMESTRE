@@ -8,6 +8,7 @@ def _env_bool(name: str, default: bool) -> bool:
         return default
     return value.strip().lower() in {'1', 'true', 'yes', 'on'}
 
+
 # Instancia Celery
 celery_app = Celery(
     'etl',

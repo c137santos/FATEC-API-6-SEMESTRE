@@ -14,7 +14,7 @@ from backend.tasks.task_process_layers import (
     task_processar_conj,
     task_processar_ssdmt_chunk,
     task_processar_ssdmt,
-    task_processar_unsemt
+    task_processar_unsemt,
 )
 
 
@@ -37,7 +37,9 @@ class _FakeDataset:
 
 
 class _FakeIterDataset:
-    def __init__(self, columns: set[str], rows: list[dict], crs=None, crs_wkt=None):
+    def __init__(
+        self, columns: set[str], rows: list[dict], crs=None, crs_wkt=None
+    ):
         self.schema = {'properties': {col: 'str' for col in columns}}
         self._rows = rows
         self._cursor = 0
@@ -103,7 +105,9 @@ def _feature_ctmt(
     }
 
 
-def _feature_ssdmt(cod_id, ctmt, geometry=None, conj='CJ', comp=10, dist='404'):
+def _feature_ssdmt(
+    cod_id, ctmt, geometry=None, conj='CJ', comp=10, dist='404'
+):
     if geometry is None:
         geometry = {'type': 'Point', 'coordinates': [0.0, 0.0]}
 
@@ -118,9 +122,13 @@ def _feature_ssdmt(cod_id, ctmt, geometry=None, conj='CJ', comp=10, dist='404'):
         'geometry': geometry,
     }
 
+
 _NO_GEOMETRY = object()
 
-def _feature_unsemt(cod_id, conj='CJ', tip_unid='32', sit_ativ='AT', geometry=_NO_GEOMETRY):
+
+def _feature_unsemt(
+    cod_id, conj='CJ', tip_unid='32', sit_ativ='AT', geometry=_NO_GEOMETRY
+):
     if geometry is _NO_GEOMETRY:
         geometry = {'type': 'Point', 'coordinates': [-54.59809, -22.79093]}
     return {
@@ -132,6 +140,7 @@ def _feature_unsemt(cod_id, conj='CJ', tip_unid='32', sit_ativ='AT', geometry=_N
         },
         'geometry': geometry,
     }
+
 
 def test_ctmt_retorna_records_com_colunas_necessarias():
     dataset = _FakeDataset(
@@ -287,7 +296,10 @@ def test_ssdmt_retorna_referencia_tabular_e_geo_em_batches(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.fiona.open', return_value=dataset),
-        patch(f'{TASK_MODULE}.pyproj.CRS.from_user_input', return_value='EPSG:3857'),
+        patch(
+            f'{TASK_MODULE}.pyproj.CRS.from_user_input',
+            return_value='EPSG:3857',
+        ),
         patch(
             f'{TASK_MODULE}.pyproj.Transformer.from_crs',
             return_value=_FakeTransformer(),
@@ -341,7 +353,10 @@ def test_ssdmt_descarta_cod_id_ou_ctmt_nulos(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.fiona.open', return_value=dataset),
-        patch(f'{TASK_MODULE}.pyproj.CRS.from_user_input', return_value='EPSG:3857'),
+        patch(
+            f'{TASK_MODULE}.pyproj.CRS.from_user_input',
+            return_value='EPSG:3857',
+        ),
         patch(
             f'{TASK_MODULE}.pyproj.Transformer.from_crs',
             return_value=_FakeTransformer(),
@@ -399,7 +414,10 @@ def test_ssdmt_lanca_erro_com_falha_reprojecao_acima_de_1_por_cento(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.fiona.open', return_value=dataset),
-        patch(f'{TASK_MODULE}.pyproj.CRS.from_user_input', return_value='EPSG:3857'),
+        patch(
+            f'{TASK_MODULE}.pyproj.CRS.from_user_input',
+            return_value='EPSG:3857',
+        ),
         patch(
             f'{TASK_MODULE}.pyproj.Transformer.from_crs',
             return_value=_FakeTransformer(),
@@ -447,7 +465,10 @@ def test_ssdmt_lanca_erro_sem_registros_validos(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.fiona.open', return_value=dataset),
-        patch(f'{TASK_MODULE}.pyproj.CRS.from_user_input', return_value='EPSG:3857'),
+        patch(
+            f'{TASK_MODULE}.pyproj.CRS.from_user_input',
+            return_value='EPSG:3857',
+        ),
         patch(
             f'{TASK_MODULE}.pyproj.Transformer.from_crs',
             return_value=_FakeTransformer(),
@@ -476,7 +497,10 @@ def test_ssdmt_chunk_processa_apenas_janela_configurada(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.fiona.open', return_value=dataset),
-        patch(f'{TASK_MODULE}.pyproj.CRS.from_user_input', return_value='EPSG:3857'),
+        patch(
+            f'{TASK_MODULE}.pyproj.CRS.from_user_input',
+            return_value='EPSG:3857',
+        ),
         patch(
             f'{TASK_MODULE}.pyproj.Transformer.from_crs',
             return_value=_FakeTransformer(),
@@ -501,7 +525,6 @@ def test_ssdmt_chunk_processa_apenas_janela_configurada(tmp_path):
     with open(tabular_path, encoding='utf-8') as tabular_file:
         first_tabular_line = tabular_file.readline().strip()
     assert json.loads(first_tabular_line)['cod_id'] == 'SS-3'
-
 
 
 def test_unsemt_retorna_records_com_colunas_necessarias():
@@ -611,7 +634,9 @@ def test_unsemt_descarta_quando_sem_geometry():
     dataset = _FakeDataset(
         columns=set(REQUIRED_UNSEMT_COLUMNS),
         rows=[
-            _feature_unsemt('UN-01', tip_unid='32', sit_ativ='AT', geometry=None),
+            _feature_unsemt(
+                'UN-01', tip_unid='32', sit_ativ='AT', geometry=None
+            ),
             _feature_unsemt('UN-02', tip_unid='32', sit_ativ='AT'),
         ],
     )
@@ -621,41 +646,40 @@ def test_unsemt_descarta_quando_sem_geometry():
     assert result['descartados'] >= 1
     assert all(r['cod_id'] != 'UN-01' for r in result['records'])
 
+
 def test_deve_persistir_unsemt_quando_presente():
     results = [
-        {
-            "layer": "UNSEMT",
-            "records": [{"cod_id": 1}],
-            "descartados": 2
-        }
+        {'layer': 'UNSEMT', 'records': [{'cod_id': 1}], 'descartados': 2}
     ]
 
-    job_id = "job-123"
-    processed_at = "2024-01-01T00:00:00"
+    job_id = 'job-123'
+    processed_at = '2024-01-01T00:00:00'
 
-    with patch("backend.tasks.task_process_layers._persist_unsemt") as mock_persist:
+    with patch(
+        'backend.tasks.task_process_layers._persist_unsemt'
+    ) as mock_persist:
         mock_persist.return_value = 1
 
         unsemt_result = next(
-            (r for r in (results or []) if r.get("layer") == "UNSEMT"),
-            None
+            (r for r in (results or []) if r.get('layer') == 'UNSEMT'), None
         )
 
         if unsemt_result:
             _ = mock_persist(
-                records=unsemt_result["records"],
+                records=unsemt_result['records'],
                 job_id=job_id,
-                descartados=unsemt_result["descartados"],
+                descartados=unsemt_result['descartados'],
                 processed_at=processed_at,
             )
 
         mock_persist.assert_called_once_with(
-            records=[{"cod_id": 1}],
+            records=[{'cod_id': 1}],
             job_id=job_id,
             descartados=2,
             processed_at=processed_at,
         )
-    
+
+
 class _FakeMongoCollection:
     def __init__(self):
         self.docs = []
@@ -767,7 +791,10 @@ def test_task_finalizar_persiste_ssdmt_full_em_mongo(tmp_path):
                 {
                     'layer': 'SSDMT',
                     'job_id': 'job-1',
-                    'ssdmt_tabular': {'path': str(tabular_path), 'records_count': 2},
+                    'ssdmt_tabular': {
+                        'path': str(tabular_path),
+                        'records_count': 2,
+                    },
                     'ssdmt_geo': {'path': str(geo_path), 'records_count': 2},
                     'descartados': 1,
                     'falhas_reprojecao': 0,
@@ -789,10 +816,7 @@ def test_task_finalizar_persiste_ssdmt_full_em_mongo(tmp_path):
         idx[0] == [('job_id', 1), ('COD_ID', 1)] and idx[1].get('unique')
         for idx in tab_col.indexes
     )
-    assert any(
-        idx[0] == [('geometry', '2dsphere')]
-        for idx in geo_col.indexes
-    )
+    assert any(idx[0] == [('geometry', '2dsphere')] for idx in geo_col.indexes)
     assert not tabular_path.exists()
     assert not geo_path.exists()
 
@@ -804,17 +828,37 @@ def test_task_finalizar_consolida_ssdmt_chunk(tmp_path):
     geo_1 = tmp_path / 'job-2_ssdmt_geo_chunk_00001.ndjson'
 
     tab_0.write_text(
-        json.dumps({'cod_id': 'SS-1', 'ctmt': 'CT-1', 'conj': 'A', 'comp': 1, 'dist': '404'}) + '\n',
+        json.dumps({
+            'cod_id': 'SS-1',
+            'ctmt': 'CT-1',
+            'conj': 'A',
+            'comp': 1,
+            'dist': '404',
+        })
+        + '\n',
         encoding='utf-8',
     )
     tab_1.write_text(
-        json.dumps({'cod_id': 'SS-2', 'ctmt': 'CT-2', 'conj': 'B', 'comp': 2, 'dist': '404'}) + '\n',
+        json.dumps({
+            'cod_id': 'SS-2',
+            'ctmt': 'CT-2',
+            'conj': 'B',
+            'comp': 2,
+            'dist': '404',
+        })
+        + '\n',
         encoding='utf-8',
     )
     geo_0.write_text(
         json.dumps({
             'type': 'Feature',
-            'properties': {'cod_id': 'SS-1', 'ctmt': 'CT-1', 'conj': 'A', 'comp': 1, 'dist': '404'},
+            'properties': {
+                'cod_id': 'SS-1',
+                'ctmt': 'CT-1',
+                'conj': 'A',
+                'comp': 1,
+                'dist': '404',
+            },
             'geometry': {'type': 'Point', 'coordinates': [0, 0]},
         })
         + '\n',
@@ -823,7 +867,13 @@ def test_task_finalizar_consolida_ssdmt_chunk(tmp_path):
     geo_1.write_text(
         json.dumps({
             'type': 'Feature',
-            'properties': {'cod_id': 'SS-2', 'ctmt': 'CT-2', 'conj': 'B', 'comp': 2, 'dist': '404'},
+            'properties': {
+                'cod_id': 'SS-2',
+                'ctmt': 'CT-2',
+                'conj': 'B',
+                'comp': 2,
+                'dist': '404',
+            },
             'geometry': {'type': 'Point', 'coordinates': [1, 1]},
         })
         + '\n',
@@ -881,13 +931,26 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
     tabular_path = tmp_path / 'job-3_ssdmt_tabular.ndjson'
     geo_path = tmp_path / 'job-3_ssdmt_geo.ndjson'
     tabular_path.write_text(
-        json.dumps({'cod_id': 'SS-1', 'ctmt': 'CT-1', 'conj': 'A', 'comp': 1, 'dist': '404'}) + '\n',
+        json.dumps({
+            'cod_id': 'SS-1',
+            'ctmt': 'CT-1',
+            'conj': 'A',
+            'comp': 1,
+            'dist': '404',
+        })
+        + '\n',
         encoding='utf-8',
     )
     geo_path.write_text(
         json.dumps({
             'type': 'Feature',
-            'properties': {'cod_id': 'SS-1', 'ctmt': 'CT-1', 'conj': 'A', 'comp': 1, 'dist': '404'},
+            'properties': {
+                'cod_id': 'SS-1',
+                'ctmt': 'CT-1',
+                'conj': 'A',
+                'comp': 1,
+                'dist': '404',
+            },
             'geometry': {'type': 'Point', 'coordinates': [0, 0]},
         })
         + '\n',
@@ -917,8 +980,14 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
                     {
                         'layer': 'SSDMT',
                         'job_id': 'job-3',
-                        'ssdmt_tabular': {'path': str(tabular_path), 'records_count': 1},
-                        'ssdmt_geo': {'path': str(geo_path), 'records_count': 1},
+                        'ssdmt_tabular': {
+                            'path': str(tabular_path),
+                            'records_count': 1,
+                        },
+                        'ssdmt_geo': {
+                            'path': str(geo_path),
+                            'records_count': 1,
+                        },
                         'descartados': 0,
                         'falhas_reprojecao': 0,
                     }
@@ -1002,7 +1071,9 @@ def test_task_finalizar_falha_no_conj_faz_rollback():
                     {
                         'layer': 'CONJ',
                         'job_id': 'job-conj-2',
-                        'records': [{'cod_id': 99999, 'nome': 'X', 'dist': '404'}],
+                        'records': [
+                            {'cod_id': 99999, 'nome': 'X', 'dist': '404'}
+                        ],
                         'descartados': 0,
                     }
                 ],

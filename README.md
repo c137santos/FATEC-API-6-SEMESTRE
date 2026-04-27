@@ -60,7 +60,7 @@ Uma User Story será considerada **pronta para desenvolvimento** quando atender 
 - O tamanho da tarefa é viável, podendo ser codificada, testada e entregue dentro de um ciclo único de Sprint.
 - Os cenários de uso (Caminho Feliz) estão descritos passo a passo.
 - Os requisitos não funcionais específicos daquela entrega, como regras de LGPD, geração de logs de auditoria ou tempo de resposta, estão explícitos nos critérios.
-- Caso a história impacte na interface visua, o protótipo, wireframe ou esboço da tela está anexado.
+- Caso a história impacte na interface visual, o protótipo, wireframe ou esboço da tela está anexado.
 
 
 ## 🏆 DoD - Definition of Done <a id="dod"></a>

@@ -7,9 +7,61 @@ class MockUser:
     def __init__(self, email):
         self.email = email
 
+user = MockUser(email="cliente@exemplo.com")
+
 @pytest.mark.asyncio
 async def test_send_email_success():
-    user = MockUser(email="cliente@exemplo.com")
+    """Testa o envio básico com anexo mockado."""
+    file_path = "relatorio_teste.pdf"
+
+    with patch("backend.email.envio_email.FastMail") as MockFastMail, \
+         patch("backend.email.envio_email.MessageSchema") as MockMessageSchema, \
+         patch("os.path.exists", return_value=True):
+        
+        instance = MockFastMail.return_value
+        instance.send_message = AsyncMock()
+        
+        mock_msg = MockMessageSchema.return_value
+
+        await send_email(user, file_path) 
+
+        assert instance.send_message.called
+        
+        MockMessageSchema.assert_called_once()
+        _, kwargs = MockMessageSchema.call_args
+        assert kwargs["attachments"] == [file_path]
+        assert kwargs["recipients"] == [user.email]
+
+@pytest.mark.asyncio
+async def test_send_email_file_not_found(capsys):
+    """Testa se a função interrompe o envio caso o arquivo não exista."""
+    file_path = "arquivo_fantasma.pdf"
+
+    with patch("os.path.exists", return_value=False):
+        await send_email(user, file_path)
+
+        captured = capsys.readouterr()
+        assert f"Erro: O arquivo {file_path} não existe." in captured.out
+
+@pytest.mark.asyncio
+async def test_send_email_smtp_error(capsys):
+    """Testa a captura de erro genérico caso o FastMail falhe."""
+    file_path = "relatorio.pdf"
+
+    with patch("backend.email.envio_email.FastMail") as MockFastMail, \
+         patch("os.path.exists", return_value=True):
+        
+        instance = MockFastMail.return_value
+        instance.send_message = AsyncMock(side_effect=Exception("Erro SMTP Genérico"))
+
+        await send_email(user, file_path)
+
+        captured = capsys.readouterr()
+        assert "Ocorreu um erro ao enviar o e-mail" in captured.out
+
+@pytest.mark.asyncio
+async def test_generate_pdf_integration():
+    """Testa se a geração de PDF e o envio podem trabalhar juntos (Mockando apenas o SMTP)."""
     
     with patch("backend.email.envio_email.FastMail") as MockFastMail:
         instance = MockFastMail.return_value

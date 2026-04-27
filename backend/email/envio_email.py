@@ -19,7 +19,29 @@ def get_mail_config():
         VALIDATE_CERTS = True
     )
 
-async def send_email(user: User):
+async def generate_pdf_report(user_email: str) -> str:
+    def create_pdf():
+        file_path = f"relatorio_{user_email.split('@')[0]}.pdf"
+        
+        c = canvas.Canvas(file_path, pagesize=A4)
+        width, height = A4
+        
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(100, height - 50, "Relatório Automático")
+        
+        c.setFont("Helvetica", 12)
+        c.drawString(100, height - 80, f"Destinatário: {user_email}")
+        c.drawString(100, height - 100, "Este é um documento PDF real gerado pela aplicação.")
+        
+        c.showPage()
+        c.save()
+        
+        return file_path
+    
+    loop = asyncio.get_event_loop()
+    return await loop.run_in_executor(None, create_pdf)
+
+async def send_email(user: User, file_path: str):
     """
     Envia o e-mail para o endereço do usuário (user.email).
     :param user: Objeto que contém o atributo 'email'

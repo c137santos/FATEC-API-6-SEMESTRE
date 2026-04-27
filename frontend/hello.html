@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meu App</title>
-  <link rel="stylesheet" href="./style.css?v=1" />
+  <link rel="stylesheet" href="./style.css?v=2" />
   <script src="https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.iife.js" defer init></script>
 <body>
   <div v-scope="app" class="app">
@@ -16,7 +16,11 @@
     </aside>
 
     <main class="main">
-      <section class="card" v-if="screen === 'documents'">
+      <div class="screen-wrapper" v-if="screen === 'documents'">
+      <h1 class="screen-title">Geração de Documentação</h1>
+      <h1 class="screen-subtitle"> Selecione os parâmetros necessários para compilar e gerar os relatórios
+oficiais em formato digital e enviar por e-mail.</h1>
+      <section class="card" >
         <h1 class="card-title">
           <span class="background-icon">
             <img src="./assets/Icon.svg" alt="" class="nav-icon">
@@ -48,6 +52,7 @@
           GERAR DOCUMENTAÇÃO PDF
         </button>
       </section>
+      </div>
     </main>
   </div>
 

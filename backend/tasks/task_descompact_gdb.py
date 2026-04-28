@@ -73,7 +73,7 @@ REQUIRED_SCHEMA: dict[str, set[str]] = {
         'DIST',
     },
     'CONJ': {'COD_ID', 'NOME', 'DIST'},
-    'UNSEMT': {'COD_ID','CONJ','TIP_UNID','SIT_ATIV'},
+    'UNSEMT': {'COD_ID', 'CONJ', 'TIP_UNID', 'SIT_ATIV'},
 }
 
 

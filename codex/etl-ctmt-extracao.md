@@ -139,5 +139,3 @@ Criterios de avaliacao:
 
 Documento detalhado:
 - `codex/task_ssdmt.md`
-
-

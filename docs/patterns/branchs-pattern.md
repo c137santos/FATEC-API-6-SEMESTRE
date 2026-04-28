@@ -11,22 +11,22 @@ Este documento descreve a estratégia de branches utilizando Git Flow, adaptado 
 ## Estrutura de Branches
 
 ### main
-- Representa o código pronto para produção  
-- Deve conter apenas commits estáveis  
+- Representa o código pronto para produção
+- Deve conter apenas commits estáveis
 
 ---
 
 ### dev
-- Branch de integração das novas funcionalidades  
-- Contém o histórico completo do projeto  
-- Pode incluir features ainda não publicadas  
+- Branch de integração das novas funcionalidades
+- Contém o histórico completo do projeto
+- Pode incluir features ainda não publicadas
 
 ---
 
 ### feature branches
-- Criadas a partir da branch `dev`  
-- Utilizadas para desenvolvimento de novas funcionalidades  
-- Após conclusão, devem ser mergeadas novamente na `dev`  
+- Criadas a partir da branch `dev`
+- Utilizadas para desenvolvimento de novas funcionalidades
+- Após conclusão, devem ser mergeadas novamente na `dev`
 
 ---
 
@@ -41,8 +41,8 @@ O nome da branch deve obrigatoriamente referenciar o ID da tarefa (ticket/issue)
 `[ticket-id]-[short-task-title]`
 
 **Exemplos:**
-- `pk-32-download-gdb`  
-- `pk-15-create-user-auth`  
+- `pk-32-download-gdb`
+- `pk-15-create-user-auth`
 
 ---
 
@@ -51,13 +51,13 @@ O nome da branch deve obrigatoriamente referenciar o ID da tarefa (ticket/issue)
 `spike-[us-id]-[us-title]`
 
 **Exemplo:**
-- `spike-us-01-download-pdf`  
+- `spike-us-01-download-pdf`
 
 ---
 
 ## Diretrizes
 
-- Substituir espaços por hífens (`-`)  
-- Não utilizar letras maiúsculas  
-- Evitar caracteres especiais  
-- Sempre incluir o ID da tarefa na branch  
+- Substituir espaços por hífens (`-`)
+- Não utilizar letras maiúsculas
+- Evitar caracteres especiais
+- Sempre incluir o ID da tarefa na branch

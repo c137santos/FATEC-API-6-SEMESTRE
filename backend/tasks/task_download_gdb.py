@@ -21,7 +21,9 @@ def _retry_countdown(retries: int) -> int:
 def _normalize_download_url(url: str) -> str:
     """ArcGIS /data/ (trailing slash) serves HTML directory instead of ZIP."""
     normalized = (url or '').strip()
-    if '/sharing/rest/content/items/' in normalized and normalized.endswith('/data/'):
+    if '/sharing/rest/content/items/' in normalized and normalized.endswith(
+        '/data/'
+    ):
         return normalized[:-1]
     return normalized
 

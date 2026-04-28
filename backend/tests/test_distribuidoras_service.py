@@ -1,5 +1,3 @@
-from datetime import date
-
 import httpx
 import pytest
 from sqlalchemy import select
@@ -22,7 +20,9 @@ async def test_fetch_paginated_resources_itera_links_de_paginacao():
                     'features': [
                         {
                             'id': 'dist-2',
-                            'properties': {'tags': ['BDGD', 'DIST_B', '2026-01-02']},
+                            'properties': {
+                                'tags': ['BDGD', 'DIST_B', '2026-01-02']
+                            },
                         }
                     ],
                     'links': [],
@@ -35,7 +35,9 @@ async def test_fetch_paginated_resources_itera_links_de_paginacao():
                 'features': [
                     {
                         'id': 'dist-1',
-                        'properties': {'tags': ['BDGD', 'DIST_A', '2026-01-01']},
+                        'properties': {
+                            'tags': ['BDGD', 'DIST_A', '2026-01-01']
+                        },
                     }
                 ],
                 'links': [
@@ -58,7 +60,7 @@ async def test_fetch_paginated_resources_itera_links_de_paginacao():
     assert len(resources) == 2
     assert resources[0].id == 'dist-1'
     assert resources[0].dist_name == 'DIST_A'
-    assert resources[0].date_gdb == date(2026, 1, 1)
+    assert resources[0].date_gdb == 2026
     assert resources[1].id == 'dist-2'
 
 
@@ -68,7 +70,7 @@ async def test_upsert_distribuidoras_insere_e_atualiza(session):
         DistribuidoraPayload(
             id='dist-10',
             dist_name='NOME_ANTIGO',
-            date_gdb=date(2026, 2, 10),
+            date_gdb=2026,
         )
     ]
 
@@ -76,7 +78,7 @@ async def test_upsert_distribuidoras_insere_e_atualiza(session):
         DistribuidoraPayload(
             id='dist-10',
             dist_name='NOME_ATUALIZADO',
-            date_gdb=date(2026, 2, 10),
+            date_gdb=2026,
         )
     ]
 
@@ -95,7 +97,7 @@ async def test_upsert_distribuidoras_insere_e_atualiza(session):
 
     assert len(rows) == 1
     assert rows[0].id == 'dist-10'
-    assert rows[0].date_gdb == date(2026, 2, 10)
+    assert rows[0].date_gdb == 2026
     assert rows[0].dist_name == 'NOME_ATUALIZADO'
 
 
@@ -105,12 +107,12 @@ async def test_upsert_distribuidoras_ignora_registros_invalidos(session):
         DistribuidoraPayload(
             id='dist-valida',
             dist_name='DIST_VALIDA',
-            date_gdb=date(2026, 3, 1),
+            date_gdb=2026,
         ),
         DistribuidoraPayload(
             id=None,
             dist_name='SEM_ID',
-            date_gdb=date(2026, 3, 2),
+            date_gdb=2026,
         ),
         DistribuidoraPayload(
             id='sem-data',
@@ -136,17 +138,19 @@ async def test_upsert_distribuidoras_ignora_registros_invalidos(session):
 
 
 @pytest.mark.asyncio
-async def test_upsert_distribuidoras_deduplica_chave_composta_no_mesmo_batch(session):
+async def test_upsert_distribuidoras_deduplica_chave_composta_no_mesmo_batch(
+    session,
+):
     batch = [
         DistribuidoraPayload(
             id='dist-dup',
             dist_name='NOME_1',
-            date_gdb=date(2026, 3, 5),
+            date_gdb=2026,
         ),
         DistribuidoraPayload(
             id='dist-dup',
             dist_name='NOME_2',
-            date_gdb=date(2026, 3, 5),
+            date_gdb=2026,
         ),
     ]
 
@@ -156,7 +160,7 @@ async def test_upsert_distribuidoras_deduplica_chave_composta_no_mesmo_batch(ses
             await session.execute(
                 select(Distribuidora).where(
                     Distribuidora.id == 'dist-dup',
-                    Distribuidora.date_gdb == date(2026, 3, 5),
+                    Distribuidora.date_gdb == 2026,
                 )
             )
         )

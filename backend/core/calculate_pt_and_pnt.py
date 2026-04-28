@@ -59,9 +59,7 @@ def calculate_pt_pnt(job_id: str) -> list[dict]:
         return []
 
     ctmt_by_cod: dict[str, dict] = {
-        r['COD_ID']: r
-        for r in doc_ctmt.get('records', [])
-        if r.get('COD_ID')
+        r['COD_ID']: r for r in doc_ctmt.get('records', []) if r.get('COD_ID')
     }
     logger.info('[pt_pnt] CTMT carregado. circuitos=%d', len(ctmt_by_cod))
 
@@ -88,7 +86,9 @@ def calculate_pt_pnt(job_id: str) -> list[dict]:
         if ctmt_cod and conj_cod:
             ctmt_to_conjs[ctmt_cod].add(conj_cod)
 
-    logger.info('[pt_pnt] SSDMT carregado. pares_ctmt_conj=%d', len(ctmt_to_conjs))
+    logger.info(
+        '[pt_pnt] SSDMT carregado. pares_ctmt_conj=%d', len(ctmt_to_conjs)
+    )
 
     accumulated: dict[str, dict[str, float]] = defaultdict(
         lambda: {'pt': 0.0, 'pnt': 0.0, 'ene': 0.0}
@@ -113,8 +113,12 @@ def calculate_pt_pnt(job_id: str) -> list[dict]:
         ene_mwh = vals['ene'] / 1000
         total_pt_and_pnt = pt_mwh + pnt_mwh
 
-        pct_pt = (pt_mwh / total_pt_and_pnt * 100) if total_pt_and_pnt else None
-        pct_pnt = (pnt_mwh / total_pt_and_pnt * 100) if total_pt_and_pnt else None
+        pct_pt = (
+            (pt_mwh / total_pt_and_pnt * 100) if total_pt_and_pnt else None
+        )
+        pct_pnt = (
+            (pnt_mwh / total_pt_and_pnt * 100) if total_pt_and_pnt else None
+        )
 
         results.append({
             'conjunto': name_by_conj.get(conj_cod, conj_cod),

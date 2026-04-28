@@ -1,4 +1,5 @@
 """Testes da rota POST /etl/load-dec-fec."""
+
 import uuid
 from unittest.mock import MagicMock, patch
 
@@ -59,69 +60,70 @@ def _mock_task(task_name: str, task_id: str):
     )
 
 
-class TestRouteLoadDecFecSucesso:
-    def test_retorna_job_id_e_task_ids(self, client):
-        with (
-            _mock_task('task_load_dec_fec_realizado', 'task-r-1'),
-            _mock_task('task_load_dec_fec_limite', 'task-l-1'),
-        ):
-            response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
+def test_retorna_job_id_e_task_ids(client):
+    with (
+        _mock_task('task_load_dec_fec_realizado', 'task-r-1'),
+        _mock_task('task_load_dec_fec_limite', 'task-l-1'),
+    ):
+        response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
 
-        assert response.status_code == 200
-        body = response.json()
-        assert 'job_id' in body
-        assert body['tasks']['realizado'] == 'task-r-1'
-        assert body['tasks']['limite'] == 'task-l-1'
-        assert body['status'] == 'queued'
-
-    def test_job_id_e_uuid_valido(self, client):
-        with (
-            _mock_task('task_load_dec_fec_realizado', 'r'),
-            _mock_task('task_load_dec_fec_limite', 'l'),
-        ):
-            response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
-
-        job_id = response.json()['job_id']
-        uuid.UUID(job_id)  # lança ValueError se inválido
+    assert response.status_code == 200
+    body = response.json()
+    assert 'job_id' in body
+    assert body['tasks']['realizado'] == 'task-r-1'
+    assert body['tasks']['limite'] == 'task-l-1'
+    assert body['status'] == 'queued'
 
 
-class TestRouteLoadDecFecValidacao:
-    def test_sem_url_realizado_retorna_422(self, client):
-        response = client.post(
-            '/load-dec-fec',
-            json={'url_limite': 'https://example.com/limite.csv'},
-        )
-        assert response.status_code == 422
+def test_job_id_e_uuid_valido(client):
+    with (
+        _mock_task('task_load_dec_fec_realizado', 'r'),
+        _mock_task('task_load_dec_fec_limite', 'l'),
+    ):
+        response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
 
-    def test_sem_url_limite_retorna_422(self, client):
-        response = client.post(
-            '/load-dec-fec',
-            json={'url_realizado': 'https://example.com/realizado.csv'},
-        )
-        assert response.status_code == 422
-
-    def test_payload_vazio_retorna_422(self, client):
-        response = client.post('/load-dec-fec', json={})
-        assert response.status_code == 422
-
-    def test_url_invalida_retorna_422(self, client):
-        response = client.post(
-            '/load-dec-fec',
-            json={
-                'url_realizado': 'nao-e-url',
-                'url_limite': 'https://example.com/limite.csv',
-            },
-        )
-        assert response.status_code == 422
+    job_id = response.json()['job_id']
+    uuid.UUID(job_id)
 
 
-class TestRouteLoadDecFecErroCelery:
-    def test_erro_no_celery_retorna_500(self, client):
-        with patch(
-            'backend.tasks.task_load_dec_fec.task_load_dec_fec_realizado.delay',
-            side_effect=Exception('broker down'),
-        ):
-            response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
+def test_sem_url_realizado_retorna_422(client):
+    response = client.post(
+        '/load-dec-fec',
+        json={'url_limite': 'https://example.com/limite.csv'},
+    )
+    assert response.status_code == 422
 
-        assert response.status_code == 500
-        assert 'broker down' in response.json()['detail']
+
+def test_sem_url_limite_retorna_422(client):
+    response = client.post(
+        '/load-dec-fec',
+        json={'url_realizado': 'https://example.com/realizado.csv'},
+    )
+    assert response.status_code == 422
+
+
+def test_payload_vazio_retorna_422(client):
+    response = client.post('/load-dec-fec', json={})
+    assert response.status_code == 422
+
+
+def test_url_invalida_retorna_422(client):
+    response = client.post(
+        '/load-dec-fec',
+        json={
+            'url_realizado': 'nao-e-url',
+            'url_limite': 'https://example.com/limite.csv',
+        },
+    )
+    assert response.status_code == 422
+
+
+def test_erro_no_celery_retorna_500(client):
+    with patch(
+        'backend.tasks.task_load_dec_fec.task_load_dec_fec_realizado.delay',
+        side_effect=Exception('broker down'),
+    ):
+        response = client.post('/load-dec-fec', json=PAYLOAD_VALIDO)
+
+    assert response.status_code == 500
+    assert 'broker down' in response.json()['detail']

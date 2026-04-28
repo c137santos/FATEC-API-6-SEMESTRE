@@ -25,7 +25,7 @@ A descrição deve ser objetiva, clara e descritiva.
 
 Descreva resumidamente as implementações feitas neste PR.
 
-Exemplo: 
+Exemplo:
 - Adiciona [funcionalidade/endpoint/componente] para [objetivo]
 - [Nome da função/tarefa] executa [ação específica e regras de negócio]
 - Valida [dados, arquivos ou entradas]

@@ -332,4 +332,3 @@ Cobre:
 	- mistura de camadas CTMT/CONJ/SSDMT
 6. Validar rollback de erro limpando colecoes por `job_id`.
 7. Validar fluxo end-to-end com 1 worker e com chunk opcional.
-

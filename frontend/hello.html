@@ -1,33 +1,155 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petite-Vue: Olá Mundo</title>
-
-    <script src="https://unpkg.com/petite-vue" defer init></script>
-
-    <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
-        .card { border: 1px solid #ddd; padding: 20px; border-radius: 8px; shadow: 2px 2px 10px rgba(0,0,0,0.1); }
-        input { margin-top: 10px; padding: 5px; }
-    </style>
-</head>
+<html lang="pt-BR">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meu App</title>
+  <link rel="stylesheet" href="./style.css?v=4" />
+  <script src="https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.iife.js" defer init></script>
 <body>
+  <div v-scope="app" class="app">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'perfil' }" @click="go('perfil')">PERFIL</button>
+        <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'documents' }" @click="go('documents')">
+          <img class="nav-icon"src="./assets/docsidebaricon.svg">DOCUMENTOS</button>
+        <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR</button>
+      </nav>
+    </aside>
 
-    <div v-scope="{ nome: 'Mundo', cor: 'blue' }" class="card">
+    <main class="main">
+      <div class="screen-wrapper" v-if="screen === 'documents'">
+      <div class="screen-title">Geração de  <span style="color: #DD7230; margin-left: 10px;">Documentação</span></div>
+      <div class="screen-subtitle">
+        <p>Selecione os parâmetros necessários para compilar e gerar os relatórios</p> 
+        <p>oficiais em formato digital e enviar por e-mail.</p>
+        </div>
+      <section class="card" >
+        <h1 class="card-title">
+          <span class="background-icon">
+            <img src="./assets/Icon.svg" alt="" class="nav-icon">
+          </span> Documentação</h1>
+        <h1 class="card-subtitle">Configuração de exportação de dados</h1>
+        <label class="field">
+          <span class="field-label">SELECIONE DISTRIBUIDORA</span>
+          <select v-model="filters.tipo">
+            <option value="">Selecione</option>
+            <option
+              v-for="dist in distOptions"
+              :key="dist.id"
+              :value="dist.id"
+            >
+              {{ dist.nome }}
+            </option>
+          </select>
+        </label>
 
-        <h1 :style="{ color: cor }">Olá, {{ nome }}!</h1>
+        <label class="field">
+          <span class="field-label">SELECIONE ANO</span>
+          <select v-model="filters.ano">
+            <option value="">Selecione</option>
+            <option
+              v-for="ano in anoOptions"
+              :key="ano"
+              :value="ano"
+              >
+              {{ ano }}
+            </option>
+          </select>
+        </label>
 
-        <p>Digite seu nome abaixo:</p>
-        <input v-model="nome" placeholder="Seu nome aqui...">
-
-        <div style="margin-top: 15px;">
-            <button @click="cor = 'red'">Ficar Vermelho</button>
-            <button @click="cor = 'blue'">Ficar Azul</button>
+        <div class="info-card">
+          <img src="./assets/infoicon.svg" alt="Info" class="info-icon">
+          <div class="info-text">
+            <p style="margin-bottom: 4px;">A geração do documento pode levar um tempo</p>
+            <p style="margin-bottom: 4px;">dependendo do volume de dados processados para a </p>
+            <p style="margin-bottom: 4px;">distribuidora selecionada.</p>
+          </div>
         </div>
 
-    </div>
+        <button class="primary-btn" @click="gerarPDF">
+          <img src="./assets/pdfbutton.svg" alt="" class="nav-icon">
+          GERAR DOCUMENTAÇÃO PDF
+        </button>
+        <div class="project-label">Sistema Thunderstone • Acesso Seguro Protegido</div>
+      </section>
+      </div>
+    </main>
+  </div>
 
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
+    const app = {
+      screen: 'documents',
+
+      filters: {
+        tipo: '',
+        ano: ''
+      },
+
+      registros: [
+        { dist: 'Distribuidora A', dist_id: 'a', ano: 2025 },
+        { dist: 'Distribuidora A', dist_id: 'a', ano: 2024 },
+        { dist: 'Distribuidora B', dist_id: 'b', ano: 2025 },
+        { dist: 'Distribuidora B', dist_id: 'b', ano: 2023 }
+      ],
+
+      async mounted() {
+//          TODO: Implementar chamada real para backend
+//          const res = await fetch('http://localhost:9000/distribuidoras-anos')
+//          this.registros = await res.json()
+      },
+
+      async gerarPDF() {
+        const params = {
+          dist_id: this.filters.tipo,
+          ano: this.filters.ano
+        }
+
+        if (!params.dist_id || !params.ano) {
+          alert('Selecione distribuidora e ano antes de gerar o PDF.')
+          return
+        }
+
+        console.log('[MOCK] Enviaria para backend:', params)
+//        TODO: Implementar chamada real para backend
+//        const params = new URLSearchParams({
+//          dist_id: this.filters.tipo,
+//          ano: this.filters.ano
+//        })
+//        const res = await fetch(`http://localhost:9000/documentos?${params}`)
+//        const data = await res.json()
+//        console.log('Resposta:', data)
+        setTimeout(() => {
+          console.log('[MOCK] Geração simulada com sucesso.')
+          alert('Geração de documentação simulada com sucesso.')
+        }, 800)
+      },
+
+      get distOptions() {
+        const mapa = new Map()
+        this.registros.forEach(r => {
+          if (!mapa.has(r.dist_id)) {
+            mapa.set(r.dist_id, r.dist)
+          }
+        })
+        return Array.from(mapa, ([id, nome]) => ({ id, nome }))
+      },
+
+      get anoOptions() {
+        const anos = new Set()
+        this.registros
+          .filter(r => !this.filters.tipo || r.dist_id === this.filters.tipo)
+          .forEach(r => anos.add(r.ano))
+
+        return Array.from(anos).sort((a, b) => b - a)
+      },
+
+      go(tela) {
+        this.screen = tela
+      }
+    }
+    createApp(app).mount()
+  </script>
 </body>
 </html>
+

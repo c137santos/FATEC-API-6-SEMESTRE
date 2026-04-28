@@ -1,8 +1,12 @@
 import asyncio
+from pathlib import Path
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from core.models import User
 from settings import Settings
+
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
 
 settings = Settings()
 
@@ -45,7 +49,16 @@ async def send_email(user: User, file_path: str):
     """
     Envia o e-mail para o endereço do usuário (user.email).
     :param user: Objeto que contém o atributo 'email'
+    :param file_path: Caminho do arquivo (PDF) já existente para anexo
     """
+    path = Path(file_path)
+    
+    if not path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"O anexo {file_path} não foi encontrado ou não é um arquivo válido."
+        )
+    
     try:
 
         conf = get_mail_config()
@@ -62,17 +75,7 @@ async def send_email(user: User, file_path: str):
         await fm.send_message(message)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao enviar o e-mail: {str(e)}")
-
-if __name__ == "__main__":
-
-    class MockUser:
-        def __init__(self, email):
-            self.email = email
-
-    test_user = MockUser(email="yan_teste@exemplo.com")
-    
-    try:
-        asyncio.run(send_email(user=test_user))
-    finally:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
+            detail=f"Falha na comunicação com o servidor de e-mail: {str(e)}"
+        )

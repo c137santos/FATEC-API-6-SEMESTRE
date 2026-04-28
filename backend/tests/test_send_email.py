@@ -1,43 +1,80 @@
-from unittest.mock import patch, AsyncMock
 import pytest
+import os
+from unittest.mock import patch, AsyncMock
 from backend.email.envio_email import send_email
+from backend.email.envio_email import generate_pdf_report
 from fastapi import HTTPException
+
 
 class MockUser:
     def __init__(self, email):
         self.email = email
 
+user = MockUser(email="cliente@exemplo.com")
+
 @pytest.mark.asyncio
 async def test_send_email_success():
-    user = MockUser(email="cliente@exemplo.com")
+    """Testa o envio básico com anexo mockado."""
+    file_path = "relatorio_teste.pdf"
+
+    with patch("backend.email.envio_email.FastMail") as MockFastMail, \
+         patch("backend.email.envio_email.MessageSchema") as MockMessageSchema, \
+         patch("backend.email.envio_email.Path.is_file", return_value=True):
+        
+        instance = MockFastMail.return_value
+        instance.send_message = AsyncMock()
+        
+        await send_email(user, file_path) 
+
+        assert instance.send_message.called
+        MockMessageSchema.assert_called_once()
+        
+        _, kwargs = MockMessageSchema.call_args
+        attachment = kwargs["attachments"][0]
+        assert str(attachment).endswith("relatorio_teste.pdf")
+
+@pytest.mark.asyncio
+async def test_send_email_file_not_found():
+    """Testa se a função lança 404 quando o arquivo não existe."""
+    file_path = "arquivo_inexistente.pdf"
+
+    with patch("backend.email.envio_email.Path.is_file", return_value=False):
+        with pytest.raises(HTTPException) as excinfo:
+            await send_email(user, file_path)
+        
+        assert excinfo.value.status_code == 404
+        assert "não foi encontrado" in excinfo.value.detail
+
+@pytest.mark.asyncio
+async def test_send_email_smtp_error():
+    """Testa erro de envio quando o arquivo EXISTE mas o SMTP falha."""
+    file_path = "relatorio_valido.pdf"
+
+    with patch("backend.email.envio_email.Path.is_file", return_value=True), \
+         patch("backend.email.envio_email.FastMail") as MockFastMail:
+        
+        instance = MockFastMail.return_value
+        instance.send_message = AsyncMock(side_effect=Exception("Conexão recusada"))
+
+        with pytest.raises(HTTPException) as excinfo:
+            await send_email(user, file_path)
+        
+        assert excinfo.value.status_code == 500
+        assert "Falha na comunicação" in excinfo.value.detail
+
+@pytest.mark.asyncio
+async def test_generate_pdf_integration():
+    """Testa se a geração de PDF e o envio podem trabalhar juntos (Mockando apenas o SMTP)."""
     
     with patch("backend.email.envio_email.FastMail") as MockFastMail:
         instance = MockFastMail.return_value
         instance.send_message = AsyncMock()
 
-        await send_email(user) 
-
-        instance.send_message.assert_awaited_once()
+        path = await generate_pdf_report(user.email)
         
-        args, _ = instance.send_message.call_args
-        message = args[0]
-        
-        assert message.subject == "Relatório automático"
-
-        recipients_list = [r.email if hasattr(r, 'email') else r for r in message.recipients]
-        assert "cliente@exemplo.com" in recipients_list
-
-@pytest.mark.asyncio
-async def test_send_email_error_log(capsys):
-    """Testa a captura de erro caso o servidor SMTP falhe."""
-    user = MockUser(email="erro@exemplo.com")
-
-    with patch("backend.email.envio_email.FastMail") as MockFastMail:
-        instance = MockFastMail.return_value
-        instance.send_message = AsyncMock(side_effect=Exception("Falha na conexão"))
-
-        with pytest.raises(HTTPException) as exc_info:
-            await send_email(user)
-
-        assert exc_info.value.status_code == 500
-        assert "Falha na conexão" in exc_info.value.detail
+        try:
+            await send_email(user, path)
+            assert instance.send_message.called
+        finally:
+            if os.path.exists(path):
+                os.remove(path)

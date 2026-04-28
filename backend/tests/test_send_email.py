@@ -17,7 +17,7 @@ async def test_send_email_success():
 
         await send_email(user) 
 
-        assert instance.send_message.called
+        instance.send_message.assert_awaited_once()
         
         args, _ = instance.send_message.call_args
         message = args[0]

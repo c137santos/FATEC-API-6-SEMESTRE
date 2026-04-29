@@ -1,5 +1,4 @@
 import asyncio
-from functools import lru_cache
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from fastapi import HTTPException
 from backend.core.models import User

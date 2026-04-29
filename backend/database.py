@@ -2,7 +2,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from backend.settings import Settings
 
-engine = create_async_engine(Settings().DATABASE_URL)
+db_url = db_url = Settings().DATABASE_URL.replace("postgresql+psycopg://", "postgresql+asyncpg://")
+engine = create_async_engine(db_url)
 
 
 async def get_session():

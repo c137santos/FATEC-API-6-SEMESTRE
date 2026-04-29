@@ -4,9 +4,11 @@ import os
 import factory
 import pytest
 import pytest_asyncio
+import asyncpg
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
+from sqlalchemy import text
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
@@ -16,6 +18,7 @@ from backend.core import models as _models  # noqa: F401
 from backend.security import get_password_hash
 from backend.routes.tam import get_db
 from backend.core.models import User, table_registry
+from backend.routes.tam import get_pg_db 
 
 
 class UserFactory(factory.Factory):
@@ -30,6 +33,19 @@ class UserFactory(factory.Factory):
 @pytest.fixture(scope='session')
 def postgres_container():
     with PostgresContainer('postgres:16', driver='psycopg') as postgres:
+        host = postgres.get_container_host_ip()
+        port = postgres.get_exposed_port(5432)
+        user = postgres.username
+        password = postgres.password
+        dbname = postgres.dbname
+        
+        url_sa = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{dbname}"
+        url_pure = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
+        
+        os.environ["DATABASE_URL"] = url_sa
+        os.environ["POSTGRES_HOST"] = host
+        os.environ["POSTGRES_PORT"] = str(port)
+        
         yield postgres
 
 
@@ -61,12 +77,24 @@ async def session(engine):
 
 
 @pytest_asyncio.fixture
-async def client(session, mongo_db):
-    async def get_session_override():
-        yield session
-
-    app.dependency_overrides[get_session] = get_session_override
+async def client(session, mongo_db, postgres_container):
+    app.dependency_overrides[get_session] = lambda: session
     app.dependency_overrides[get_db] = lambda: mongo_db
+
+    async def get_pg_db_override():
+        host = postgres_container.get_container_host_ip()
+        port = postgres_container.get_exposed_port(5432)
+        url = f"postgresql://{postgres_container.username}:{postgres_container.password}@{host}:{port}/{postgres_container.dbname}"
+        
+        conn = await asyncpg.connect(url)
+        try:
+            yield conn
+        finally:
+            if not conn.is_closed():
+                await conn.close()
+
+    app.dependency_overrides[get_pg_db] = get_pg_db_override
+
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:
@@ -120,11 +148,27 @@ async def mongo_db():
 
 
 @pytest_asyncio.fixture
-async def setup_test_data(mongo_db):
+async def setup_test_data(mongo_db, postgres_container):
+    test_job_id = f'test-job-{uuid.uuid4()}'
+    dist_id_fake = uuid.uuid4().hex
+    
+    url = postgres_container.get_connection_url().replace(
+        'postgresql+psycopg', 'postgresql'
+    )
+    
+    conn = await asyncpg.connect(url)
+    try:
+        await conn.execute(
+            """
+            INSERT INTO distribuidoras (id, job_id, date_gdb, dist_name)
+            VALUES ($1, $2, $3, $4)
+            """,
+            dist_id_fake, test_job_id, 2024, "CEMIG-D"
+        )
+    finally:
+        await conn.close()
+
     colecao = mongo_db['segmentos_mt_tabular']
-
-    test_job_id = 'test-job-' + str(uuid.uuid4())
-
     await colecao.insert_one({
         'job_id': test_job_id,
         'CTMT': 'ALIMENTADOR_TESTE',

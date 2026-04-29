@@ -1,18 +1,17 @@
 import logging
 from typing import Dict, List, Optional
 
-from pymongo import MongoClient
-from pymongo.collection import Collection
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
 
 from backend.settings import Settings
 
 logger = logging.getLogger(__name__)
 
 
-def get_mongo_collection(collection_name: str) -> Collection:
+def get_mongo_collection(collection_name: str) -> AsyncIOMotorCollection:
     """Obtém uma coleção do MongoDB."""
     settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
+    client = AsyncIOMotorClient(settings.MONGO_URI)
     return client[settings.MONGO_DB][collection_name]
 
 
@@ -28,8 +27,10 @@ def classificar_criticidade(score: float) -> str:
     """
     Classifica a criticidade baseada no score, seguindo a lógica do notebook.
 
+
     Args:
         score: Score de criticidade calculado
+
 
     Returns:
         String com a classificação: 'Verde', 'Laranja' ou 'Vermelho'
@@ -42,7 +43,7 @@ def classificar_criticidade(score: float) -> str:
         return 'Vermelho'
 
 
-def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
+async def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
     """Busca dados realizados de DEC/FEC para um ano e distribuidora."""
     collection = get_mongo_collection('dec_fec_realizado')
 
@@ -77,14 +78,14 @@ def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
         },
     ]
 
-    resultados = list(collection.aggregate(pipeline))
+    resultados = await collection.aggregate(pipeline).to_list(None)
     logger.info(
         f'Encontrados {len(resultados)} registros realizados para {distribuidora} em {ano}'
     )
     return resultados
 
 
-def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
+async def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
     """Busca dados limites de DEC/FEC para um ano e distribuidora."""
     collection = get_mongo_collection('dec_fec_limite')
 
@@ -108,14 +109,16 @@ def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
         },
     ]
 
-    resultados = list(collection.aggregate(pipeline))
+    resultados = await collection.aggregate(pipeline).to_list(None)
     logger.info(
         f'Encontrados {len(resultados)} registros limites para {distribuidora} em {ano}'
     )
     return resultados
 
 
-def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
+async def calcular_score_criticidade(
+    ano: int, distribuidora: str
+) -> Optional[Dict]:
     """
     Calcula o score de criticidade para uma distribuidora e ano específicos.
 
@@ -127,8 +130,8 @@ def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
         Dicionário com o score calculado ou None se não houver dados
     """
     try:
-        dados_realizados = buscar_dados_realizados(ano, distribuidora)
-        dados_limites = buscar_dados_limites(ano, distribuidora)
+        dados_realizados = await buscar_dados_realizados(ano, distribuidora)
+        dados_limites = await buscar_dados_limites(ano, distribuidora)
 
         if not dados_realizados or not dados_limites:
             logger.warning(
@@ -219,8 +222,7 @@ def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
             'quantidade_conjuntos': len(conjuntos_scores),
         }
 
-        # Salvar no MongoDB
-        salvar_score_criticidade(resultado)
+        await salvar_score_criticidade(resultado)
 
         logger.info(
             f'Score calculado para {distribuidora} em {ano}: {score_medio:.2f}'
@@ -232,14 +234,14 @@ def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
         raise
 
 
-def salvar_score_criticidade(dados: Dict) -> None:
+async def salvar_score_criticidade(dados: Dict) -> None:
     """Salva o score de criticidade na coleção MongoDB."""
     try:
         collection = get_mongo_collection('score_criticidade')
 
         filtro = {'ano': dados['ano'], 'distribuidora': dados['distribuidora']}
 
-        collection.update_one(filtro, {'$set': dados}, upsert=True)
+        await collection.update_one(filtro, {'$set': dados}, upsert=True)
 
         logger.info(
             f'Score salvo para {dados["distribuidora"]} em {dados["ano"]}'

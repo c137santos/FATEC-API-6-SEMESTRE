@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get('/criticidade', response_model=CriticidadeResponse)
-def calcular_criticidade_endpoint(
+async def calcular_criticidade_endpoint(
     ano: int = Query(..., description='Ano de análise'),
     distribuidora: str = Query(..., description='Nome da distribuidora'),
 ):
@@ -42,7 +42,7 @@ def calcular_criticidade_endpoint(
             )
 
         # Calcular score de criticidade
-        resultado = calcular_score_criticidade(ano, distribuidora.strip())
+        resultado = await calcular_score_criticidade(ano, distribuidora.strip())
 
         if resultado is None:
             raise HTTPException(

@@ -3,6 +3,7 @@ Testes automatizados para o endpoint de criticidade.
 Formato funcional sem classes, seguindo as melhores práticas.
 """
 
+import pytest
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 
@@ -162,7 +163,8 @@ def test_endpoint_criticidade_apenas_distribuidora():
     assert response.status_code == 422  # Validation error
 
 
-def test_calcular_score_criticidade_sem_dados():
+@pytest.mark.asyncio
+async def test_calcular_score_criticidade_sem_dados():
     """Testa função de cálculo quando não há dados."""
     with (
         patch(
@@ -174,11 +176,12 @@ def test_calcular_score_criticidade_sem_dados():
             return_value=[],
         ),
     ):
-        resultado = calcular_score_criticidade(2024, 'EQUATORIAL')
+        resultado = await calcular_score_criticidade(2024, 'EQUATORIAL')
         assert resultado is None
 
 
-def test_calcular_score_criticidade_com_dados():
+@pytest.mark.asyncio
+async def test_calcular_score_criticidade_com_dados():
     """Testa função de cálculo com dados mockados."""
     # Mock dados realizados
     dados_realizados = [
@@ -229,7 +232,7 @@ def test_calcular_score_criticidade_com_dados():
             'backend.services.criticidade.salvar_score_criticidade'
         ) as mock_salvar,
     ):
-        resultado = calcular_score_criticidade(2024, 'EQUATORIAL')
+        resultado = await calcular_score_criticidade(2024, 'EQUATORIAL')
 
         assert resultado is not None
         assert resultado['ano'] == 2024

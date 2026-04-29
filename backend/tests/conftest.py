@@ -109,11 +109,11 @@ async def token(client, user):
 
 @pytest_asyncio.fixture
 async def mongo_db():
-    host = os.getenv("MONGO_HOST", "127.0.0.1")
-    user = os.getenv("MONGO_ROOT_USER", "root")
-    pw = os.getenv("MONGO_ROOT_PASSWORD", "1234")
-    db_name = os.getenv("MONGO_DB", "fatec_api")
-    uri = f"mongodb://{user}:{pw}@{host}:27017/?authSource=admin"
+    host = os.getenv('MONGO_HOST', '127.0.0.1')
+    user = os.getenv('MONGO_ROOT_USER', 'root')
+    pw = os.getenv('MONGO_ROOT_PASSWORD', '1234')
+    db_name = os.getenv('MONGO_DB', 'fatec_api')
+    uri = f'mongodb://{user}:{pw}@{host}:27017/?authSource=admin'
     client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
     yield client[db_name]
     client.close()
@@ -139,18 +139,18 @@ async def setup_test_data(mongo_db):
 @pytest_asyncio.fixture
 async def api_response(client, setup_test_data):
 
-    response = await client.get(f"/tam/{setup_test_data}")
+    response = await client.get(f'/tam/{setup_test_data}')
     return response
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
     """
-    Executa antes da coleta dos testes. 
+    Executa antes da coleta dos testes.
     Define variáveis de ambiente mínimas para evitar erros de validação do Pydantic.
     """
-    os.environ.setdefault("MAIL_USERNAME", "test_user")
-    os.environ.setdefault("MAIL_PASSWORD", "test_password")
-    os.environ.setdefault("MAIL_SERVER", "smtp.test.com")
-    os.environ.setdefault("MAIL_PORT", "587")
-    os.environ.setdefault("MAIL_FROM", "admin@test.com")
+    os.environ.setdefault('MAIL_USERNAME', 'test_user')
+    os.environ.setdefault('MAIL_PASSWORD', 'test_password')
+    os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')
+    os.environ.setdefault('MAIL_PORT', '587')
+    os.environ.setdefault('MAIL_FROM', 'admin@test.com')

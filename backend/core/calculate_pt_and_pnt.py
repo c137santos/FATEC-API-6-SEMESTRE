@@ -38,7 +38,7 @@ def _to_float(value) -> float:
             if not value:
                 return 0.0
         return float(value)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return 0.0
 
 

@@ -24,7 +24,8 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
             'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
         )
 
-    def fake_enqueue(_url):
+    def fake_enqueue(_url, _distribuidora_id):
+        assert _distribuidora_id == 'item-123'
         return {
             'job_id': 'job-1',
             'task_id': 'task-1',
@@ -80,18 +81,44 @@ async def test_pipeline_trigger_payload_invalido_retorna_422(client):
 
 
 @pytest.mark.asyncio
-async def test_pipeline_trigger_distribuidora_nao_encontrada_retorna_404(
+async def test_pipeline_trigger_ja_acionada_retorna_409(
     client,
+    session,
+    monkeypatch,
 ):
-    response = await client.post(
-        '/pipeline/trigger',
-        json={'distribuidora_id': 'item-nao-existe', 'ano': 2026},
+    session.add(
+        Distribuidora(
+            id='item-duplicado',
+            date_gdb=2026,
+            dist_name='DIST TESTE',
+            job_id='job-ja-existente',
+        )
+    )
+    await session.commit()
+
+    async def fake_resolve(_distribuidora_id):
+        pytest.fail('Não deveria resolver URL para pipeline já acionada')
+
+    def fake_enqueue(_url, _distribuidora_id):
+        pytest.fail('Não deveria enfileirar pipeline já acionada')
+
+    monkeypatch.setattr(
+        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        fake_resolve,
+    )
+    monkeypatch.setattr(
+        'backend.routes.pipeline.enqueue_download_gdb', fake_enqueue
     )
 
-    assert response.status_code == 404
+    response = await client.post(
+        '/pipeline/trigger',
+        json={'distribuidora_id': 'item-duplicado', 'ano': 2026},
+    )
+
+    assert response.status_code == 409
     assert (
         response.json()['detail']
-        == 'Distribuidora não encontrada para o ano informado'
+        == 'Pipeline já foi acionada para a distribuidora no ano informado'
     )
 
 

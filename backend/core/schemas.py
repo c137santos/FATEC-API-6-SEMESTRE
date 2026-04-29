@@ -26,6 +26,7 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class CriticidadeResponse(BaseModel):
     ano: int
     distribuidora: str
@@ -33,6 +34,7 @@ class CriticidadeResponse(BaseModel):
     desvio_dec: float
     desvio_fec: float
     cor: str
+
 
 class DistribuidoraPayload(BaseModel):
     id: str | None

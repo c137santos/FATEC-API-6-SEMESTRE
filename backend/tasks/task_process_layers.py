@@ -25,7 +25,11 @@ def _get_collection(name: str):
 
 
 def _persist_ctmt(
-    records: list[dict], job_id: str, descartados: int, processed_at: str
+    records: list[dict],
+    job_id: str,
+    descartados: int,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> int:
     col = _get_collection('circuitos_mt')
     col.create_index('job_id', unique=True, background=True)
@@ -33,6 +37,7 @@ def _persist_ctmt(
         {'job_id': job_id},
         {
             'job_id': job_id,
+            'distribuidora_id': distribuidora_id,
             'processed_at': processed_at,
             'total': len(records),
             'descartados': descartados,
@@ -44,7 +49,11 @@ def _persist_ctmt(
 
 
 def _persist_conj(
-    records: list[dict], job_id: str, descartados: int, processed_at: str
+    records: list[dict],
+    job_id: str,
+    descartados: int,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> int:
     col = _get_collection('conjuntos')
     col.create_index('job_id', unique=True, background=True)
@@ -52,6 +61,7 @@ def _persist_conj(
         {'job_id': job_id},
         {
             'job_id': job_id,
+            'distribuidora_id': distribuidora_id,
             'processed_at': processed_at,
             'total': len(records),
             'descartados': descartados,
@@ -72,7 +82,10 @@ def _iter_ndjson(path: str):
 
 
 def _to_notebook_ssdmt_tabular(
-    raw: dict, job_id: str, processed_at: str
+    raw: dict,
+    job_id: str,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> dict | None:
     cod_id = _normalize_required_field(raw.get('COD_ID', raw.get('cod_id')))
     ctmt = _normalize_required_field(raw.get('CTMT', raw.get('ctmt')))
@@ -81,6 +94,7 @@ def _to_notebook_ssdmt_tabular(
 
     return {
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'COD_ID': cod_id,
         'CTMT': ctmt,
         'CONJ': raw.get('CONJ', raw.get('conj')),
@@ -91,7 +105,10 @@ def _to_notebook_ssdmt_tabular(
 
 
 def _to_notebook_ssdmt_geo(
-    raw: dict, job_id: str, processed_at: str
+    raw: dict,
+    job_id: str,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> dict | None:
     properties = raw.get('properties') or raw
     geometry = raw.get('geometry')
@@ -109,6 +126,7 @@ def _to_notebook_ssdmt_geo(
 
     return {
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'COD_ID': cod_id,
         'CTMT': ctmt,
         'CONJ': properties.get('CONJ', properties.get('conj')),
@@ -120,7 +138,10 @@ def _to_notebook_ssdmt_geo(
 
 
 def _persist_ssdmt(
-    results: list[dict], job_id: str, processed_at: str
+    results: list[dict],
+    job_id: str,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> dict:
     ssdmt_results = [
         r
@@ -185,7 +206,12 @@ def _persist_ssdmt(
 
     for path in tabular_paths:
         for raw in _iter_ndjson(path):
-            doc = _to_notebook_ssdmt_tabular(raw, job_id, processed_at)
+            doc = _to_notebook_ssdmt_tabular(
+                raw,
+                job_id,
+                processed_at,
+                distribuidora_id,
+            )
             if doc is None:
                 continue
             tabular_batch.append(doc)
@@ -200,7 +226,12 @@ def _persist_ssdmt(
 
     for path in geo_paths:
         for raw in _iter_ndjson(path):
-            doc = _to_notebook_ssdmt_geo(raw, job_id, processed_at)
+            doc = _to_notebook_ssdmt_geo(
+                raw,
+                job_id,
+                processed_at,
+                distribuidora_id,
+            )
             if doc is None:
                 continue
             geo_batch.append(doc)
@@ -231,7 +262,11 @@ def _persist_ssdmt(
 
 
 def _persist_unsemt(
-    records: list[dict], job_id: str, descartados: int, processed_at: str
+    records: list[dict],
+    job_id: str,
+    descartados: int,
+    processed_at: str,
+    distribuidora_id: str | None,
 ) -> int:
     col = _get_collection('unsemt')
     col.create_index([('job_id', 1)], background=True)
@@ -247,6 +282,7 @@ def _persist_unsemt(
         doc = {
             **r,
             'job_id': job_id,
+            'distribuidora_id': distribuidora_id,
             'processed_at': processed_at,
         }
         docs.append(doc)
@@ -351,6 +387,7 @@ def _process_ssdmt_window(
     layer_label: str,
     job_id: str,
     gdb_path: str,
+    distribuidora_id: str | None = None,
     start_index: int = 0,
     window_size: int | None = None,
     allow_empty: bool = False,
@@ -433,6 +470,7 @@ def _process_ssdmt_window(
                     'comp': comp,
                     'dist': dist,
                     'job_id': job_id,
+                    'distribuidora_id': distribuidora_id,
                     'processed_at': processed_at,
                 }
                 tabular_writer.write(
@@ -450,6 +488,7 @@ def _process_ssdmt_window(
                                 'comp': comp,
                                 'dist': dist,
                                 'job_id': job_id,
+                                'distribuidora_id': distribuidora_id,
                                 'processed_at': processed_at,
                             },
                             'geometry': geom_geojson,
@@ -511,6 +550,7 @@ def _process_ssdmt_window(
     return {
         'layer': layer_label,
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'ssdmt_tabular': {
             'storage_type': 'ndjson',
             'path': str(tabular_path),
@@ -534,7 +574,11 @@ def _process_ssdmt_window(
 
 
 @celery_app.task(name='etl.processar_ctmt')
-def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
+def task_processar_ctmt(
+    job_id: str,
+    gdb_path: str,
+    distribuidora_id: str | None = None,
+) -> dict:
     logger.info(
         '[task_processar_ctmt] Inicio do processamento. job_id=%s gdb_path=%s',
         job_id,
@@ -622,6 +666,7 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
                 'PNTBT_11': row.get('PNTBT_11'),
                 'PNTBT_12': row.get('PNTBT_12'),
                 'job_id': job_id,
+                'distribuidora_id': distribuidora_id,
                 'processed_at': processed_at,
             })
 
@@ -637,6 +682,7 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
     return {
         'layer': 'CTMT',
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'records': records,
         'total': len(records),
         'descartados': descartados,
@@ -644,7 +690,11 @@ def task_processar_ctmt(job_id: str, gdb_path: str) -> dict:
 
 
 @celery_app.task(name='etl.processar_ssdmt')
-def task_processar_ssdmt(job_id: str, gdb_path: str) -> dict:
+def task_processar_ssdmt(
+    job_id: str,
+    gdb_path: str,
+    distribuidora_id: str | None = None,
+) -> dict:
     logger.info(
         '[task_processar_ssdmt] Inicio do processamento. job_id=%s gdb_path=%s',
         job_id,
@@ -656,6 +706,7 @@ def task_processar_ssdmt(job_id: str, gdb_path: str) -> dict:
         layer_label='SSDMT',
         job_id=job_id,
         gdb_path=gdb_path,
+        distribuidora_id=distribuidora_id,
         start_index=0,
         window_size=None,
         allow_empty=False,
@@ -670,6 +721,7 @@ def task_processar_ssdmt_chunk(
     chunk_index: int,
     start_index: int,
     chunk_size: int,
+    distribuidora_id: str | None = None,
 ) -> dict:
     logger.info(
         '[task_processar_ssdmt_chunk] Inicio do processamento. job_id=%s chunk=%s start=%s size=%s gdb_path=%s',
@@ -685,6 +737,7 @@ def task_processar_ssdmt_chunk(
         layer_label='SSDMT_CHUNK',
         job_id=job_id,
         gdb_path=gdb_path,
+        distribuidora_id=distribuidora_id,
         start_index=start_index,
         window_size=chunk_size,
         allow_empty=True,
@@ -695,7 +748,11 @@ def task_processar_ssdmt_chunk(
 
 
 @celery_app.task(name='etl.processar_conj')
-def task_processar_conj(job_id: str, gdb_path: str) -> dict:
+def task_processar_conj(
+    job_id: str,
+    gdb_path: str,
+    distribuidora_id: str | None = None,
+) -> dict:
     logger.info(
         '[task_processar_conj] Inicio do processamento. job_id=%s gdb_path=%s',
         job_id,
@@ -729,6 +786,7 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
                 'nome': nome,
                 'dist': row.get('DIST'),
                 'job_id': job_id,
+                'distribuidora_id': distribuidora_id,
                 'processed_at': processed_at,
             })
 
@@ -744,6 +802,7 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
     return {
         'layer': 'CONJ',
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'records': records,
         'total': len(records),
         'descartados': descartados,
@@ -751,7 +810,11 @@ def task_processar_conj(job_id: str, gdb_path: str) -> dict:
 
 
 @celery_app.task(name='etl.processar_unsemt')
-def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
+def task_processar_unsemt(
+    job_id: str,
+    gdb_path: str,
+    distribuidora_id: str | None = None,
+) -> dict:
     logger.info(
         '[task_processar_unsemt] Inicio do processamento. job_id=%s gdb_path=%s',
         job_id,
@@ -801,6 +864,7 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
                 'conj': conj,
                 'coordinates': coordinates,
                 'job_id': job_id,
+                'distribuidora_id': distribuidora_id,
             })
 
     if not records:
@@ -815,6 +879,7 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
     return {
         'layer': 'UNSEMT',
         'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
         'records': records,
         'total': len(records),
         'descartados': descartados,
@@ -823,7 +888,11 @@ def task_processar_unsemt(job_id: str, gdb_path: str) -> dict:
 
 @celery_app.task(name='etl.finalizar')
 def task_finalizar(
-    results: list[dict], job_id: str, zip_path: str, tmp_dir: str
+    results: list[dict],
+    job_id: str,
+    zip_path: str,
+    tmp_dir: str,
+    distribuidora_id: str | None = None,
 ) -> dict:
     """Persiste resultados do chord no MongoDB e atualiza o status do job."""
     logger.info(
@@ -850,6 +919,7 @@ def task_finalizar(
                 job_id=job_id,
                 descartados=ctmt_result['descartados'],
                 processed_at=processed_at,
+                distribuidora_id=distribuidora_id,
             )
             logger.info(
                 '[task_finalizar] CTMT persistido. job_id=%s total=%s',
@@ -866,6 +936,7 @@ def task_finalizar(
                 job_id=job_id,
                 descartados=conj_result['descartados'],
                 processed_at=processed_at,
+                distribuidora_id=distribuidora_id,
             )
             logger.info(
                 '[task_finalizar] CONJ persistido. job_id=%s total=%s',
@@ -874,7 +945,10 @@ def task_finalizar(
             )
 
         ssdmt_stats = _persist_ssdmt(
-            results=results or [], job_id=job_id, processed_at=processed_at
+            results=results or [],
+            job_id=job_id,
+            processed_at=processed_at,
+            distribuidora_id=distribuidora_id,
         )
         ssdmt_total = ssdmt_stats['total']
         ssdmt_descartados = ssdmt_stats['descartados']
@@ -896,6 +970,7 @@ def task_finalizar(
                 job_id=job_id,
                 descartados=unsemt_result['descartados'],
                 processed_at=processed_at,
+                distribuidora_id=distribuidora_id,
             )
         logger.info(
             '[task_finalizar] UNSEMT persistido. job_id=%s total=%s descartados=%s',
@@ -909,6 +984,7 @@ def task_finalizar(
             {
                 '$set': {
                     'job_id': job_id,
+                    'distribuidora_id': distribuidora_id,
                     'status': 'completed',
                     'ctmt_total': ctmt_total,
                     'conj_total': conj_total,
@@ -934,6 +1010,7 @@ def task_finalizar(
         )
         return {
             'job_id': job_id,
+            'distribuidora_id': distribuidora_id,
             'status': 'completed',
             'ctmt_total': ctmt_total,
             'conj_total': conj_total,

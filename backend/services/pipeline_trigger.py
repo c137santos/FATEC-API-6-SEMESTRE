@@ -13,12 +13,12 @@ ARCGIS_DOWNLOAD_URL = (
 ALLOWED_ITEM_TYPES = {'Feature Service', 'File Geodatabase'}
 
 
-async def distribuidora_for_year_exists(
+async def distribuidora_job_already_triggered(
     session: AsyncSession,
     distribuidora_id: str,
     ano: int,
 ) -> bool:
-    stmt = select(Distribuidora.id).where(
+    stmt = select(Distribuidora.job_id).where(
         Distribuidora.id == distribuidora_id,
         Distribuidora.date_gdb == ano,
     )

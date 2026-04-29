@@ -8,7 +8,7 @@ from backend.core.schemas import (
 from backend.database import get_session
 from backend.services.etl_download import enqueue_download_gdb
 from backend.services.pipeline_trigger import (
-    distribuidora_for_year_exists,
+    distribuidora_job_already_triggered,
     resolve_download_url_from_aneel,
     save_distribuidora_job_tracking,
 )
@@ -23,14 +23,14 @@ async def trigger_pipeline(
     request: PipelineTriggerRequest,
     session: AsyncSession = Depends(get_session),
 ):
-    if not await distribuidora_for_year_exists(
+    if await distribuidora_job_already_triggered(
         session,
         request.distribuidora_id,
         request.ano,
     ):
         raise HTTPException(
-            status_code=404,
-            detail='Distribuidora não encontrada para o ano informado',
+            status_code=409,
+            detail='Pipeline já foi acionada para a distribuidora no ano informado',
         )
 
     try:
@@ -43,7 +43,9 @@ async def trigger_pipeline(
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     try:
-        enqueue_result = enqueue_download_gdb(download_url)
+        enqueue_result = enqueue_download_gdb(
+            download_url, request.distribuidora_id
+        )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 

@@ -3,7 +3,16 @@ from http import HTTPStatus
 from fastapi import FastAPI
 
 from .core.schemas import Message
-from .routes import auth, dist, etl, users, pt_and_pnt, tam, pipeline, criticidade
+from .routes import (
+    auth,
+    dist,
+    etl,
+    users,
+    pt_and_pnt,
+    tam,
+    pipeline,
+    criticidade,
+)
 
 app = FastAPI()
 app.include_router(users.router)

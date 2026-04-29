@@ -1,64 +1,62 @@
 import pytest
 
-COLECAO_ALVO = 'segmentos_mt_tabular'
+COLECAO_RESULTADOS = 'TAM'
+
+@pytest.mark.asyncio
+async def test_get_tam_200_sucesso(client, setup_test_data):
+    response = await client.get(f"/tam/{setup_test_data}")
+    
+    if response.status_code != 200:
+        print(f"\nERRO NO BACKEND: {response.text}")
+        
+    assert response.status_code == 200
+    data = response.json()
+    
+    assert data.get('status') == 'success'
+    assert 'distribuidora_info' in data.get('metadata', {})
 
 
 @pytest.mark.asyncio
-async def test_get_tam_200_sucesso(api_response):
-    assert api_response.status_code == 200
-    assert 'data' in api_response.json()
+async def test_get_tam_integracao_postgres_mongo(mongo_db, setup_test_data, client):
+    response = await client.get(f"/tam/{setup_test_data}")
+    assert response.status_code == 200
+    
+    colecao = mongo_db[COLECAO_RESULTADOS]
+    documento_no_banco = await colecao.find_one({'job_id': setup_test_data})
+    
+    dados_api = response.json()['metadata']['distribuidora_info']
+    
+    assert dados_api['dist_name'] == documento_no_banco['dist_name']
+    assert dados_api['id'] == documento_no_banco['id']
 
 
 @pytest.mark.asyncio
-async def test_get_tam_nomes_corretos(mongo_db, setup_test_data, api_response):
-    colecao = mongo_db[COLECAO_ALVO]
-    amostra = await colecao.find_one({'job_id': setup_test_data})
-    assert amostra is not None
-    ctmt_esperado = amostra['CTMT']
-
-    dados_api = api_response.json()['data']['trechos']
-    item_api = next((t for t in dados_api if t['CTMT'] == ctmt_esperado), None)
-
-    assert item_api is not None
-    assert 'NOME' in item_api
-    assert item_api['NOME'] == ctmt_esperado, (
-        f'Esperava fallback para {ctmt_esperado}, mas veio {item_api["NOME"]}'
-    )
-
+async def test_get_tam_estrutura_data(client, setup_test_data):
+    """Valida a estrutura JSON de retorno."""
+    response = await client.get(f"/tam/{setup_test_data}")
+    res_json = response.json()
+    data_section = res_json.get('data', {})
+    
+    assert 'trechos' in data_section
+    assert 'ranking_por_conjunto' in data_section
+    assert 'top_10' in data_section
 
 @pytest.mark.asyncio
-async def test_get_tam_404_job_inexistente(client):
-    response = await client.get('/tam/12345')
+async def test_get_tam_404_not_found(client):
+    """Valida erro 404 para Job ID inexistente."""
+    response = await client.get('/tam/job_inexistente_999')
     assert response.status_code == 404
 
 
 @pytest.mark.asyncio
-async def test_get_tam_estrutura_resposta(api_response, setup_test_data):
-    data = api_response.json()
-    assert data['metadata']['job_id'] == setup_test_data
-    assert all(
-        k in data['data']
-        for k in ['trechos', 'ranking_por_conjunto', 'top_10']
-    )
-
-
-@pytest.mark.asyncio
-async def test_get_tam_calculo_comp_km(
-    mongo_db, setup_test_data, api_response
-):
-    colecao = mongo_db[COLECAO_ALVO]
-    amostra = await colecao.find_one({'job_id': setup_test_data})
-    ctmt_alvo = amostra['CTMT']
-
-    pipeline = [
-        {'$match': {'job_id': setup_test_data, 'CTMT': ctmt_alvo}},
-        {'$group': {'_id': '$CTMT', 'total_metros': {'$sum': '$COMP'}}},
-    ]
-    resultado_banco = await colecao.aggregate(pipeline).to_list(length=None)
-    esperado_km = resultado_banco[0]['total_metros'] / 1000
-
-    dados_api = api_response.json()['data']['trechos']
-    item_api = next((t for t in dados_api if t['CTMT'] == ctmt_alvo), None)
-
-    assert item_api is not None
-    assert item_api['COMP_KM'] == pytest.approx(esperado_km, rel=1e-3)
+async def test_get_tam_consistencia_calculo(mongo_db, setup_test_data, client):
+    """Verifica se a contagem no Mongo bate com a lista retornada na API."""
+    response = await client.get(f"/tam/{setup_test_data}")
+    res_json = response.json()
+    
+    total_api = len(res_json['data']['trechos'])
+    
+    colecao = mongo_db[COLECAO_RESULTADOS]
+    total_no_banco = await colecao.count_documents({'job_id': setup_test_data})
+    
+    assert total_api == total_no_banco

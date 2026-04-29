@@ -1,38 +1,31 @@
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 
 from backend.core.calculo_tam import calculo_tam
 from backend.database import get_mongo_async_database
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
+settings = Settings()
 
 
 @router.get('/tam/{job_id}')
 async def get_json_tam(job_id: str, db=Depends(get_mongo_async_database)):
 
     try:
-        calculo_trechos, ranking_conjunto, top_10_conjunto = await calculo_tam(
-            db, job_id
-        )
-
-        if not calculo_trechos:
-            raise ValueError('Job inexistente ou sem dados')
-
+        trechos, ranking, top10 = await calculo_tam(mongo_db, job_id, pg_db)
         return {
-            'status': 'success',
-            'metadata': {
-                'job_id': job_id,
+            "status": "success",
+            "metadata": {
+                "job_id": job_id,
+                "distribuidora_info": ranking[0] if ranking else {}
             },
-            'data': {
-                'trechos': calculo_trechos,
-                'ranking_por_conjunto': ranking_conjunto,
-                'top_10': top_10_conjunto,
-            },
+            "data": {
+                "trechos": trechos,
+                "ranking_por_conjunto": ranking,
+                "top_10": top10
+            }
         }
-
-    except ValueError as ve:
-        raise HTTPException(status_code=404, detail=str(ve))
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f'Erro interno ao processar TAM: {str(e)}'
-        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

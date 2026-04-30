@@ -1,10 +1,13 @@
-import httpx
+import uuid
 from datetime import datetime
+
+import httpx
 
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.models import Distribuidora
+from backend.tasks.task_download_gdb import task_download_gdb
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
 ARCGIS_DOWNLOAD_URL = (
@@ -13,12 +16,28 @@ ARCGIS_DOWNLOAD_URL = (
 ALLOWED_ITEM_TYPES = {'Feature Service', 'File Geodatabase'}
 
 
-async def distribuidora_for_year_exists(
+async def _get_distribuidora_name(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+) -> str:
+    stmt = select(Distribuidora.dist_name).where(
+        Distribuidora.id == distribuidora_id,
+        Distribuidora.date_gdb == ano,
+    )
+    result = await session.execute(stmt)
+    dist_name = result.scalar_one_or_none()
+    if not dist_name:
+        raise LookupError('Distribuidora não encontrada para o ano informado')
+    return dist_name
+
+
+async def distribuidora_job_already_triggered(
     session: AsyncSession,
     distribuidora_id: str,
     ano: int,
 ) -> bool:
-    stmt = select(Distribuidora.id).where(
+    stmt = select(Distribuidora.job_id).where(
         Distribuidora.id == distribuidora_id,
         Distribuidora.date_gdb == ano,
     )
@@ -86,3 +105,42 @@ async def save_distribuidora_job_tracking(
     )
     await session.execute(stmt)
     await session.commit()
+
+
+async def trigger_pipeline_flow(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+) -> dict:
+    """Orquestra os passos da pipeline de download GDB."""
+    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
+        raise ValueError(
+            'Pipeline já foi acionada para a distribuidora no ano informado'
+        )
+
+    dist_name = await _get_distribuidora_name(
+        session,
+        distribuidora_id,
+        ano,
+    )
+
+    download_url = await resolve_download_url_from_aneel(distribuidora_id)
+    job_id = str(uuid.uuid4())
+
+    task = task_download_gdb.delay(job_id, download_url, distribuidora_id)
+
+    await save_distribuidora_job_tracking(
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=job_id,
+    )
+
+    return {
+        'job_id': job_id,
+        'task_id': task.id,
+        'status': 'queued',
+        'distribuidora_id': distribuidora_id,
+        'ano': ano,
+        'download_url': download_url,
+    }

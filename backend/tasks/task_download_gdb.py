@@ -31,7 +31,9 @@ def _normalize_download_url(url: str) -> str:
 @celery_app.task(
     bind=True, max_retries=2, default_retry_delay=60, name='etl.download_gdb'
 )
-def task_download_gdb(self, job_id: str, url: str) -> dict:
+def task_download_gdb(
+    self, job_id: str, url: str, distribuidora_id: str | None = None
+) -> dict:
     url = _normalize_download_url(url)
     logger.info(
         '[task_download_gdb] Inicio do download. job_id=%s url=%s', job_id, url
@@ -97,7 +99,10 @@ def task_download_gdb(self, job_id: str, url: str) -> dict:
             raise RuntimeError('Arquivo baixado não é um ZIP válido')
 
         # Enfileira próxima task com assinatura Celery válida.
-        signature('etl.extrair_gdb', args=(job_id, str(zip_path))).delay()
+        signature(
+            'etl.extrair_gdb',
+            args=(job_id, str(zip_path), distribuidora_id),
+        ).delay()
         logger.info(
             '[task_download_gdb] Proxima task enfileirada. job_id=%s next_task=etl.extrair_gdb zip_path=%s',
             job_id,
@@ -106,6 +111,7 @@ def task_download_gdb(self, job_id: str, url: str) -> dict:
 
         return {
             'job_id': job_id,
+            'distribuidora_id': distribuidora_id,
             'zip_path': str(zip_path),
             'status': 'downloaded',
         }

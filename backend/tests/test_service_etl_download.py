@@ -8,16 +8,13 @@ def test_enqueue_download_gdb_retorna_metadata_da_fila():
     fake_task = SimpleNamespace(id='task-123')
 
     with patch(
-        'backend.services.etl_download.uuid.uuid4', return_value='job-abc'
-    ):
-        with patch(
-            'backend.services.etl_download.task_download_gdb.delay',
-            return_value=fake_task,
-        ) as delay_mock:
-            result = enqueue_download_gdb('https://example.com/file.zip')
+        'backend.services.etl_download.task_download_gdb.delay',
+        return_value=fake_task,
+    ) as delay_mock:
+        result = enqueue_download_gdb('job-abc', 'https://example.com/file.zip')
 
     delay_mock.assert_called_once_with(
-        'job-abc', 'https://example.com/file.zip'
+        'job-abc', 'https://example.com/file.zip', None
     )
     assert result == {
         'job_id': 'job-abc',
@@ -28,14 +25,11 @@ def test_enqueue_download_gdb_retorna_metadata_da_fila():
 
 def test_enqueue_download_gdb_propagates_celery_errors():
     with patch(
-        'backend.services.etl_download.uuid.uuid4', return_value='job-err'
+        'backend.services.etl_download.task_download_gdb.delay',
+        side_effect=RuntimeError('broker down'),
     ):
-        with patch(
-            'backend.services.etl_download.task_download_gdb.delay',
-            side_effect=RuntimeError('broker down'),
-        ):
-            try:
-                enqueue_download_gdb('https://example.com/file.zip')
-                raise AssertionError('expected RuntimeError')
-            except RuntimeError as exc:
-                assert str(exc) == 'broker down'
+        try:
+            enqueue_download_gdb('job-err', 'https://example.com/file.zip')
+            raise AssertionError('expected RuntimeError')
+        except RuntimeError as exc:
+            assert str(exc) == 'broker down'

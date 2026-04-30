@@ -28,4 +28,3 @@ class Settings(BaseSettings):
     mail_from: str
     mail_port: int = 587
     mail_server: str
-

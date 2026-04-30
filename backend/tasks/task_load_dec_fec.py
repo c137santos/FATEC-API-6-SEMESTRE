@@ -5,9 +5,9 @@ from datetime import datetime
 from pathlib import Path
 
 import httpx
-from pymongo import ASCENDING, MongoClient, UpdateOne
+from pymongo import ASCENDING, UpdateOne
 
-from backend.settings import Settings
+from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,8 @@ CHUNK_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
 
 
 def _get_collection(name: str):
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][name]
+    db = get_mongo_sync_db()
+    return db[name]
 
 
 def _ensure_index(collection, fields: list[str]) -> None:
@@ -28,7 +27,9 @@ def _ensure_index(collection, fields: list[str]) -> None:
     index_name = '_'.join(f for f in fields) + '_unique'
     existing = {idx['name'] for idx in collection.list_indexes()}
     if index_name not in existing:
-        collection.create_index(index_keys, unique=True, name=index_name, sparse=True)
+        collection.create_index(
+            index_keys, unique=True, name=index_name, sparse=True
+        )
 
 
 def _download_csv(url: str, dest: Path) -> None:
@@ -108,7 +109,13 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
         collection = _get_collection('dec_fec_realizado')
         _ensure_index(
             collection,
-            ['sig_agente', 'ide_conj', 'sig_indicador', 'ano_indice', 'num_periodo'],
+            [
+                'sig_agente',
+                'ide_conj',
+                'sig_indicador',
+                'ano_indice',
+                'num_periodo',
+            ],
         )
         total = 0
 

@@ -1,5 +1,7 @@
 import pytest
 from sqlalchemy import select
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 from backend.core.models import Distribuidora
 
@@ -24,19 +26,15 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
             'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
         )
 
-    def fake_enqueue(_url):
-        return {
-            'job_id': 'job-1',
-            'task_id': 'task-1',
-            'status': 'queued',
-        }
-
+    fake_task = SimpleNamespace(id='task-1')
+    mock_delay = MagicMock(return_value=fake_task)
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
-        fake_resolve,
+        'backend.services.pipeline_trigger.task_download_gdb.delay',
+        mock_delay,
     )
     monkeypatch.setattr(
-        'backend.routes.pipeline.enqueue_download_gdb', fake_enqueue
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
+        fake_resolve,
     )
 
     response = await client.post(
@@ -45,14 +43,15 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
     )
 
     assert response.status_code == 202
-    assert response.json() == {
-        'job_id': 'job-1',
-        'task_id': 'task-1',
-        'status': 'queued',
-        'distribuidora_id': 'item-123',
-        'ano': 2026,
-        'download_url': 'https://www.arcgis.com/sharing/rest/content/items/item-123/data',
-    }
+    body = response.json()
+    assert body['task_id'] == 'task-1'
+    assert body['status'] == 'queued'
+    assert body['distribuidora_id'] == 'item-123'
+    assert body['ano'] == 2026
+    assert body['download_url'] == 'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
+    assert 'job_id' in body
+
+    mock_delay.assert_called_once()
 
     persisted = (
         (
@@ -66,7 +65,7 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
         .scalars()
         .one()
     )
-    assert persisted.job_id == 'job-1'
+    assert persisted.job_id == body['job_id']
     assert persisted.processed_at is not None
 
 
@@ -80,18 +79,42 @@ async def test_pipeline_trigger_payload_invalido_retorna_422(client):
 
 
 @pytest.mark.asyncio
-async def test_pipeline_trigger_distribuidora_nao_encontrada_retorna_404(
+async def test_pipeline_trigger_ja_acionada_retorna_409(
     client,
+    session,
+    monkeypatch,
 ):
-    response = await client.post(
-        '/pipeline/trigger',
-        json={'distribuidora_id': 'item-nao-existe', 'ano': 2026},
+    session.add(
+        Distribuidora(
+            id='item-duplicado',
+            date_gdb=2026,
+            dist_name='DIST TESTE',
+            job_id='job-ja-existente',
+        )
+    )
+    await session.commit()
+
+    async def fake_resolve(_distribuidora_id):
+        pytest.fail('Não deveria resolver URL para pipeline já acionada')
+
+    monkeypatch.setattr(
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
+        fake_resolve,
+    )
+    monkeypatch.setattr(
+        'backend.services.pipeline_trigger.task_download_gdb.delay',
+        lambda *a, **kw: pytest.fail('Não deveria enfileirar pipeline já acionada'),
     )
 
-    assert response.status_code == 404
+    response = await client.post(
+        '/pipeline/trigger',
+        json={'distribuidora_id': 'item-duplicado', 'ano': 2026},
+    )
+
+    assert response.status_code == 409
     assert (
         response.json()['detail']
-        == 'Distribuidora não encontrada para o ano informado'
+        == 'Pipeline já foi acionada para a distribuidora no ano informado'
     )
 
 
@@ -114,7 +137,7 @@ async def test_pipeline_trigger_item_inexistente_aneel_retorna_404(
         raise LookupError('Item não encontrado na ANEEL')
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
 
@@ -146,7 +169,7 @@ async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
         raise RuntimeError('ANEEL indisponível no momento')
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
 

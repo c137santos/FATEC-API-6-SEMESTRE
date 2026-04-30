@@ -3,7 +3,7 @@ import uuid
 from fastapi import APIRouter, HTTPException
 
 from backend.core.schemas import DecFecRequest, DownloadRequest
-from backend.services.etl_download import enqueue_download_gdb
+from backend.tasks.task_download_gdb import task_download_gdb
 from backend.tasks.task_load_dec_fec import (
     task_load_dec_fec_limite,
     task_load_dec_fec_realizado,
@@ -14,8 +14,14 @@ router = APIRouter()
 
 @router.post('/download-gdb')
 def download_gdb(request: DownloadRequest):
+    job_id = str(uuid.uuid4())
     try:
-        return enqueue_download_gdb(str(request.url))
+        task = task_download_gdb.delay(job_id, str(request.url))
+        return {
+            'job_id': job_id,
+            'task_id': task.id,
+            'status': 'queued',
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

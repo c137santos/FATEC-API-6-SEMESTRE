@@ -1,36 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
-import os
-from motor.motor_asyncio import AsyncIOMotorClient
-from ..core.calculo_tam import calculo_tam
+
+from backend.core.calculo_tam import calculo_tam
+from backend.database import get_mongo_async_database
 
 
 router = APIRouter()
 
 
-async def get_db():
-
-    uri = os.getenv('MONGO_URI')
-    db_name = os.getenv('MONGO_DB')
-
-    if not uri:
-        raise HTTPException(
-            status_code=500, detail='Configuração ausente: MONGO_URI'
-        )
-    if not db_name:
-        raise HTTPException(
-            status_code=500, detail='Configuração ausente: MONGO_DB'
-        )
-
-    client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
-
-    try:
-        yield client[db_name]
-    finally:
-        client.close()
-
-
 @router.get('/tam/{job_id}')
-async def get_json_tam(job_id: str, db=Depends(get_db)):
+async def get_json_tam(job_id: str, db=Depends(get_mongo_async_database)):
 
     try:
         calculo_trechos, ranking_conjunto, top_10_conjunto = await calculo_tam(

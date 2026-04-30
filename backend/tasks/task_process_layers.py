@@ -7,11 +7,11 @@ from pathlib import Path
 
 import fiona
 import pyproj
-from pymongo import MongoClient, results
+from pymongo import results
 from shapely.geometry import mapping, shape
 from shapely.ops import transform
 
-from backend.settings import Settings
+from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -19,9 +19,8 @@ SSDMT_INSERT_BATCH_SIZE = 5000
 
 
 def _get_collection(name: str):
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][name]
+    db = get_mongo_sync_db()
+    return db[name]
 
 
 def _persist_ctmt(

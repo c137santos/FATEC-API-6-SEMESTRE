@@ -1,18 +1,16 @@
 import logging
 from typing import Dict, List, Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection
+from motor.motor_asyncio import AsyncIOMotorCollection
 
-from backend.settings import Settings
+from backend.database import get_mongo_async_db
 
 logger = logging.getLogger(__name__)
 
 
 def get_mongo_collection(collection_name: str) -> AsyncIOMotorCollection:
     """Obtém uma coleção do MongoDB."""
-    settings = Settings()
-    client = AsyncIOMotorClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][collection_name]
+    return get_mongo_async_db()[collection_name]
 
 
 def calcular_desvio(realizado: float, limite: float) -> float:

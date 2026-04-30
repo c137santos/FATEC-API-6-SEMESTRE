@@ -33,11 +33,11 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
         }
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
     monkeypatch.setattr(
-        'backend.routes.pipeline.enqueue_download_gdb', fake_enqueue
+        'backend.services.pipeline_trigger.enqueue_download_gdb', fake_enqueue
     )
 
     response = await client.post(
@@ -103,11 +103,11 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
         pytest.fail('Não deveria enfileirar pipeline já acionada')
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
     monkeypatch.setattr(
-        'backend.routes.pipeline.enqueue_download_gdb', fake_enqueue
+        'backend.services.pipeline_trigger.enqueue_download_gdb', fake_enqueue
     )
 
     response = await client.post(
@@ -141,7 +141,7 @@ async def test_pipeline_trigger_item_inexistente_aneel_retorna_404(
         raise LookupError('Item não encontrado na ANEEL')
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
 
@@ -173,7 +173,7 @@ async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
         raise RuntimeError('ANEEL indisponível no momento')
 
     monkeypatch.setattr(
-        'backend.routes.pipeline.resolve_download_url_from_aneel',
+        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
 

@@ -5,9 +5,9 @@ from datetime import datetime
 from pathlib import Path
 
 import httpx
-from pymongo import ASCENDING, MongoClient, UpdateOne
+from pymongo import ASCENDING, UpdateOne
 
-from backend.settings import Settings
+from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,8 @@ CHUNK_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
 
 
 def _get_collection(name: str):
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][name]
+    db = get_mongo_sync_db()
+    return db[name]
 
 
 def _ensure_index(collection, fields: list[str]) -> None:

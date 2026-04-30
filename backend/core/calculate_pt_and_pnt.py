@@ -1,9 +1,7 @@
 import logging
 from collections import defaultdict
 
-from pymongo import MongoClient
-
-from backend.settings import Settings
+from backend.database import get_mongo_sync_db
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +36,7 @@ def _to_float(value) -> float:
             if not value:
                 return 0.0
         return float(value)
-    except TypeError, ValueError:
+    except (TypeError, ValueError):
         return 0.0
 
 
@@ -47,9 +45,7 @@ def _sum_columns(record: dict, colunas: list[str]) -> float:
 
 
 def calculate_pt_pnt(job_id: str) -> list[dict]:
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    db = client[settings.MONGO_DB]
+    db = get_mongo_sync_db()
 
     logger.info('[pt_pnt] Iniciando cálculo. job_id=%s', job_id)
 

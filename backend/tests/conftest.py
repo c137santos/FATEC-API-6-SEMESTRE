@@ -11,10 +11,9 @@ from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from motor.motor_asyncio import AsyncIOMotorClient
-from backend.database import get_session
+from backend.database import get_session, get_mongo_async_database
 from backend.core import models as _models  # noqa: F401
 from backend.security import get_password_hash
-from backend.routes.tam import get_db
 from backend.core.models import User, table_registry
 
 
@@ -65,8 +64,11 @@ async def client(session, mongo_db):
     async def get_session_override():
         yield session
 
+    async def get_mongo_database_override():
+        yield mongo_db
+
     app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[get_db] = lambda: mongo_db
+    app.dependency_overrides[get_mongo_async_database] = get_mongo_database_override
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:

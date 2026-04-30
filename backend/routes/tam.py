@@ -1,31 +1,35 @@
-import logging
 from fastapi import APIRouter, Depends, HTTPException
-
-from backend.core.calculo_tam import calculo_tam
-from backend.database import get_mongo_async_database
-
-logger = logging.getLogger(__name__)
+from backend.database import get_mongo_async_database  
 
 router = APIRouter()
-settings = Settings()
 
+@router.get("/tam/{job_id}")
+async def get_tam_results(
+    job_id: str,
+    mongo_db = Depends(get_mongo_async_database)
+):
+    """
+    Este endpoint não calcula nada. Ele apenas consome o que a 
+    Pipeline (Task Celery) já processou e persistiu.
+    """
+    
+    cursor = mongo_db.TAM.find({"job_id": job_id})
+    trechos = await cursor.to_list(length=1000)
 
-@router.get('/tam/{job_id}')
-async def get_json_tam(job_id: str, db=Depends(get_mongo_async_database)):
+    if not trechos:
+        raise HTTPException(status_code=404, detail="Resultados não encontrados.")
 
-    try:
-        trechos, ranking, top10 = await calculo_tam(mongo_db, job_id, pg_db)
-        return {
-            "status": "success",
-            "metadata": {
-                "job_id": job_id,
-                "distribuidora_info": ranking[0] if ranking else {}
-            },
-            "data": {
-                "trechos": trechos,
-                "ranking_por_conjunto": ranking,
-                "top_10": top10
-            }
+    for trecho in trechos:
+        trecho["_id"] = str(trecho["_id"])
+
+    trechos_ordenados = sorted(trechos, key=lambda x: x['COMP_KM'], reverse=True)
+
+    return {
+        "status": "success",
+        "job_id": job_id,
+        "data": {
+            "total_registros": len(trechos_ordenados),
+            "top_10": trechos_ordenados[:10],
+            "todos_trechos": trechos_ordenados
         }
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
+    }

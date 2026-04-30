@@ -1,10 +1,10 @@
 import uuid
 import os
+import logging
 
 import factory
 import pytest
 import pytest_asyncio
-import asyncpg
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
@@ -17,7 +17,9 @@ from backend.database import get_session, get_mongo_async_database
 from backend.core import models as _models  # noqa: F401
 from backend.security import get_password_hash
 from backend.core.models import User, table_registry
-from backend.routes.tam import get_pg_db 
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserFactory(factory.Factory):
@@ -76,19 +78,19 @@ async def session(engine):
 
 
 @pytest_asyncio.fixture
-async def client(session, mongo_db):
-    async def get_session_override():
-        yield session
+async def client(session, mongo_db, postgres_container):
+    app.dependency_overrides[get_session] = lambda: session
 
-    async def get_mongo_database_override():
+    async def _get_mongo_db_override():
         yield mongo_db
+        
+    app.dependency_overrides[get_mongo_async_database] = _get_mongo_db_override
 
-    app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[get_mongo_async_database] = get_mongo_database_override
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:
         yield ac
+    
     app.dependency_overrides.clear()
 
 
@@ -138,33 +140,39 @@ async def mongo_db():
 
 
 @pytest_asyncio.fixture
-async def setup_test_data(mongo_db, postgres_container):
-    test_job_id = f'test-job-{uuid.uuid4()}'
-    dist_id_fake = uuid.uuid4().hex
+async def setup_test_data(session, mongo_db):
+    """Prepara os dados brutos reais para o cálculo."""
+    test_job_id = f'real-job-{uuid.uuid4()}'
     
-    url = postgres_container.get_connection_url().replace(
-        'postgresql+psycopg', 'postgresql'
+    await session.execute(
+        text("INSERT INTO distribuidoras (id, job_id, date_gdb, dist_name) VALUES (:id, :job_id, :ano, :name)"),
+        {"id": uuid.uuid4().hex, "job_id": test_job_id, "ano": 2024, "name": "CEMIG"}
     )
-    
-    conn = await asyncpg.connect(url)
-    try:
-        await conn.execute(
-            """
-            INSERT INTO distribuidoras (id, job_id, date_gdb, dist_name)
-            VALUES ($1, $2, $3, $4)
-            """,
-            dist_id_fake, test_job_id, 2024, "CEMIG-D"
-        )
-    finally:
-        await conn.close()
+    await session.commit()
 
-    colecao = mongo_db['segmentos_mt_tabular']
-    await colecao.insert_one({
-        'job_id': test_job_id,
-        'CTMT': 'ALIMENTADOR_TESTE',
-        'COMP': 1500.0,
-        'CONJ': '999',
-        'DIST': 'DIST_TESTE',
+    col_segmentos = mongo_db['segmentos_mt_tabular']
+    
+    await col_segmentos.insert_many([
+        {
+            'job_id': test_job_id, 
+            'CTMT': 'CIRC_A', 
+            'COD_ID': str(uuid.uuid4()), 
+            'COMP': 1000.0, 
+            'CONJ': '100'
+        },
+        {
+            'job_id': test_job_id, 
+            'CTMT': 'CIRC_A', 
+            'COD_ID': str(uuid.uuid4()),
+            'COMP': 2000.0, 
+            'CONJ': '100'
+        },
+    ])
+    
+    await mongo_db['conjuntos'].insert_one({
+        'job_id': test_job_id, 
+        'cod_id': '100', 
+        'nome': 'CONJUNTO REAL'
     })
 
     return test_job_id

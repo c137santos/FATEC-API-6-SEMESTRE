@@ -14,6 +14,8 @@ from backend.tasks.task_render_criticidade import (
     task_render_mapa_calor,
     task_render_tabela_score,
 )
+from backend.services.etl_download import enqueue_download_gdb
+from backend.database import get_mongo_async_db
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
 ARCGIS_DOWNLOAD_URL = (
@@ -113,6 +115,22 @@ async def save_distribuidora_job_tracking(
     await session.commit()
 
 
+async def init_tam_metadata(
+    distribuidora_id: str,
+    ano: int,
+    job_id: str,
+) -> None:
+    """Inicializa o rastro do TAM no MongoDB logo após o disparo."""
+    db = get_mongo_async_db()
+    await db.TAM_status.insert_one({
+        "job_id": job_id,
+        "distribuidora_id": distribuidora_id,
+        "ano": ano,
+        "status": "waiting_download",
+        "created_at": datetime.utcnow()
+    })
+
+
 async def trigger_pipeline_flow(
     session: AsyncSession,
     distribuidora_id: str,
@@ -142,6 +160,9 @@ async def trigger_pipeline_flow(
         task_render_tabela_score.si(job_id, dist_name, ano),
         task_render_mapa_calor.si(job_id, dist_name, ano),
     ).delay()
+    
+    enqueue_result = enqueue_download_gdb(download_url, distribuidora_id)
+    job_id = enqueue_result['job_id']
 
     await save_distribuidora_job_tracking(
         session=session,
@@ -149,6 +170,8 @@ async def trigger_pipeline_flow(
         ano=ano,
         job_id=job_id,
     )
+
+    await init_tam_metadata(distribuidora_id, ano, job_id)
 
     return {
         'job_id': job_id,

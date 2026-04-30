@@ -17,7 +17,7 @@ def test_enqueue_download_gdb_retorna_metadata_da_fila():
             result = enqueue_download_gdb('https://example.com/file.zip')
 
     delay_mock.assert_called_once_with(
-        'job-abc', 'https://example.com/file.zip'
+        'job-abc', 'https://example.com/file.zip', None
     )
     assert result == {
         'job_id': 'job-abc',

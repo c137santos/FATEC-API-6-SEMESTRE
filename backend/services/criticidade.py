@@ -1,19 +1,16 @@
 import logging
 from typing import Dict, List, Optional
 
-from pymongo import MongoClient
-from pymongo.collection import Collection
+from motor.motor_asyncio import AsyncIOMotorCollection
 
-from backend.settings import Settings
+from backend.database import get_mongo_async_db
 
 logger = logging.getLogger(__name__)
 
 
-def get_mongo_collection(collection_name: str) -> Collection:
+def get_mongo_collection(collection_name: str) -> AsyncIOMotorCollection:
     """Obtém uma coleção do MongoDB."""
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][collection_name]
+    return get_mongo_async_db()[collection_name]
 
 
 def calcular_desvio(realizado: float, limite: float) -> float:
@@ -27,10 +24,12 @@ def calcular_desvio(realizado: float, limite: float) -> float:
 def classificar_criticidade(score: float) -> str:
     """
     Classifica a criticidade baseada no score, seguindo a lógica do notebook.
-    
+
+
     Args:
         score: Score de criticidade calculado
-        
+
+
     Returns:
         String com a classificação: 'Verde', 'Laranja' ou 'Vermelho'
     """
@@ -42,16 +41,16 @@ def classificar_criticidade(score: float) -> str:
         return 'Vermelho'
 
 
-def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
+async def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
     """Busca dados realizados de DEC/FEC para um ano e distribuidora."""
     collection = get_mongo_collection('dec_fec_realizado')
-    
+
     pipeline = [
         {
             '$match': {
                 'ano_indice': ano,
                 'sig_agente': distribuidora.upper(),
-                'sig_indicador': {'$in': ['DEC', 'FEC']}
+                'sig_indicador': {'$in': ['DEC', 'FEC']},
             }
         },
         {
@@ -60,9 +59,9 @@ def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
                     'sig_agente': '$sig_agente',
                     'ide_conj': '$ide_conj',
                     'dsc_conj': '$dsc_conj',
-                    'sig_indicador': '$sig_indicador'
+                    'sig_indicador': '$sig_indicador',
                 },
-                'valor_realizado': {'$sum': '$vlr_indice'}
+                'valor_realizado': {'$sum': '$vlr_indice'},
             }
         },
         {
@@ -72,26 +71,28 @@ def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
                 'ide_conj': '$_id.ide_conj',
                 'dsc_conj': '$_id.dsc_conj',
                 'sig_indicador': '$_id.sig_indicador',
-                'valor_realizado': 1
+                'valor_realizado': 1,
             }
-        }
+        },
     ]
-    
-    resultados = list(collection.aggregate(pipeline))
-    logger.info(f"Encontrados {len(resultados)} registros realizados para {distribuidora} em {ano}")
+
+    resultados = await collection.aggregate(pipeline).to_list(None)
+    logger.info(
+        f'Encontrados {len(resultados)} registros realizados para {distribuidora} em {ano}'
+    )
     return resultados
 
 
-def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
+async def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
     """Busca dados limites de DEC/FEC para um ano e distribuidora."""
     collection = get_mongo_collection('dec_fec_limite')
-    
+
     pipeline = [
         {
             '$match': {
                 'ano_limite': ano,
                 'sig_agente': distribuidora.upper(),
-                'sig_indicador': {'$in': ['DEC', 'FEC']}
+                'sig_indicador': {'$in': ['DEC', 'FEC']},
             }
         },
         {
@@ -101,70 +102,78 @@ def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
                 'ide_conj': '$ide_conj',
                 'dsc_conj': '$dsc_conj',
                 'sig_indicador': '$sig_indicador',
-                'valor_limite': '$vlr_limite'
+                'valor_limite': '$vlr_limite',
             }
-        }
+        },
     ]
-    
-    resultados = list(collection.aggregate(pipeline))
-    logger.info(f"Encontrados {len(resultados)} registros limites para {distribuidora} em {ano}")
+
+    resultados = await collection.aggregate(pipeline).to_list(None)
+    logger.info(
+        f'Encontrados {len(resultados)} registros limites para {distribuidora} em {ano}'
+    )
     return resultados
 
 
-def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
+async def calcular_score_criticidade(
+    ano: int, distribuidora: str
+) -> Optional[Dict]:
     """
     Calcula o score de criticidade para uma distribuidora e ano específicos.
-    
+
     Args:
         ano: Ano de análise
         distribuidora: Nome da distribuidora
-        
+
     Returns:
         Dicionário com o score calculado ou None se não houver dados
     """
     try:
-        dados_realizados = buscar_dados_realizados(ano, distribuidora)
-        dados_limites = buscar_dados_limites(ano, distribuidora)
-        
+        dados_realizados = await buscar_dados_realizados(ano, distribuidora)
+        dados_limites = await buscar_dados_limites(ano, distribuidora)
+
         if not dados_realizados or not dados_limites:
-            logger.warning(f"Dados não encontrados para {distribuidora} em {ano}")
+            logger.warning(
+                f'Dados não encontrados para {distribuidora} em {ano}'
+            )
             return None
-        
+
         realizados_dict = {}
         for item in dados_realizados:
             key = (item['sig_agente'], item['ide_conj'], item['sig_indicador'])
             realizados_dict[key] = item['valor_realizado']
-        
+
         limites_dict = {}
         for item in dados_limites:
             key = (item['sig_agente'], item['ide_conj'], item['sig_indicador'])
             limites_dict[key] = item['valor_limite']
-        
+
         scores_conjuntos = []
         for key, valor_realizado in realizados_dict.items():
             sig_agente, ide_conj, sig_indicador = key
-            
+
             limite_key = (sig_agente, ide_conj, sig_indicador)
             if limite_key not in limites_dict:
                 continue
-                
+
             valor_limite = limites_dict[limite_key]
-            
+
             desvio = calcular_desvio(valor_realizado, valor_limite)
-            
+
             scores_conjuntos.append({
                 'sig_agente': sig_agente,
                 'ide_conj': ide_conj,
                 'sig_indicador': sig_indicador,
                 'valor_realizado': valor_realizado,
                 'valor_limite': valor_limite,
-                'desvio': desvio
+                'desvio': desvio,
             })
-        
+
         if not scores_conjuntos:
-            logger.warning(f"Nenhum conjunto com dados completos para {distribuidora} em {ano}")
+            logger.warning(
+                f'Nenhum conjunto com dados completos para {distribuidora} em {ano}'
+            )
             return None
-        
+
         conjuntos_scores = {}
         for item in scores_conjuntos:
             ide_conj = item['ide_conj']
@@ -174,25 +183,33 @@ def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
                     'ide_conj': ide_conj,
                     'desvio_dec': 0.0,
                     'desvio_fec': 0.0,
-                    'score_criticidade': 0.0
+                    'score_criticidade': 0.0,
                 }
-            
+
             if item['sig_indicador'] == 'DEC':
                 conjuntos_scores[ide_conj]['desvio_dec'] = item['desvio']
             elif item['sig_indicador'] == 'FEC':
                 conjuntos_scores[ide_conj]['desvio_fec'] = item['desvio']
-        
+
         for conjunto in conjuntos_scores.values():
-            conjunto['score_criticidade'] = conjunto['desvio_dec'] + conjunto['desvio_fec']
-        
-        scores_finais = [c['score_criticidade'] for c in conjuntos_scores.values()]
+            conjunto['score_criticidade'] = (
+                conjunto['desvio_dec'] + conjunto['desvio_fec']
+            )
+
+        scores_finais = [
+            c['score_criticidade'] for c in conjuntos_scores.values()
+        ]
         score_medio = sum(scores_finais) / len(scores_finais)
-        
-        desvio_dec_medio = sum(c['desvio_dec'] for c in conjuntos_scores.values()) / len(conjuntos_scores)
-        desvio_fec_medio = sum(c['desvio_fec'] for c in conjuntos_scores.values()) / len(conjuntos_scores)
-        
+
+        desvio_dec_medio = sum(
+            c['desvio_dec'] for c in conjuntos_scores.values()
+        ) / len(conjuntos_scores)
+        desvio_fec_medio = sum(
+            c['desvio_fec'] for c in conjuntos_scores.values()
+        ) / len(conjuntos_scores)
+
         cor_classificacao = classificar_criticidade(score_medio)
-        
+
         resultado = {
             'ano': ano,
             'distribuidora': distribuidora.upper(),
@@ -200,38 +217,34 @@ def calcular_score_criticidade(ano: int, distribuidora: str) -> Optional[Dict]:
             'desvio_dec': desvio_dec_medio,
             'desvio_fec': desvio_fec_medio,
             'cor': cor_classificacao,
-            'quantidade_conjuntos': len(conjuntos_scores)
+            'quantidade_conjuntos': len(conjuntos_scores),
         }
-        
-        # Salvar no MongoDB
-        salvar_score_criticidade(resultado)
-        
-        logger.info(f"Score calculado para {distribuidora} em {ano}: {score_medio:.2f}")
+
+        await salvar_score_criticidade(resultado)
+
+        logger.info(
+            f'Score calculado para {distribuidora} em {ano}: {score_medio:.2f}'
+        )
         return resultado
-        
+
     except Exception as e:
-        logger.error(f"Erro ao calcular score de criticidade: {e}")
+        logger.error(f'Erro ao calcular score de criticidade: {e}')
         raise
 
 
-def salvar_score_criticidade(dados: Dict) -> None:
+async def salvar_score_criticidade(dados: Dict) -> None:
     """Salva o score de criticidade na coleção MongoDB."""
     try:
         collection = get_mongo_collection('score_criticidade')
-        
-        filtro = {
-            'ano': dados['ano'],
-            'distribuidora': dados['distribuidora']
-        }
-        
-        collection.update_one(
-            filtro,
-            {'$set': dados},
-            upsert=True
+
+        filtro = {'ano': dados['ano'], 'distribuidora': dados['distribuidora']}
+
+        await collection.update_one(filtro, {'$set': dados}, upsert=True)
+
+        logger.info(
+            f'Score salvo para {dados["distribuidora"]} em {dados["ano"]}'
         )
-        
-        logger.info(f"Score salvo para {dados['distribuidora']} em {dados['ano']}")
-        
+
     except Exception as e:
-        logger.error(f"Erro ao salvar score de criticidade: {e}")
+        logger.error(f'Erro ao salvar score de criticidade: {e}')
         raise

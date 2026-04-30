@@ -11,10 +11,9 @@ from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from motor.motor_asyncio import AsyncIOMotorClient
-from backend.database import get_session
+from backend.database import get_session, get_mongo_async_database
 from backend.core import models as _models  # noqa: F401
 from backend.security import get_password_hash
-from backend.routes.tam import get_db
 from backend.core.models import User, table_registry
 
 
@@ -65,8 +64,11 @@ async def client(session, mongo_db):
     async def get_session_override():
         yield session
 
+    async def get_mongo_database_override():
+        yield mongo_db
+
     app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[get_db] = lambda: mongo_db
+    app.dependency_overrides[get_mongo_async_database] = get_mongo_database_override
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url='http://test'
     ) as ac:
@@ -109,11 +111,11 @@ async def token(client, user):
 
 @pytest_asyncio.fixture
 async def mongo_db():
-    host = os.getenv("MONGO_HOST", "127.0.0.1")
-    user = os.getenv("MONGO_ROOT_USER", "root")
-    pw = os.getenv("MONGO_ROOT_PASSWORD", "1234")
-    db_name = os.getenv("MONGO_DB", "fatec_api")
-    uri = f"mongodb://{user}:{pw}@{host}:27017/?authSource=admin"
+    host = os.getenv('MONGO_HOST', '127.0.0.1')
+    user = os.getenv('MONGO_ROOT_USER', 'root')
+    pw = os.getenv('MONGO_ROOT_PASSWORD', '1234')
+    db_name = os.getenv('MONGO_DB', 'fatec_api')
+    uri = f'mongodb://{user}:{pw}@{host}:27017/?authSource=admin'
     client = AsyncIOMotorClient(uri, serverSelectionTimeoutMS=5000)
     yield client[db_name]
     client.close()
@@ -139,18 +141,18 @@ async def setup_test_data(mongo_db):
 @pytest_asyncio.fixture
 async def api_response(client, setup_test_data):
 
-    response = await client.get(f"/tam/{setup_test_data}")
+    response = await client.get(f'/tam/{setup_test_data}')
     return response
 
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_sessionstart(session):
     """
-    Executa antes da coleta dos testes. 
+    Executa antes da coleta dos testes.
     Define variáveis de ambiente mínimas para evitar erros de validação do Pydantic.
     """
-    os.environ.setdefault("MAIL_USERNAME", "test_user")
-    os.environ.setdefault("MAIL_PASSWORD", "test_password")
-    os.environ.setdefault("MAIL_SERVER", "smtp.test.com")
-    os.environ.setdefault("MAIL_PORT", "587")
-    os.environ.setdefault("MAIL_FROM", "admin@test.com")
+    os.environ.setdefault('MAIL_USERNAME', 'test_user')
+    os.environ.setdefault('MAIL_PASSWORD', 'test_password')
+    os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')
+    os.environ.setdefault('MAIL_PORT', '587')
+    os.environ.setdefault('MAIL_FROM', 'admin@test.com')

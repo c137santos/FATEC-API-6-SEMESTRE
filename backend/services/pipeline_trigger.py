@@ -5,6 +5,7 @@ from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.models import Distribuidora
+from backend.services.etl_download import enqueue_download_gdb
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
 ARCGIS_DOWNLOAD_URL = (
@@ -13,12 +14,12 @@ ARCGIS_DOWNLOAD_URL = (
 ALLOWED_ITEM_TYPES = {'Feature Service', 'File Geodatabase'}
 
 
-async def distribuidora_for_year_exists(
+async def distribuidora_job_already_triggered(
     session: AsyncSession,
     distribuidora_id: str,
     ano: int,
 ) -> bool:
-    stmt = select(Distribuidora.id).where(
+    stmt = select(Distribuidora.job_id).where(
         Distribuidora.id == distribuidora_id,
         Distribuidora.date_gdb == ano,
     )
@@ -86,3 +87,33 @@ async def save_distribuidora_job_tracking(
     )
     await session.execute(stmt)
     await session.commit()
+
+
+async def trigger_pipeline_flow(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+) -> dict:
+    """Orquestra os passos da pipeline de download GDB."""
+    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
+        raise ValueError(
+            'Pipeline já foi acionada para a distribuidora no ano informado'
+        )
+
+    download_url = await resolve_download_url_from_aneel(distribuidora_id)
+
+    enqueue_result = enqueue_download_gdb(download_url, distribuidora_id)
+
+    await save_distribuidora_job_tracking(
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=enqueue_result['job_id'],
+    )
+
+    return {
+        **enqueue_result,
+        'distribuidora_id': distribuidora_id,
+        'ano': ano,
+        'download_url': download_url,
+    }

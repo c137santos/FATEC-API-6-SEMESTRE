@@ -59,10 +59,7 @@ def _make_mongo_mocks(
 
     mock_db = MagicMock()
     mock_db.__getitem__.side_effect = lambda name: _colecoes[name]
-
-    mock_client = MagicMock()
-    mock_client.__getitem__.return_value = mock_db
-    return mock_client
+    return mock_db
 
 
 def test_inteiro():
@@ -99,10 +96,10 @@ def test_record_vazio_retorna_zero():
     assert _sum_columns({}, PT_COLUMNS) == 0.0
 
 
-def _patch_mongo(mock_client):
+def _patch_mongo(mock_db):
     return patch(
-        'backend.core.calculate_pt_and_pnt.MongoClient',
-        return_value=mock_client,
+        'backend.core.calculate_pt_and_pnt.get_mongo_sync_db',
+        return_value=mock_db,
     )
 
 
@@ -232,12 +229,10 @@ def test_retorna_lista_vazia_se_ctmt_nao_encontrado():
     _colecoes = {'circuitos_mt': mock_circuitos}
     mock_db = MagicMock()
     mock_db.__getitem__.side_effect = lambda name: _colecoes[name]
-    mock_client = MagicMock()
-    mock_client.__getitem__.return_value = mock_db
 
     with patch(
-        'backend.core.calculate_pt_and_pnt.MongoClient',
-        return_value=mock_client,
+        'backend.core.calculate_pt_and_pnt.get_mongo_sync_db',
+        return_value=mock_db,
     ):
         resultado = calculate_pt_pnt(JOB_ID)
 
@@ -260,12 +255,10 @@ def test_retorna_lista_vazia_se_conj_nao_encontrado():
     }
     mock_db = MagicMock()
     mock_db.__getitem__.side_effect = lambda name: _colecoes[name]
-    mock_client = MagicMock()
-    mock_client.__getitem__.return_value = mock_db
 
     with patch(
-        'backend.core.calculate_pt_and_pnt.MongoClient',
-        return_value=mock_client,
+        'backend.core.calculate_pt_and_pnt.get_mongo_sync_db',
+        return_value=mock_db,
     ):
         resultado = calculate_pt_pnt(JOB_ID)
 

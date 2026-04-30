@@ -5,22 +5,31 @@ from datetime import datetime
 from pathlib import Path
 
 import httpx
-from pymongo import MongoClient, UpdateOne
+from pymongo import ASCENDING, UpdateOne
 
-from backend.settings import Settings
+from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
 
 TMP_DIR = Path(os.getenv('TMP_DIR', '/data/tmp/'))
 
-CHUNK_SIZE = 10_000
+CHUNK_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
 
 
 def _get_collection(name: str):
-    settings = Settings()
-    client = MongoClient(settings.MONGO_URI)
-    return client[settings.MONGO_DB][name]
+    db = get_mongo_sync_db()
+    return db[name]
+
+
+def _ensure_index(collection, fields: list[str]) -> None:
+    index_keys = [(f, ASCENDING) for f in fields]
+    index_name = '_'.join(f for f in fields) + '_unique'
+    existing = {idx['name'] for idx in collection.list_indexes()}
+    if index_name not in existing:
+        collection.create_index(
+            index_keys, unique=True, name=index_name, sparse=True
+        )
 
 
 def _download_csv(url: str, dest: Path) -> None:
@@ -72,7 +81,12 @@ def _to_float(value: str) -> float | None:
 
 def _to_date(value: str) -> datetime | None:
     v = value.strip() if value else ''
-    return datetime.fromisoformat(v) if v else None
+    if not v:
+        return None
+    try:
+        return datetime.fromisoformat(v)
+    except ValueError:
+        return None
 
 
 @celery_app.task(
@@ -93,6 +107,16 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
         _download_csv(url, csv_path)
 
         collection = _get_collection('dec_fec_realizado')
+        _ensure_index(
+            collection,
+            [
+                'sig_agente',
+                'ide_conj',
+                'sig_indicador',
+                'ano_indice',
+                'num_periodo',
+            ],
+        )
         total = 0
 
         for chunk in _iter_chunks(csv_path):
@@ -119,7 +143,7 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
                 ops.append(UpdateOne(filtro, {'$set': doc}, upsert=True))
 
             if ops:
-                result = collection.bulk_write(ops)
+                result = collection.bulk_write(ops, ordered=False)
                 total += result.upserted_count + result.modified_count
                 logger.info(
                     '[task_load_dec_fec_realizado] Progresso. job_id=%s linhas_salvas=%s',
@@ -181,6 +205,10 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
         _download_csv(url, csv_path)
 
         collection = _get_collection('dec_fec_limite')
+        _ensure_index(
+            collection,
+            ['sig_agente', 'ide_conj', 'sig_indicador', 'ano_limite'],
+        )
         total = 0
 
         for chunk in _iter_chunks(csv_path):
@@ -205,7 +233,7 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
                 ops.append(UpdateOne(filtro, {'$set': doc}, upsert=True))
 
             if ops:
-                result = collection.bulk_write(ops)
+                result = collection.bulk_write(ops, ordered=False)
                 total += result.upserted_count + result.modified_count
 
         logger.info(

@@ -1,27 +1,54 @@
-# Pipeline + Trigger: como agregar novos services no mesmo job Celery
+# Pipeline ETL: como funciona e como agregar novas tasks Celery
 
-Este guia descreve o desenho que o projeto usa hoje para o endpoint `/trigger`
-e mostra como plugar novas regras de negocio no fluxo sem empurrar logica para
-camada HTTP e sem criar outro job Celery quando o download continua sendo o mesmo.
+Este guia descreve o desenho atual da pipeline ETL do projeto — uma cadeia
+sequencial de tasks Celery onde cada etapa dispara a próxima ao terminar.
+Use este documento para entender o fluxo e para plugar novas tasks respeitando
+a ordem da pipeline.
 
-Se alguem for agregar outra integracao, como score de criticidade, a regra deste
-guia e literal: toda logica de negocio deve entrar no service e continuar
-condizente com o contrato do `/trigger`. O endpoint deve continuar funcionando
-como adaptador HTTP fino, nao como lugar de orquestracao.
+## Visão geral da arquitetura
 
-## Objetivo do fluxo atual
+```
+HTTP POST /pipeline/trigger
+        │
+        ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  trigger_pipeline_flow (service / orquestrador)                   │
+│                                                                  │
+│  1. valida, resolve URL, cria job_id                             │
+│  2. task_download_gdb.delay(job_id, ...)   ← pipeline ETL        │
+│  3. task_pos_etl.delay(job_id, ...)        ← tasks pós-ETL       │
+│     (quantas forem necessárias, mesmo job_id)                    │
+└──────────────────────────────────────────────────────────────────┘
+        │                              │
+        ▼  pipeline ETL                ▼  tasks pós-ETL
+┌────────────────────────────┐   ┌────────────────────────────────┐
+│  etl.download_gdb          │   │  etl.minha_etapa               │
+│  → etl.extrair_gdb         │   │  (aguarda job completed no     │
+│  → chord [ctmt, conj,      │   │   MongoDB antes de executar)   │
+│    unsemt, ssdmt]           │   └────────────────────────────────┘
+│  → etl.finalizar            │
+│  (persiste, marca completed)│
+└────────────────────────────┘
+```
 
-Hoje a separacao de responsabilidade esta assim:
+O `job_id` nasce uma vez no service e identifica todo o processamento.
+Dentro da pipeline ETL, cada task encadeia a próxima via `signature(...).delay()`.
+Tasks pós-ETL são disparadas **pelo orquestrador** (`pipeline_trigger.py`) no
+mesmo momento, usando o mesmo `job_id`, mas aguardam o job ser marcado como
+`completed` no MongoDB antes de executar sua lógica.
 
-- `backend/routes/pipeline.py`: recebe HTTP, injeta `session` e traduz excecoes.
-- `backend/services/pipeline_trigger.py`: orquestra o fluxo de negocio.
-- `backend/services/etl_download.py`: enfileira o job Celery `etl.download_gdb`.
-- `backend/tasks/task_download_gdb.py`: executa o download e encadeia a proxima task.
+## Separação de responsabilidades
 
-Em outras palavras: a rota nao decide mais a ordem da pipeline. Quem decide isso e
-o service agregador `trigger_pipeline_flow`.
+| Camada | Arquivo | Papel |
+|--------|---------|-------|
+| Rota HTTP | `backend/routes/pipeline.py` | Recebe request, injeta session, traduz exceções |
+| Service agregador | `backend/services/pipeline_trigger.py` | Valida, resolve URL, cria job_id, dispara ETL + tasks pós-ETL |
+| Tasks Celery | `backend/tasks/task_*.py` | Execução assíncrona, encadeia próxima etapa |
+| Celery app | `backend/tasks/celery_app.py` | Configuração do broker, lista de tasks registradas |
 
-## Mapa rapido do flow
+## Código real do fluxo
+
+### Rota (adaptador HTTP fino)
 
 ```python
 # backend/routes/pipeline.py
@@ -40,6 +67,8 @@ async def trigger_pipeline(
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 ```
 
+### Service agregador (orquestra o disparo)
+
 ```python
 # backend/services/pipeline_trigger.py
 async def trigger_pipeline_flow(
@@ -49,348 +78,347 @@ async def trigger_pipeline_flow(
 ) -> dict:
     if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
         raise ValueError(
-            'Pipeline ja foi acionada para a distribuidora no ano informado'
+            'Pipeline já foi acionada para a distribuidora no ano informado'
         )
 
+    dist_name = await _get_distribuidora_name(session, distribuidora_id, ano)
     download_url = await resolve_download_url_from_aneel(distribuidora_id)
-    enqueue_result = enqueue_download_gdb(download_url, distribuidora_id)
+    job_id = str(uuid.uuid4())
+
+    task = task_download_gdb.delay(job_id, download_url, distribuidora_id)
 
     await save_distribuidora_job_tracking(
         session=session,
         distribuidora_id=distribuidora_id,
         ano=ano,
-        job_id=enqueue_result['job_id'],
+        job_id=job_id,
     )
 
-    return {
-        **enqueue_result,
-        'distribuidora_id': distribuidora_id,
-        'ano': ano,
-        'download_url': download_url,
-    }
-```
-
-```python
-# backend/services/etl_download.py
-def enqueue_download_gdb(
-    url: str, distribuidora_id: str | None = None
-) -> dict[str, str]:
-    job_id = str(uuid.uuid4())
-    task = task_download_gdb.delay(job_id, url, distribuidora_id)
     return {
         'job_id': job_id,
         'task_id': task.id,
         'status': 'queued',
+        'distribuidora_id': distribuidora_id,
+        'ano': ano,
+        'download_url': download_url,
     }
 ```
 
-O ponto importante e este: o `job_id` nasce uma vez, no enqueue, e segue sendo a
-identidade do processamento. Se voce quer agregar novos services no mesmo flow,
-eles devem orbitar esse mesmo `job_id`, nao criar outro.
+### Tasks Celery (pipeline sequencial)
 
-## Regra pratica: onde cada coisa entra
+Cada task encadeia a próxima via `signature(...)`:
 
-Use esta regra antes de alterar o codigo:
+```python
+# task_download_gdb.py (name='etl.download_gdb')
+# Ao finalizar download + validação ZIP:
+signature('etl.extrair_gdb', args=(job_id, str(zip_path), distribuidora_id)).delay()
+```
 
-- Se a mudanca e traduzir request, status HTTP ou schema de resposta: altere a rota.
-- Se a mudanca e validar, consultar infra, enriquecer dados ou persistir metadados do fluxo: altere o service agregador.
-- Se a mudanca e sobre como o download assinado e colocado na fila: altere `enqueue_download_gdb`.
-- Se a mudanca e sobre a execucao assincrona do download ou seu encadeamento: altere a task Celery.
+```python
+# task_descompact_gdb.py (name='etl.extrair_gdb')
+# Após extrair e validar camadas, dispara processamento paralelo:
+chord(
+    [
+        signature('etl.processar_ctmt', args=(job_id, gdb_path, distribuidora_id)),
+        signature('etl.processar_conj', args=(job_id, gdb_path, distribuidora_id)),
+        signature('etl.processar_unsemt', args=(job_id, gdb_path, distribuidora_id)),
+        signature('etl.processar_ssdmt', args=(job_id, gdb_path, distribuidora_id)),
+    ],
+    signature('etl.finalizar', args=(job_id, zip_path, str(tmp_dir), distribuidora_id)),
+).delay()
+```
 
-Na maior parte dos casos de extensao, o lugar certo sera `trigger_pipeline_flow`.
+```python
+# task_process_layers.py (name='etl.finalizar')
+# Callback do chord: persiste resultados, marca job como completed no MongoDB.
+```
 
-## Regra obrigatoria para manter o `/trigger` reutilizavel
+## Tutorial: adicionando uma nova task na pipeline
 
-Se a mesma logica puder ser chamada por HTTP hoje e por job interno amanha, ela
-nao pertence ao endpoint. Ela pertence ao service.
+### Passo 1 — Decida ONDE na sequência sua task deve rodar
 
-Em termos práticos:
+A pipeline hoje é:
 
-- o endpoint recebe request, injeta dependencias HTTP e traduz excecoes em status;
-- o service decide ordem, validacoes, integracoes, persistencia e montagem do resultado;
-- o PostgreSQL ja entra no flow como `session: AsyncSession`; se uma nova funcao precisar de banco, ela deve receber essa `session` como parametro dentro do service;
-- o endpoint nao pode conter regra que seria perdida ao chamar o flow fora da rota;
-- tudo que fizer parte do significado do `/trigger` precisa estar dentro de `trigger_pipeline_flow` ou de helpers chamados por ele.
+```
+download_gdb → extrair_gdb → [ctmt, conj, unsemt, ssdmt] → finalizar
+```
 
-Se isso nao for respeitado, o sistema fica com dois comportamentos diferentes:
+Perguntas para decidir o ponto de inserção:
 
-- um quando a pipeline e chamada pela rota;
-- outro quando a pipeline e chamada por reuso interno.
+| Cenário | Onde inserir |
+|---------|------|
+| Precisa dos dados já persistidos no MongoDB? | Opção A: task pós-ETL disparada do orquestrador |
+| Pode rodar em paralelo com processamento de camadas? | Opção B: dentro do chord (header) |
+| Precisa dos dados GDB extraídos mas antes de persistir? | Opção C: entre etapas da pipeline ETL |
 
-Esse e exatamente o desenho que este documento quer evitar.
+### Passo 2 — Crie a task no padrão do projeto
 
-## Tutorial: adicionando um novo service no mesmo flow
+Crie o arquivo em `backend/tasks/`:
 
-### 1. Decida se o novo service roda antes ou depois do enqueue
+```python
+# backend/tasks/task_minha_etapa.py
+import logging
 
-Pergunta de projeto:
+from celery import signature
+from backend.tasks.celery_app import celery_app
 
-- O novo service precisa bloquear o disparo? Rode antes do `enqueue_download_gdb`.
-- O novo service precisa usar o `job_id` gerado? Rode depois do `enqueue_download_gdb`.
-- O novo service faz parte do processamento assincrono do arquivo? Ele provavelmente pertence a task, nao ao endpoint.
+logger = logging.getLogger(__name__)
 
-Exemplos:
 
-- Validar regra de negocio antes do disparo: antes do enqueue.
-- Salvar auditoria com `job_id` e `task_id`: depois do enqueue.
-- Baixar outro arquivo em paralelo: isso ja nao e o mesmo job; precisa outro desenho.
+@celery_app.task(bind=True, name='etl.minha_etapa')
+def task_minha_etapa(self, job_id: str, distribuidora_id: str | None = None) -> dict:
+    """Descrição do que essa task faz."""
+    logger.info('[task_minha_etapa] Inicio. job_id=%s', job_id)
 
-### 2. Extraia o comportamento para uma funcao pequena
+    # ... lógica de negócio ...
 
-Nao empilhe regra nova diretamente dentro da rota. O padrao e criar helpers de
-service, mantendo `trigger_pipeline_flow` como agregador.
+    # Se houver próxima task na cadeia:
+    # signature('etl.proxima_etapa', args=(job_id, distribuidora_id)).delay()
 
-Se o novo helper precisar consultar ou persistir no PostgreSQL, use a mesma
-`session` que o `/trigger` recebeu via `Depends(get_session)` e repasse essa
-dependencia para a nova funcao. Nao recrie sessao dentro do helper e nao mova a
-regra para a rota so porque ela usa banco.
+    logger.info('[task_minha_etapa] Concluida. job_id=%s', job_id)
+    return {'job_id': job_id, 'status': 'done'}
+```
 
-Exemplo de um service novo para registrar auditoria com o mesmo `job_id`:
+Convenções obrigatórias:
+
+- `bind=True` para acesso a `self` (retry, request info)
+- `name='etl.<nome_descritivo>'` — prefixo `etl.` é padrão do projeto
+- Primeiro argumento é sempre `job_id`
+- Log de início e fim com `job_id` para rastreabilidade
+- Retorno é sempre um `dict` com pelo menos `job_id` e `status`
+
+### Passo 3 — Registre a task no Celery
+
+Adicione o módulo em `backend/tasks/celery_app.py`:
+
+```python
+celery_app = Celery(
+    'etl',
+    broker=os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0'),
+    backend=os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0'),
+    include=[
+        'backend.tasks.task_download_gdb',
+        'backend.tasks.task_descompact_gdb',
+        'backend.tasks.task_process_layers',
+        'backend.tasks.task_load_dec_fec',
+        'backend.tasks.task_minha_etapa',      # ← adicione aqui
+    ],
+)
+```
+
+### Passo 4 — Encadeie na posição correta
+
+#### Opção A: task pós-ETL (precisa dos dados já persistidos no MongoDB)
+
+Este é o caso mais comum para novas funcionalidades. Sua task precisa que a
+pipeline ETL tenha completado (dados no MongoDB) mas faz parte do mesmo
+processamento lógico.
+
+**A task é disparada do orquestrador `pipeline_trigger.py`**, usando o mesmo
+`job_id`. NÃO coloque nada dentro de `task_finalizar` — ele deve permanecer
+responsável apenas por persistir resultados e marcar o job como `completed`.
+
+A sequência é garantida pela própria task, que verifica se o job foi concluído
+antes de executar:
+
+```python
+# backend/tasks/task_minha_etapa.py
+from backend.database import get_mongo_sync_db
+from backend.tasks.celery_app import celery_app
+
+WAIT_COUNTDOWN = 30  # segundos entre retries
+MAX_WAIT_RETRIES = 60  # máx ~30 min esperando
+
+
+@celery_app.task(bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.minha_etapa')
+def task_minha_etapa(self, job_id: str, distribuidora_id: str | None = None) -> dict:
+    """Executa após a pipeline ETL completar."""
+    db = get_mongo_sync_db()
+    job = db['jobs'].find_one({'job_id': job_id})
+
+    if not job or job.get('status') != 'completed':
+        # ETL ainda não terminou — reagenda com countdown
+        raise self.retry(countdown=WAIT_COUNTDOWN)
+
+    # Aqui os dados já estão persistidos no MongoDB.
+    # ... lógica de negócio ...
+
+    return {'job_id': job_id, 'status': 'done'}
+```
+
+E no orquestrador, dispare junto com a ETL:
 
 ```python
 # backend/services/pipeline_trigger.py
-async def save_pipeline_audit(
-    session: AsyncSession,
-    distribuidora_id: str,
-    ano: int,
-    job_id: str,
-    task_id: str,
-) -> None:
+async def trigger_pipeline_flow(...) -> dict:
+    ...
+    job_id = str(uuid.uuid4())
+
+    # Pipeline ETL (sempre primeiro)
+    task = task_download_gdb.delay(job_id, download_url, distribuidora_id)
+
+    # Tasks pós-ETL (mesmo job_id, aguardam ETL completar)
+    task_minha_etapa.delay(job_id, distribuidora_id)
+
     ...
 ```
 
-Ou, se a dependencia nao for o Postgres da requisicao, resolva dentro do service:
+Por que este padrão?
+
+- O `job_id` identifica que todas as tasks pertencem ao mesmo processamento
+- A sequência é respeitada: a task pós-ETL só executa quando encontra
+  `status: 'completed'` no MongoDB
+- `task_finalizar` permanece simples e com responsabilidade única
+- O orquestrador é o único lugar que decide o que dispara no processamento
+- Novas tasks pós-ETL são apenas mais um `.delay()` em `pipeline_trigger.py`
+
+#### Opção B: rodar EM PARALELO com as camadas (dentro do chord)
+
+Adicione sua task na lista `header_tasks` em `task_descompact_gdb`:
 
 ```python
-from backend.database import get_mongo_async_db
-
-async def save_pipeline_audit_external(
-    distribuidora_id: str,
-    ano: int,
-    job_id: str,
-) -> None:
-    db = get_mongo_async_db()
-    await db['pipeline_audit'].insert_one(
-        {
-            'distribuidora_id': distribuidora_id,
-            'ano': ano,
-            'job_id': job_id,
-        }
-    )
+header_tasks = [
+    signature('etl.processar_ctmt', args=(job_id, gdb_path, distribuidora_id)),
+    signature('etl.processar_conj', args=(job_id, gdb_path, distribuidora_id)),
+    signature('etl.processar_unsemt', args=(job_id, gdb_path, distribuidora_id)),
+    signature('etl.processar_ssdmt', args=(job_id, gdb_path, distribuidora_id)),
+    signature('etl.minha_etapa', args=(job_id, gdb_path, distribuidora_id)),  # ← aqui
+]
 ```
 
-### 3. Agregue o novo passo dentro de `trigger_pipeline_flow`
+`etl.finalizar` só executa quando TODAS as tasks do header terminam.
 
-Este e o ponto central do tutorial. O fluxo cresce no service agregador, e nao na
-rota.
+#### Opção C: inserir ENTRE duas etapas da pipeline ETL
+
+Se sua task precisa rodar entre `download` e `extrair`, altere o encadeamento em
+`task_download_gdb.py`:
 
 ```python
-async def trigger_pipeline_flow(
-    session: AsyncSession,
-    distribuidora_id: str,
-    ano: int,
-) -> dict:
-    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
-        raise ValueError(
-            'Pipeline ja foi acionada para a distribuidora no ano informado'
-        )
+# Antes (encadeia direto para extrair):
+signature('etl.extrair_gdb', args=(job_id, str(zip_path), distribuidora_id)).delay()
 
-    await validate_pipeline_rules(session, distribuidora_id, ano)
-
-    download_url = await resolve_download_url_from_aneel(distribuidora_id)
-    enqueue_result = enqueue_download_gdb(download_url, distribuidora_id)
-
-    await save_distribuidora_job_tracking(
-        session=session,
-        distribuidora_id=distribuidora_id,
-        ano=ano,
-        job_id=enqueue_result['job_id'],
-    )
-
-    await save_pipeline_audit(
-        session=session,
-        distribuidora_id=distribuidora_id,
-        ano=ano,
-        job_id=enqueue_result['job_id'],
-        task_id=enqueue_result['task_id'],
-    )
-
-    return {
-        **enqueue_result,
-        'distribuidora_id': distribuidora_id,
-        'ano': ano,
-        'download_url': download_url,
-    }
+# Depois (encadeia para sua task, que por sua vez encadeia extrair):
+signature('etl.minha_etapa', args=(job_id, str(zip_path), distribuidora_id)).delay()
 ```
 
-O detalhe importante aqui e a ordem:
-
-- tudo que decide se pode ou nao disparar fica antes do enqueue;
-- tudo que depende de `job_id` e `task_id` fica depois do enqueue;
-- tudo que precisar de PostgreSQL deve receber a `session` ja aberta pelo flow;
-- a resposta HTTP continua montada a partir do mesmo contrato.
-
-### Exemplo explicito: agregando score de criticidade sem quebrar o `/trigger`
-
-Imagine que alguem queira incluir uma integracao com score de criticidade antes de enfileirar a pipeline. O erro mais comum e colocar isso na rota, por exemplo:
+E na sua task, ao final:
 
 ```python
-# errado: regra de negocio no endpoint
-@router.post('/trigger')
-async def trigger_pipeline(...):
-    score = await calculate_criticidade_score(...)
-    if score < 0.7:
-        raise HTTPException(status_code=409, detail='Score insuficiente')
-
-    return await trigger_pipeline_flow(...)
+signature('etl.extrair_gdb', args=(job_id, zip_path, distribuidora_id)).delay()
 ```
 
-Isso deixa o endpoint "funcionando", mas quebra o reuso: quem chamar `trigger_pipeline_flow` fora do HTTP nao vai executar a regra do score.
+### Passo 5 — Escreva testes
 
-O desenho correto e este:
+Crie `backend/tests/test_task_minha_etapa.py`:
 
 ```python
-# backend/services/pipeline_trigger.py
-async def validate_criticidade_before_trigger(
-    session: AsyncSession,
-    distribuidora_id: str,
-    ano: int,
-) -> None:
-    # Se a validacao precisar do PostgreSQL, a mesma session do flow entra aqui.
-    score = await calculate_criticidade_score(distribuidora_id, ano)
-    if score < 0.7:
-        raise ValueError('Score de criticidade insuficiente para disparar a pipeline')
+import pytest
+from unittest.mock import patch, MagicMock
+
+from backend.tasks.task_minha_etapa import task_minha_etapa
 
 
-async def trigger_pipeline_flow(
-    session: AsyncSession,
-    distribuidora_id: str,
-    ano: int,
-) -> dict:
-    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
-        raise ValueError(
-            'Pipeline ja foi acionada para a distribuidora no ano informado'
-        )
+class TestTaskMinhaEtapa:
+    @patch('backend.tasks.task_minha_etapa.signature')
+    def test_executa_e_encadeia_proxima(self, mock_sig):
+        mock_sig.return_value.delay = MagicMock()
 
-    await validate_criticidade_before_trigger(session, distribuidora_id, ano)
+        result = task_minha_etapa('job-123', 'dist-456')
 
-    download_url = await resolve_download_url_from_aneel(distribuidora_id)
-    enqueue_result = enqueue_download_gdb(download_url, distribuidora_id)
+        assert result['job_id'] == 'job-123'
+        assert result['status'] == 'done'
+        # Se encadeia próxima:
+        # mock_sig.assert_called_once_with('etl.proxima_etapa', args=(...))
 
-    await save_distribuidora_job_tracking(
-        session=session,
-        distribuidora_id=distribuidora_id,
-        ano=ano,
-        job_id=enqueue_result['job_id'],
-    )
-
-    return {
-        **enqueue_result,
-        'distribuidora_id': distribuidora_id,
-        'ano': ano,
-        'download_url': download_url,
-    }
+    def test_falha_com_dados_invalidos(self):
+        with pytest.raises(RuntimeError):
+            task_minha_etapa('job-123', None)
 ```
 
-E a rota continua simples:
+Padrão nos testes do projeto: mocke `signature` para não precisar de broker real.
+
+## Princípios que devem ser mantidos
+
+### 1. O `job_id` é único por execução
+
+Nasce em `trigger_pipeline_flow` e percorre toda a cadeia. Não crie novos UUIDs
+dentro das tasks — use o mesmo `job_id` para rastrear tudo no MongoDB.
+
+### 2. A rota não orquestra
+
+A rota apenas traduz HTTP. Toda lógica de validação, resolução de URL e disparo
+fica no service `trigger_pipeline_flow`. Se amanhã o mesmo fluxo for chamado por
+outro service ou job administrativo, ele funciona igual.
+
+### 3. Dentro da pipeline ETL, cada task dispara a próxima
+
+O encadeamento interno da ETL é feito task a task via `signature(...).delay()`:
+
+- Retry individual por etapa
+- Visibilidade no Celery Flower
+- Composição com `chord` para paralelismo + callback
+
+Mas tasks **pós-ETL** não entram nessa cadeia. Elas são disparadas pelo
+orquestrador e se auto-regulam verificando o status do job.
+
+### 4. `task_finalizar` não deve ser alterada
+
+`task_finalizar` tem uma única responsabilidade: persistir os resultados do
+chord no MongoDB e marcar o job como `completed`. Não adicione encadeamentos,
+lógica de negócio ou `.delay()` de outras tasks dentro dela.
+
+Tasks que precisam rodar após a ETL devem ser disparadas do orquestrador
+(`pipeline_trigger.py`) e aguardar o job completar usando retry com countdown.
+
+### 5. O orquestrador decide toda a composição do processamento
+
+Tudo que faz parte de um processamento é disparado em `trigger_pipeline_flow`:
 
 ```python
-# backend/routes/pipeline.py
-@router.post('/trigger', status_code=202, response_model=PipelineTriggerResponse)
-async def trigger_pipeline(
-    request: PipelineTriggerRequest,
-    session: AsyncSession = Depends(get_session),
-):
-    try:
-        return await trigger_pipeline_flow(
-            session=session,
-            distribuidora_id=request.distribuidora_id,
-            ano=request.ano,
-        )
-    except ValueError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
+task_download_gdb.delay(job_id, ...)        # pipeline ETL
+task_minha_etapa.delay(job_id, ...)          # pós-ETL, mesmo job_id
+task_outra_coisa.delay(job_id, ...)          # pós-ETL, mesmo job_id
 ```
 
-O motivo e simples: se amanha o mesmo flow for chamado por outro service, por um comando interno ou por um job administrativo, ele continua respeitando exatamente as mesmas regras do `/trigger`, porque a regra mora no lugar certo.
+Isso mantém a visibilidade de tudo que compõe um processamento num único lugar.
 
-Resumo da regra para banco relacional: o `/trigger` injeta a `session`, o flow
-recebe a `session`, e qualquer nova funcao que precise de PostgreSQL tambem deve
-receber essa mesma `session` como argumento.
+### 6. Novas dependências de infra entram via task
 
-### 4. Preserve o contrato do job compartilhado
+Se sua etapa precisa de MongoDB, use `get_mongo_sync_db()` dentro da task (como
+`task_process_layers` faz). Se precisa de PostgreSQL assíncrono, considere se a
+lógica realmente pertence a uma task Celery (tasks Celery são síncronas neste
+projeto).
 
-Se o objetivo e continuar usando o mesmo job Celery `etl.download_gdb`, preserve:
+## Registro de tasks existentes
 
-- a chamada `enqueue_download_gdb(download_url, distribuidora_id)`;
-- a geracao unica de `job_id`;
-- o retorno com `job_id`, `task_id` e `status`;
-- o encadeamento da task `etl.extrair_gdb` em `task_download_gdb`.
+| Nome Celery | Arquivo | O que faz |
+|-------------|---------|-----------|
+| `etl.download_gdb` | `task_download_gdb.py` | Baixa ZIP do ArcGIS, valida, encadeia `etl.extrair_gdb` |
+| `etl.extrair_gdb` | `task_descompact_gdb.py` | Extrai GDB, valida schema, dispara chord de processamento |
+| `etl.processar_ctmt` | `task_process_layers.py` | Processa camada CTMT |
+| `etl.processar_conj` | `task_process_layers.py` | Processa camada CONJ |
+| `etl.processar_ssdmt` | `task_process_layers.py` | Processa camada SSDMT |
+| `etl.processar_unsemt` | `task_process_layers.py` | Processa camada UNSEMT |
+| `etl.finalizar` | `task_process_layers.py` | Callback do chord: persiste resultados, atualiza status |
+| `etl.load_dec_fec_realizado` | `task_load_dec_fec.py` | Carrega CSV DEC/FEC realizado |
+| `etl.load_dec_fec_limite` | `task_load_dec_fec.py` | Carrega CSV DEC/FEC limite |
 
-Nao crie um segundo `delay()` so para anexar uma regra lateral. Se a regra nao
-precisa de processamento assincrono separado, mantenha-a no service agregador.
+## Checklist para nova task
 
-## Quando criar um service novo versus alterar o existente
+- [ ] Arquivo criado em `backend/tasks/` com `@celery_app.task(bind=True, name='etl.<nome>')`
+- [ ] Módulo adicionado em `celery_app.py` → `include`
+- [ ] `job_id` como primeiro argumento
+- [ ] Encadeamento na posição certa (`.delay()` em `pipeline_trigger.py` ou alterou task anterior)
+- [ ] Logs com `job_id` no início e fim
+- [ ] Retorno é `dict` com `job_id` e `status`
+- [ ] Testes com `signature` mockado
+- [ ] Teste roda verde: `uv run pytest backend/tests/test_task_<nome>.py`
 
-Crie um helper novo quando:
+## O que NÃO fazer
 
-- a regra tem responsabilidade propria e nome claro;
-- a regra pode ser testada isoladamente;
-- a regra pode ser reutilizada em outro fluxo interno.
-
-Altere `trigger_pipeline_flow` diretamente quando:
-
-- a mudanca e so de ordem do fluxo;
-- a mudanca apenas conecta passos ja existentes;
-- a logica adicional e curta e especifica da orquestracao.
-
-## Padrao recomendado para novas integracoes
-
-Se voce for incluir novos services com frequencia, siga este esqueleto:
-
-```python
-async def trigger_pipeline_flow(
-    session: AsyncSession,
-    distribuidora_id: str,
-    ano: int,
-) -> dict:
-    await preconditions(...)
-    context = await collect_context(...)
-
-    enqueue_result = enqueue_download_gdb(context.download_url, distribuidora_id)
-
-    await persist_tracking(..., job_id=enqueue_result['job_id'])
-    await run_post_enqueue_hooks(..., enqueue_result=enqueue_result)
-
-    return build_trigger_response(...)
-```
-
-Mesmo quando o codigo nao estiver exatamente com esses nomes, a ideia e manter
-quatro blocos visiveis:
-
-1. pre-condicoes;
-2. resolucao de contexto;
-3. enqueue do job compartilhado;
-4. persistencia e hooks pos-enqueue.
-
-## O que nao fazer
-
-Evite estes desvios, porque eles reintroduzem o problema antigo:
-
-- colocar regra de negocio dentro de `backend/routes/pipeline.py`;
-- injetar novas dependencias de infra na assinatura da rota sem necessidade real;
-- criar varios `job_id`s para o mesmo processamento logico;
-- duplicar chamadas a Celery quando o download continua sendo unico;
-- esconder o fluxo em helpers que nao deixam clara a ordem da pipeline.
-
-## Checklist para extender o flow com seguranca
-
-- O endpoint continua apenas traduzindo HTTP?
-- A nova regra entrou em `trigger_pipeline_flow` ou em helper chamado por ele?
-- O mesmo `job_id` segue sendo usado como identidade do processamento?
-- O enqueue continua centralizado em `enqueue_download_gdb`?
-- O novo service roda antes ou depois do enqueue por um motivo claro?
-- O retorno para `PipelineTriggerResponse` continua compativel?
-
-Se a resposta for sim para esses pontos, o novo service foi agregado ao flow do
-jeito certo: a rota segue fina, a orquestracao continua no service e o job Celery
-permanece unico para o download GDB.
+- Colocar lógica de negócio dentro da rota (`backend/routes/pipeline.py`)
+- Criar múltiplos `job_id` para a mesma execução
+- Adicionar `.delay()`, encadeamentos ou lógica dentro de `task_finalizar`
+- Disparar tasks pós-ETL de dentro de outras tasks (devem sair do orquestrador)
+- Usar `await` em lógica assíncrona dentro de tasks (o worker Celery é síncrono)
+- Importar tasks entre si circularmente (use `signature('etl.nome')` para evitar isso)

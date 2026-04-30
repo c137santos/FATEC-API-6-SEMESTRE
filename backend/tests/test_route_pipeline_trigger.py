@@ -1,5 +1,7 @@
 import pytest
 from sqlalchemy import select
+from types import SimpleNamespace
+from unittest.mock import MagicMock
 
 from backend.core.models import Distribuidora
 
@@ -24,20 +26,15 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
             'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
         )
 
-    def fake_enqueue(_url, _distribuidora_id):
-        assert _distribuidora_id == 'item-123'
-        return {
-            'job_id': 'job-1',
-            'task_id': 'task-1',
-            'status': 'queued',
-        }
-
+    fake_task = SimpleNamespace(id='task-1')
+    mock_delay = MagicMock(return_value=fake_task)
+    monkeypatch.setattr(
+        'backend.services.pipeline_trigger.task_download_gdb.delay',
+        mock_delay,
+    )
     monkeypatch.setattr(
         'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
-    )
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.enqueue_download_gdb', fake_enqueue
     )
 
     response = await client.post(
@@ -46,14 +43,15 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
     )
 
     assert response.status_code == 202
-    assert response.json() == {
-        'job_id': 'job-1',
-        'task_id': 'task-1',
-        'status': 'queued',
-        'distribuidora_id': 'item-123',
-        'ano': 2026,
-        'download_url': 'https://www.arcgis.com/sharing/rest/content/items/item-123/data',
-    }
+    body = response.json()
+    assert body['task_id'] == 'task-1'
+    assert body['status'] == 'queued'
+    assert body['distribuidora_id'] == 'item-123'
+    assert body['ano'] == 2026
+    assert body['download_url'] == 'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
+    assert 'job_id' in body
+
+    mock_delay.assert_called_once()
 
     persisted = (
         (
@@ -67,7 +65,7 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
         .scalars()
         .one()
     )
-    assert persisted.job_id == 'job-1'
+    assert persisted.job_id == body['job_id']
     assert persisted.processed_at is not None
 
 
@@ -99,15 +97,13 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
     async def fake_resolve(_distribuidora_id):
         pytest.fail('Não deveria resolver URL para pipeline já acionada')
 
-    def fake_enqueue(_url, _distribuidora_id):
-        pytest.fail('Não deveria enfileirar pipeline já acionada')
-
     monkeypatch.setattr(
         'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
         fake_resolve,
     )
     monkeypatch.setattr(
-        'backend.services.pipeline_trigger.enqueue_download_gdb', fake_enqueue
+        'backend.services.pipeline_trigger.task_download_gdb.delay',
+        lambda *a, **kw: pytest.fail('Não deveria enfileirar pipeline já acionada'),
     )
 
     response = await client.post(

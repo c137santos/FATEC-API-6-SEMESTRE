@@ -22,17 +22,7 @@ def calcular_desvio(realizado: float, limite: float) -> float:
 
 
 def classificar_criticidade(score: float) -> str:
-    """
-    Classifica a criticidade baseada no score, seguindo a lógica do notebook.
-
-
-    Args:
-        score: Score de criticidade calculado
-
-
-    Returns:
-        String com a classificação: 'Verde', 'Laranja' ou 'Vermelho'
-    """
+    """Classifica a criticidade baseada no score."""
     if score == 0:
         return 'Verde'
     elif 0 < score <= 10:
@@ -78,7 +68,10 @@ async def buscar_dados_realizados(ano: int, distribuidora: str) -> List[Dict]:
 
     resultados = await collection.aggregate(pipeline).to_list(None)
     logger.info(
-        f'Encontrados {len(resultados)} registros realizados para {distribuidora} em {ano}'
+        'Encontrados %s registros realizados para %s em %s',
+        len(resultados),
+        distribuidora,
+        ano,
     )
     return resultados
 
@@ -109,7 +102,10 @@ async def buscar_dados_limites(ano: int, distribuidora: str) -> List[Dict]:
 
     resultados = await collection.aggregate(pipeline).to_list(None)
     logger.info(
-        f'Encontrados {len(resultados)} registros limites para {distribuidora} em {ano}'
+        'Encontrados %s registros limites para %s em %s',
+        len(resultados),
+        distribuidora,
+        ano,
     )
     return resultados
 
@@ -133,7 +129,7 @@ async def calcular_score_criticidade(
 
         if not dados_realizados or not dados_limites:
             logger.warning(
-                f'Dados não encontrados para {distribuidora} em {ano}'
+                'Dados não encontrados para %s em %s', distribuidora, ano
             )
             return None
 
@@ -156,7 +152,6 @@ async def calcular_score_criticidade(
                 continue
 
             valor_limite = limites_dict[limite_key]
-
             desvio = calcular_desvio(valor_realizado, valor_limite)
 
             scores_conjuntos.append({
@@ -170,11 +165,13 @@ async def calcular_score_criticidade(
 
         if not scores_conjuntos:
             logger.warning(
-                f'Nenhum conjunto com dados completos para {distribuidora} em {ano}'
+                'Nenhum conjunto com dados completos para %s em %s',
+                distribuidora,
+                ano,
             )
             return None
 
-        conjuntos_scores = {}
+        conjuntos_scores: dict[str, dict] = {}
         for item in scores_conjuntos:
             ide_conj = item['ide_conj']
             if ide_conj not in conjuntos_scores:
@@ -208,27 +205,27 @@ async def calcular_score_criticidade(
             c['desvio_fec'] for c in conjuntos_scores.values()
         ) / len(conjuntos_scores)
 
-        cor_classificacao = classificar_criticidade(score_medio)
-
         resultado = {
             'ano': ano,
             'distribuidora': distribuidora.upper(),
             'score_criticidade': score_medio,
             'desvio_dec': desvio_dec_medio,
             'desvio_fec': desvio_fec_medio,
-            'cor': cor_classificacao,
+            'cor': classificar_criticidade(score_medio),
             'quantidade_conjuntos': len(conjuntos_scores),
         }
 
         await salvar_score_criticidade(resultado)
-
         logger.info(
-            f'Score calculado para {distribuidora} em {ano}: {score_medio:.2f}'
+            'Score calculado para %s em %s: %.2f',
+            distribuidora,
+            ano,
+            score_medio,
         )
         return resultado
 
     except Exception as e:
-        logger.error(f'Erro ao calcular score de criticidade: {e}')
+        logger.error('Erro ao calcular score de criticidade: %s', e)
         raise
 
 
@@ -236,15 +233,93 @@ async def salvar_score_criticidade(dados: Dict) -> None:
     """Salva o score de criticidade na coleção MongoDB."""
     try:
         collection = get_mongo_collection('score_criticidade')
-
         filtro = {'ano': dados['ano'], 'distribuidora': dados['distribuidora']}
-
         await collection.update_one(filtro, {'$set': dados}, upsert=True)
-
         logger.info(
-            f'Score salvo para {dados["distribuidora"]} em {dados["ano"]}'
+            'Score salvo para %s em %s',
+            dados['distribuidora'],
+            dados['ano'],
         )
-
     except Exception as e:
-        logger.error(f'Erro ao salvar score de criticidade: {e}')
+        logger.error('Erro ao salvar score de criticidade: %s', e)
         raise
+
+
+async def criar_mapa_criticidade(
+    distribuidora: str,
+    ano: int,
+    distribuidora_id: str,
+    job_id: str | None = None,
+) -> dict | None:
+    """Calcula e salva o mapa de criticidade por conjunto."""
+    dados_realizados = await buscar_dados_realizados(ano, distribuidora)
+    if not dados_realizados:
+        logger.warning(
+            'Sem dados realizados para %s em %s', distribuidora, ano
+        )
+        return None
+
+    dados_limites = await buscar_dados_limites(ano, distribuidora)
+
+    realizados_dict = {}
+    for item in dados_realizados:
+        key = (item['sig_agente'], item['ide_conj'], item['sig_indicador'])
+        realizados_dict[key] = item['valor_realizado']
+
+    limites_dict = {}
+    for item in dados_limites:
+        key = (item['sig_agente'], item['ide_conj'], item['sig_indicador'])
+        limites_dict[key] = item['valor_limite']
+
+    conjuntos: dict[str, dict] = {}
+    for key, valor_realizado in realizados_dict.items():
+        sig_agente, ide_conj, sig_indicador = key
+        limite = limites_dict.get((sig_agente, ide_conj, sig_indicador), 0.0)
+        desvio = calcular_desvio(valor_realizado, limite)
+
+        if ide_conj not in conjuntos:
+            conjuntos[ide_conj] = {
+                'ide_conj': ide_conj,
+                'desvio_dec': 0.0,
+                'desvio_fec': 0.0,
+                'score_criticidade': 0.0,
+            }
+        if sig_indicador == 'DEC':
+            conjuntos[ide_conj]['desvio_dec'] = round(desvio, 4)
+        elif sig_indicador == 'FEC':
+            conjuntos[ide_conj]['desvio_fec'] = round(desvio, 4)
+
+    for c in conjuntos.values():
+        score = c['desvio_dec'] + c['desvio_fec']
+        c['score_criticidade'] = round(score, 4)
+        c['categoria'] = classificar_criticidade(score)
+
+    conjuntos_final = sorted(
+        conjuntos.values(),
+        key=lambda x: x['score_criticidade'],
+        reverse=True,
+    )
+
+    documento = {
+        'distribuidora_id': distribuidora_id,
+        'distribuidora': distribuidora.upper(),
+        'ano': ano,
+        'job_id': job_id,
+        'total_conjuntos': len(conjuntos_final),
+        'conjuntos': conjuntos_final,
+    }
+
+    collection = get_mongo_collection('mapa_criticidade')
+    await collection.update_one(
+        {'distribuidora_id': distribuidora_id, 'ano': ano},
+        {'$set': documento},
+        upsert=True,
+    )
+
+    logger.info(
+        'Mapa criticidade salvo. distribuidora=%s ano=%s conjuntos=%s',
+        distribuidora.upper(),
+        ano,
+        len(conjuntos_final),
+    )
+    return documento

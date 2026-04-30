@@ -5,13 +5,13 @@ from fastapi import FastAPI
 from .core.schemas import Message
 from .routes import (
     auth,
+    criticidade,
     dist,
     etl,
-    users,
+    pipeline,
     pt_and_pnt,
     tam,
-    pipeline,
-    criticidade,
+    users,
 )
 
 app = FastAPI()

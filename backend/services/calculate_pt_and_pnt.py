@@ -152,7 +152,10 @@ def salvar_pt_pnt(
             'records': records,
         })
         logger.info(
-            '[pt_pnt] Resultados salvos. distribuidora_id=%s job_id=%s conjuntos=%d',
+            (
+                '[pt_pnt] Resultados salvos. '
+                'distribuidora_id=%s job_id=%s conjuntos=%d'
+            ),
             distribuidora_id,
             job_id,
             len(records),

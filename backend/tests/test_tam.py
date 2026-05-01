@@ -1,8 +1,9 @@
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import patch, AsyncMock, MagicMock
+from services.render_tam import render_grafico_barras_tam
+
 import pytest
 from sqlalchemy import text
-from unittest.mock import patch
-from services.render_tam import render_grafico_barras_tam
+
 
 @pytest.fixture(autouse=True)
 def mock_external_deps(mongo_db):

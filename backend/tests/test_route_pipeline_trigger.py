@@ -128,12 +128,15 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
         "date_gdb": 2026
     })
 
+    assert sigs[4].task == 'etl.render_grafico_tam'
+    assert sigs[4].args == (job_id,)
+
     assert sigs[5].task == 'etl.render_tabela_score'
     assert sigs[5].args == (job_id, 'DIST CHAIN', 2026)
 
     assert sigs[6].task == 'etl.render_mapa_calor'
     assert sigs[6].args == (job_id, 'DIST CHAIN', 2026)
-
+    
     mock_chain.return_value.delay.assert_called_once()
 
 

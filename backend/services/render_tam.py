@@ -56,7 +56,6 @@ async def render_grafico_barras_tam(job_id: str) -> Path:
 
     plt.xticks(rotation=45, ha='right', fontsize=9)
 
-    # Adiciona os valores (KM) acima das barras
     for bar in bars:
         yval = bar.get_height()
         ax.text(bar.get_x() + bar.get_width()/2, yval + 0.1, f'{yval:.2f}', 
@@ -94,9 +93,9 @@ if __name__ == "__main__":
             
             try:
                 resultado = await render_grafico_barras_tam(TEST_JOB_ID)
-                print(f"✅ Sucesso! Gráfico gerado em: {resultado.absolute()}")
+                print(f"Sucesso! Gráfico gerado em: {resultado.absolute()}")
             except Exception as e:
-                print(f"❌ Erro ao gerar gráfico: {e}")
+                print(f"Erro ao gerar gráfico: {e}")
                 import traceback
                 traceback.print_exc()
 

@@ -37,10 +37,6 @@ async def test_trigger_pipeline_flow_data_integrity(session, mongo_db, triggered
     assert job_doc['status'] == "started"
 
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock
-from services.render_tam import render_grafico_barras_tam
-
 @pytest.mark.asyncio
 async def test_render_grafico_barras_tam_sucesso(monkeypatch):
     mock_data = [{

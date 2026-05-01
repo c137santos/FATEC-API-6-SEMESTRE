@@ -250,3 +250,10 @@ def pytest_sessionstart(session):
     os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')
     os.environ.setdefault('MAIL_PORT', '587')
     os.environ.setdefault('MAIL_FROM', 'admin@test.com')
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_celery_test_env():
+    os.environ["CELERY_BROKER_URL"] = "memory://"
+    os.environ["CELERY_RESULT_BACKEND"] = "cache+memory://"    
+    os.environ["CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP"] = "False"
+    os.environ["CELERY_BROKER_CONNECTION_MAX_RETRIES"] = "1"

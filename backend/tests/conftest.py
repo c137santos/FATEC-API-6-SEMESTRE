@@ -1,27 +1,23 @@
-import uuid
 import os
-import logging
+import uuid
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import factory
 import pytest
 import pytest_asyncio
-from unittest.mock import patch, MagicMock
 from httpx import ASGITransport, AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
-from sqlalchemy import text
 from testcontainers.postgres import PostgresContainer
-from datetime import datetime
 
 from backend.app import app
-from motor.motor_asyncio import AsyncIOMotorClient
-from backend.database import get_session, get_mongo_async_database
 from backend.core import models as _models  # noqa: F401
-from backend.security import get_password_hash
 from backend.core.models import User, table_registry
-
-
-logger = logging.getLogger(__name__)
+from backend.database import get_mongo_async_database, get_session
+from backend.security import get_password_hash
 
 
 class UserFactory(factory.Factory):
@@ -49,7 +45,8 @@ async def triggered_job(session, setup_distribuidora):
         "url": "https://link-da-aneel.com/dados.gdb.zip"
     }
 
-    with patch("httpx.AsyncClient.get", return_value=mock_response):
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = mock_response
         result = await trigger_pipeline_flow(
             session=session,
             distribuidora_id=dist_data["id"],
@@ -71,7 +68,6 @@ def postgres_container():
         dbname = postgres.dbname
         
         url_sa = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{dbname}"
-        url_pure = f"postgresql://{user}:{password}@{host}:{port}/{dbname}"
         
         os.environ["DATABASE_URL"] = url_sa
         os.environ["POSTGRES_HOST"] = host
@@ -219,7 +215,7 @@ async def setup_test_data(session, mongo_db, setup_distribuidora):
     await mongo_db['jobs'].insert_one({
         "job_id": job_id,
         "distribuidora_id": dist["id"],
-        "dist_name": dist["nome"],
+        "dist_name": dist["dist_name"],
         "ano_gdb": ano,
         "status": "completed",
         "created_at": datetime.utcnow()

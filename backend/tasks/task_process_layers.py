@@ -1012,20 +1012,44 @@ def task_finalizar(
 
         try:
 
-            job_info = _get_collection('jobs').find_one({'job_id': job_id}) 
-
-            dist_name = job_info.get('dist_name')
-            date_gdb = job_info.get('ano_gdb')
-
-            metadados_dist = {
-                "id": distribuidora_id,
-                "dist_name": dist_name,
-                "date_gdb": int(date_gdb)
-            }
-
-            logger.info('[task_finalizar] Disparando cálculo automático do TAM. job_id=%s', job_id)
+            job_info = _get_collection('jobs').find_one({'job_id': job_id})
             
-            task_calcular_tam.delay(job_id=job_id, metadados_dist=metadados_dist)
+            if not job_info:
+                logger.error(
+                    '[task_finalizar] Metadados do job não encontrados para disparar TAM. job_id=%s',
+                    job_id,
+                )
+            else:
+                dist_name = job_info.get('dist_name')
+                date_gdb = job_info.get('ano_gdb')
+
+                if not dist_name:
+                    logger.error(
+                        '[task_finalizar] Campo obrigatório ausente para disparar TAM: dist_name. job_id=%s',
+                        job_id,
+                    )
+                elif date_gdb is None:
+                    logger.error(
+                        '[task_finalizar] Campo obrigatório ausente para disparar TAM: ano_gdb. job_id=%s',
+                        job_id,
+                    )
+                else:
+                    try:
+                        date_gdb_int = int(date_gdb)
+                    except (TypeError, ValueError):
+                        logger.error(
+                            '[task_finalizar] Campo ano_gdb inválido para disparar TAM. job_id=%s ano_gdb=%r',
+                            job_id,
+                            date_gdb,
+                        )
+                    else:
+                        metadados_dist = {
+                            "id": distribuidora_id,
+                            "dist_name": dist_name,
+                            "date_gdb": date_gdb_int
+                        }
+                        logger.info('[task_finalizar] Disparando cálculo automático do TAM. job_id=%s', job_id)
+                        task_calcular_tam.delay(job_id=job_id, metadados_dist=metadados_dist)
 
         except Exception as tam_exc:
             logger.error('[task_finalizar] Falha ao disparar task do TAM. job_id=%s erro=%s', job_id, tam_exc)

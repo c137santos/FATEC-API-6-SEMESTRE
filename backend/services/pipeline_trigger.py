@@ -15,7 +15,7 @@ from backend.tasks.task_render_criticidade import (
     task_render_mapa_calor,
     task_render_tabela_score,
 )
-from backend.services.etl_download import enqueue_download_gdb
+from backend.tasks.task_tam import task_calcular_tam
 from backend.database import get_mongo_async_db
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
@@ -124,7 +124,11 @@ async def init_tam_metadata(
 ) -> None:
     """Inicializa os dados do Job no MongoDB para que as tasks futuras tenham acesso."""
     
-    stmt = select(Distribuidora.dist_name).where(Distribuidora.id == distribuidora_id)
+    stmt = select(Distribuidora.dist_name).where(
+        Distribuidora.id == distribuidora_id,
+        Distribuidora.date_gdb == ano,
+    )
+
     result = await session.execute(stmt)
     dist_name = result.scalar_one_or_none()
 
@@ -167,6 +171,11 @@ async def trigger_pipeline_flow(
         task_score_criticidade.si(job_id, dist_name, ano),
         task_calculate_pt_pnt.si(job_id, distribuidora_id),
         task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano),
+        task_calcular_tam.si(job_id, {
+            "id": distribuidora_id, 
+            "dist_name": dist_name, 
+            "date_gdb": ano
+        }),       
         task_render_tabela_score.si(job_id, dist_name, ano),
         task_render_mapa_calor.si(job_id, dist_name, ano),
     ).delay()

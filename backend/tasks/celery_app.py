@@ -21,6 +21,7 @@ celery_app = Celery(
         'backend.tasks.task_load_dec_fec',
         'backend.tasks.task_calculate_pt_pnt',
         'backend.tasks.task_criticidade',
+        'backend.tasks.task_tam',
         'backend.tasks.task_render_criticidade',
     ],
 )

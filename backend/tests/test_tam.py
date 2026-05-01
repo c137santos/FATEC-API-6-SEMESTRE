@@ -1,6 +1,7 @@
+from unittest.mock import patch
+
 import pytest
 from sqlalchemy import text
-from unittest.mock import patch
 
 
 @pytest.fixture(autouse=True)
@@ -8,9 +9,8 @@ def mock_external_deps(mongo_db):
     """
     Isola o teste de dependências externas.
     """
-    with patch("backend.database.get_mongo_async_db", return_value=mongo_db), \
+    with patch("backend.services.pipeline_trigger.get_mongo_async_db", return_value=mongo_db), \
          patch("backend.services.etl_download.enqueue_download_gdb") as mock_enqueue:
-        
         yield mock_enqueue
 
 

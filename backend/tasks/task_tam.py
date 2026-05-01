@@ -1,9 +1,10 @@
-from backend.tasks.celery_app import celery_app
-from backend.services.calculo_tam import calcular_extensao_tam, salvar_resultados_tam
-from backend.database import get_mongo_sync_db
-from core.schemas import DistributorMetadata
 import logging
 from datetime import datetime
+
+from backend.database import get_mongo_sync_db
+from backend.services.calculo_tam import calcular_extensao_tam, salvar_resultados_tam
+from backend.tasks.celery_app import celery_app
+from core.schemas import DistributorMetadata
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +32,11 @@ def task_calcular_tam(job_id: str, metadados_dist: dict):
     
     db.TAM_status.update_one(
         {"job_id": job_id},
-        {"$set": {"status": "completed", "finished_at": datetime.now()}}
+        {"$set": {
+            "status": "completed", 
+            "finished_at": datetime.now()
+        }},
+        upsert=True 
     )
     
     return {"job_id": job_id, "status": "success"}

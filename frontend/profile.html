@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil - Raichu</title>
+  <link rel="stylesheet" href="./style.css?v=6" />
+</head>
+<body>
+  <div v-scope class="app" @vue:mounted="loadUser()">
+
+    <!-- MODAL DE EXCLUSÃO -->
+    <div v-if="showDeleteUserModal" class="modal-backdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; font-family: Arial, Helvetica, sans-serif;">
+      <div class="modal-content" style="background: #20201F; border: 1px solid rgba(221, 114, 48, 0.4); padding: 32px; border-radius: 8px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <!-- Ícone de Atenção (Vermelho) -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#da0404" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <h2 style="color: #da0404; font-size: 24px; margin-bottom: 16px; font-weight: bold;">Atenção!</h2>
+        <p style="color: #bbb; font-size: 14px; margin-bottom: 24px;">Deseja realmente excluir sua conta? Essa ação não tem volta.</p>
+        
+        <div style="display: flex; gap: 16px;">
+          <button @click="showDeleteUserModal = false" class="login-btn" style="flex: 1; padding: 10px; border: 1px solid #353535; background: transparent; color: #FFF; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit;">Cancelar</button>
+          <button @click="deleteUser" class="login-btn" style="flex: 1; background: #da0404; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit;">Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL DE ALERTA -->
+    <div v-if="showAlertModal" class="modal-backdrop" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; font-family: Arial, Helvetica, sans-serif;">
+      <div class="modal-content" style="background: #20201F; border: 1px solid rgba(221, 114, 48, 0.4); padding: 32px; border-radius: 8px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        
+        <!-- Ícone dinâmico -->
+        <svg v-if="alertType === 'error'" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#da0404" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+
+        <svg v-if="alertType === 'success'" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+
+        <h2 :style="{ color: alertType === 'error' ? '#da0404' : '#DD7230' }" style="font-size: 24px; margin-bottom: 16px; font-weight: bold;">{{ alertTitle }}</h2>
+        <p style="color: #bbb; font-size: 14px; margin-bottom: 24px;">{{ alertMessage }}</p>
+        
+        <button @click="closeAlert" class="login-btn" style="width: 100%; background: #353535; border: 1px solid #353535; color: white; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit;">OK</button>
+      </div>
+    </div>
+
+    <!-- BARRA LATERAL -->
+    <aside class="sidebar">
+      <nav class="nav">
+        <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">PERFIL</button>
+        <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'documents' }" @click="go('documents')">
+          <img class="nav-icon" src="./assets/docsidebaricon.svg">DOCUMENTOS
+        </button>
+        <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <!-- TELA DE PERFIL -->
+      <div class="screen-wrapper" style="align-items: flex-start; width: 100%; max-width: 900px; margin: 0 auto; font-family: Arial, Helvetica, sans-serif;">
+        <div class="perfil-header" style="margin-bottom: 30px;">
+          <h1 style="color: #FFF; font-size: 28px; margin-bottom: 8px;">Perfil</h1>
+          <p style="color: #bbb; font-size: 14px;">Gerencie suas informações pessoais e as configurações da sua conta.</p>
+        </div>
+
+        <div class="perfil-grid">
+          <!-- Coluna Esquerda -->
+          <div class="perfil-col-left">
+            <!-- Segurança View -->
+            <div class="card" style="width: 100%;">
+              <div class="field-label" style="color: #DD7230;">SEGURANÇA</div>
+              <div style="margin-top: 10px;">
+                <div style="font-size: 10px; color: #aaa; margin-bottom: 4px; text-transform: uppercase;">SENHA</div>
+                <div style="color: #FFF; font-size: 14px;">••••••••••••</div>
+              </div>
+            </div>
+
+            <!-- Dados Pessoais View -->
+            <div class="card" style="width: 100%;">
+              <div class="field-label" style="color: #DD7230;">DADOS PESSOAIS</div>
+              <div style="margin-top: 10px; margin-bottom: 16px;">
+                <div style="font-size: 10px; color: #aaa; margin-bottom: 4px; text-transform: uppercase;">NOME COMPLETO</div>
+                <div style="color: #FFF; font-size: 14px;">{{ currentUser.username || '-' }}</div>
+              </div>
+              <div>
+                <div style="font-size: 10px; color: #aaa; margin-bottom: 4px; text-transform: uppercase;">ENDEREÇO DE EMAIL</div>
+                <div style="color: #FFF; font-size: 14px;">{{ currentUser.email || '-' }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna Direita -->
+          <div class="perfil-col-right">
+            <form class="card" style="width: 100%;" @submit.prevent="updateUser">
+              <div class="field-label" style="color: #DD7230; margin-bottom: 16px;">ATUALIZAR DETALHES PESSOAIS</div>
+              
+              <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                  <label style="font-size: 9px; color: #FFF; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block;">ATUALIZAR NOME</label>
+                  <input type="text" v-model="editUser.username" class="perfil-input" required>
+                </div>
+                <div style="flex: 1;">
+                  <label style="font-size: 9px; color: #FFF; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block;">ATUALIZAR EMAIL</label>
+                  <input type="email" v-model="editUser.email" class="perfil-input" required>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px; position: relative;">
+                <label style="font-size: 9px; color: #FFF; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block;">SENHA ATUAL *</label>
+                <input type="password" v-model="editUser.currentPassword" class="perfil-input" placeholder="Preencha sua senha atual" required>
+              </div>
+
+              <div style="margin-bottom: 24px; position: relative;">
+                <label style="font-size: 9px; color: #FFF; text-transform: uppercase; font-weight: bold; margin-bottom: 6px; display: block;">NOVA SENHA</label>
+                <input type="password" v-model="editUser.newPassword" class="perfil-input" placeholder="Deixe em branco para não alterar a senha atual">
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 16px; align-items: center;">
+                <a href="#" style="color: #FFF; font-size: 12px; text-decoration: none;" @click.prevent="resetEditForm">Cancelar</a>
+                <button type="submit" class="login-btn" style="width: auto; padding: 10px 24px;">Salvar Alterações</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Zona de perigo -->
+        <div style="width: 100%; border: 1px solid rgba(221, 114, 48, 0.4); border-radius: 8px; padding: 20px; background: rgba(0, 15, 8, 0.5); margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div class="field-label" style="color: #DD7230; margin-bottom: 4px; padding: 0;">ZONA DE PERIGO</div>
+            <p style="color: #bbb; font-size: 11px;">Remove permanentemente sua conta e todos os dados associados. Essa ação não pode ser desfeita.</p>
+          </div>
+          <button @click="showDeleteUserModal = true" style="background: none; border: 1px solid #da0404; color: #da0404; padding: 10px 24px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: inherit; font-weight: bold; transition: all 0.2s;">Deletar Conta</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
+    const app = {
+      screen: 'perfil',
+      showDeleteUserModal: false,
+      showAlertModal: false,
+      alertTitle: '',
+      alertMessage: '',
+      alertType: 'success',
+      alertCallback: null,
+      currentUser: { username: '', email: '', id: '' },
+      editUser: { username: '', email: '', currentPassword: '', newPassword: '' },
+
+      showAlert(title, message, type = 'success', callback = null) {
+        this.alertTitle = title;
+        this.alertMessage = message;
+        this.alertType = type;
+        this.alertCallback = callback;
+        this.showAlertModal = true;
+      },
+
+      closeAlert() {
+        this.showAlertModal = false;
+        if (this.alertCallback) {
+          this.alertCallback();
+          this.alertCallback = null;
+        }
+      },
+
+      parseJwt(token) {
+        try {
+          return JSON.parse(atob(token.split('.')[1]))
+        } catch (e) {
+          return null
+        }
+      },
+
+      async loadUser() {
+        const token = localStorage.getItem('access_token')
+        if (!token) return
+        const payload = this.parseJwt(token)
+        if (!payload || !payload.sub) return
+
+        try {
+          const res = await fetch('http://localhost:8000/users/', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+          if (!res.ok) return
+          const data = await res.json()
+          
+          const users = Array.isArray(data) ? data : (data.users || []);
+          const user = users.find(u => u.email === payload.sub || u.username === payload.sub)
+          if (user) {
+            this.currentUser.username = user.username
+            this.currentUser.email = user.email
+            this.currentUser.id = user.id
+            this.resetEditForm()
+          }
+        } catch(e) {
+          console.error('Erro ao carregar usuário:', e)
+        }
+      },
+
+      resetEditForm() {
+        this.editUser = {
+          username: this.currentUser.username,
+          email: this.currentUser.email,
+          currentPassword: '',
+          newPassword: ''
+        }
+      },
+
+      async updateUser() {
+        const token = localStorage.getItem('access_token')
+        if (!token || !this.currentUser.id) return
+
+        if (!this.editUser.currentPassword) {
+          this.showAlert('Atenção', 'Por favor, informe a senha atual para salvar alterações.', 'error')
+          return
+        }
+
+        const passwordToSubmit = this.editUser.newPassword ? this.editUser.newPassword : this.editUser.currentPassword
+
+        try {
+          const res = await fetch(`http://localhost:8000/users/${this.currentUser.id}`, {
+            method: 'PUT',
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: this.editUser.username,
+              email: this.editUser.email,
+              password: passwordToSubmit
+            })
+          })
+
+          if (res.ok) {
+            this.showAlert('Sucesso!', 'Perfil atualizado com sucesso! Por segurança, faça login novamente com os novos dados.', 'success', () => {
+              localStorage.removeItem('access_token')
+              window.location.href = 'login.html'
+            })
+          } else {
+            const data = await res.json()
+            this.showAlert('Erro ao Atualizar', data.detail || 'Impossível atualizar o perfil', 'error')
+          }
+        } catch(e) {
+          console.error(e)
+          this.showAlert('Erro de Conexão', 'Não foi possível conectar ao servidor para atualizar.', 'error')
+        }
+      },
+
+      async deleteUser() {
+
+        const token = localStorage.getItem('access_token')
+        if (!token || !this.currentUser.id) return
+
+        try {
+          const res = await fetch(`http://localhost:8000/users/${this.currentUser.id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
+          
+          if (res.ok) {
+            this.showDeleteUserModal = false;
+            this.showAlert('Conta Excluída', 'Sua conta foi deletada com sucesso.', 'success', () => {
+              localStorage.removeItem('access_token')
+              window.location.href = 'login.html'
+            })
+          } else {
+            const data = await res.json()
+            this.showDeleteUserModal = false;
+            this.showAlert('Erro ao Excluir', data.detail || 'Falha ao deletar conta', 'error')
+          }
+        } catch(e) {
+          console.error(e)
+          this.showDeleteUserModal = false;
+          this.showAlert('Erro de Conexão', 'Não foi possível conectar ao servidor para excluir a conta.', 'error')
+        }
+      },
+
+      go(tela) {
+        if (tela === 'login') {
+          localStorage.removeItem('access_token')
+          window.location.href = 'login.html'
+        } else if (tela === 'documents') {
+          window.location.href = 'hello.html'
+        }
+      }
+    }
+    
+    createApp(app).mount()
+  </script>
+</body>
+</html>

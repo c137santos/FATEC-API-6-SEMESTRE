@@ -97,7 +97,7 @@
 
     async gerarPDF() {
       const payload = {
-        dist_id: this.filters.tipo,  // agora filters.tipo guarda o nome
+        dist_id: this.filters.tipo,
         ano: this.filters.ano
       }
       if (!payload.dist_id || !payload.ano) {
@@ -123,13 +123,11 @@
     go(tela) { this.screen = tela }
   })
 
-  // carrega distribuidoras
   fetch('http://localhost:8000/dist/distributors', {
     headers: { accept: 'application/json' }
   })
   .then(r => r.json())
   .then(data => {
-    // deduplica por NOME (não por id)
     const mapa = new Map()
     data.forEach(r => {
       if (!mapa.has(r.nome)) mapa.set(r.nome, r.nome)
@@ -138,7 +136,6 @@
     store.registros = data
     store.distOptions = Array.from(mapa, ([nome]) => ({ id: nome, nome }))
 
-    // anos iniciais (todos)
     const anos = new Set()
     data.forEach(r => anos.add(r.ano))
     store.anoOptions = Array.from(anos).sort((a, b) => b - a)
@@ -146,8 +143,16 @@
     console.log('Distribuidoras únicas:', store.distOptions.length)
   })
 
-  // monta passando o store como escopo
-  createApp(store).mount()
-</script>
+      go(tela) {
+        if (tela === 'login') {
+          localStorage.removeItem('access_token')
+          window.location.href = 'login.html'
+        } else if (tela === 'perfil') {
+          window.location.href = 'profile.html'
+        }
+      }
+    }
+    createApp(store).mount()
+  </script>
 </body>
 </html>

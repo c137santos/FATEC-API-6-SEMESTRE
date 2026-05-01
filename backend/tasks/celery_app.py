@@ -19,6 +19,8 @@ celery_app = Celery(
         'backend.tasks.task_descompact_gdb',
         'backend.tasks.task_process_layers',
         'backend.tasks.task_load_dec_fec',
+        'backend.tasks.task_criticidade',
+        'backend.tasks.task_render_criticidade',
     ],
 )
 

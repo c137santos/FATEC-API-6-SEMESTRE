@@ -1,4 +1,5 @@
 import logging
+from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -9,12 +10,16 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+_ANO_MIN = 2015
+_ANO_MAX = date.today().year
+_DIST_MIN_LEN = 2
+
 
 @router.get('/criticidade', response_model=CriticidadeResponse)
 async def calcular_criticidade_endpoint(
     ano: int = Query(..., description='Ano de análise'),
     distribuidora: str = Query(..., description='Nome da distribuidora'),
-):
+) -> CriticidadeResponse:
     """
     Calcula o score de criticidade para uma distribuidora e ano específicos.
 
@@ -29,29 +34,36 @@ async def calcular_criticidade_endpoint(
         HTTPException: Se não houver dados para os parâmetros fornecidos
     """
     try:
-        # Validar parâmetros
-        if ano < 2000 or ano > 2030:
+        if ano < _ANO_MIN or ano > _ANO_MAX:
             raise HTTPException(
-                status_code=400, detail='Ano deve estar entre 2000 e 2030'
+                status_code=400,
+                detail=f'Ano deve estar entre {_ANO_MIN} e {_ANO_MAX}',
             )
 
-        if not distribuidora or len(distribuidora.strip()) < 2:
+        if not distribuidora or len(distribuidora.strip()) < _DIST_MIN_LEN:
             raise HTTPException(
                 status_code=400,
                 detail='Nome da distribuidora deve ter pelo menos 2 caracteres',
             )
 
-        # Calcular score de criticidade
-        resultado = await calcular_score_criticidade(ano, distribuidora.strip())
+        resultado = await calcular_score_criticidade(
+            ano, distribuidora.strip()
+        )
 
         if resultado is None:
             raise HTTPException(
                 status_code=404,
-                detail=f"Dados não encontrados para distribuidora '{distribuidora}' no ano {ano}",
+                detail=(
+                    f'Dados não encontrados para distribuidora'
+                    f" '{distribuidora}' no ano {ano}"
+                ),
             )
 
         logger.info(
-            f'Score retornado: {resultado["score_criticidade"]:.2f} para {distribuidora} em {ano}'
+            'Score retornado: %.2f para %s em %s',
+            resultado['score_criticidade'],
+            distribuidora,
+            ano,
         )
 
         return CriticidadeResponse(
@@ -66,7 +78,8 @@ async def calcular_criticidade_endpoint(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f'Erro no endpoint de criticidade: {e}')
+        logger.error('Erro no endpoint de criticidade: %s', e)
         raise HTTPException(
-            status_code=500, detail='Erro interno ao processar solicitação'
+            status_code=500,
+            detail='Erro interno ao processar solicitação',
         )

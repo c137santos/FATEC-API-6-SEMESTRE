@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meu App</title>
-  <link rel="stylesheet" href="./style.css?v=7" />
+  <link rel="stylesheet" href="./style.css?v=10" />
 <body>
   <div v-scope class="app">
     <aside class="sidebar">
@@ -14,6 +14,21 @@
         <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR</button>
       </nav>
     </aside>
+
+    <div v-if="showSuccessModal" class="modal-backdrop">
+      <div class="modal">
+        <div class="modal-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2 style="color: #DD7230; font-size: 24px; margin-bottom: 16px; font-weight: bold;"> Sucesso! </h2>
+          <p> Seu relatório foi compilado com sucesso e</p>
+          <p> enviado para o e-mail cadastrado. </p>
+          <button class="modal-btn" @click="closeSuccessModal">Ok</button>
+        </div>
+      </div>
+    </div>
 
     <main class="main">
       <div class="screen-wrapper" v-if="screen === 'documents'">
@@ -86,6 +101,11 @@
     registros: [],
     distOptions: [],
     anoOptions: [],
+    showSuccessModal: false,
+
+    closeSuccessModal() {
+    this.showSuccessModal = false
+   },
 
     selecionarDist() {
       store.filters.ano = ''
@@ -117,7 +137,7 @@
         let data = null
         try { data = await res.json() } catch { data = await res.text() }
         console.log('Resposta de /trigger:', data)
-        alert('Requisição enviada com sucesso.')
+        store.showSuccessModal = true
       } catch (e) {
         console.error('Erro ao chamar /trigger', e)
         alert('Erro ao iniciar a geração.')

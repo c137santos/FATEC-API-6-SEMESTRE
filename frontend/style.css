@@ -156,10 +156,12 @@ select:hover {
   font-family: Arial;
   text-transform: uppercase;
   font-weight: 800;
+  border: 1px solid #DD7230;
 }
 
 .primary-btn:hover{
   border-color: #DD7230;
+  opacity: 0.9;
 }
 
 .nav-item {
@@ -241,6 +243,61 @@ select:hover {
   margin-right: 8px;
 }
 
+.modal-backdrop{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  padding: 32px;
+  border-radius: 4px;
+  background: #20201F;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-content{
+  color: #fff;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+}
+
+.modal-btn{
+  display: flex;
+  width: 100%;
+  padding: 10px 0;
+  justify-content: center;
+  align-items: center;
+  align-self: stretch;
+  border-radius: 2px;
+  background: #DD7230;
+  color: #FFF;
+  font-size: 10px;
+  font-family: Arial;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 32px;
+  border: 1px solid #DD7230;
+}
+
+.modal-btn:hover{
+  border-color: #DD7230;
+  opacity: 0.9;
+}
 
 /* ------------------------- */
 /*      RESPONSIVIDADE       */

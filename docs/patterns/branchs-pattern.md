@@ -1,63 +1,63 @@
-# Estrutura de Branches
+# Branching Structure
 
 ---
 
-## Visão Geral
+## Overview
 
-Este documento descreve a estratégia de branches utilizando Git Flow, adaptado para integração com GitHub Projects.
-
----
-
-## Estrutura de Branches
-
-### main
-- Representa o código pronto para produção
-- Deve conter apenas commits estáveis
+This document outlines the branching strategy using Git Flow, tailored for integration with GitHub Projects.
 
 ---
 
-### dev
-- Branch de integração das novas funcionalidades
-- Contém o histórico completo do projeto
-- Pode incluir features ainda não publicadas
+## Branch Structure
+
+### Main
+- Represents production-ready code  
+- Must contain only stable commits  
 
 ---
 
-### feature branches
-- Criadas a partir da branch `dev`
-- Utilizadas para desenvolvimento de novas funcionalidades
-- Após conclusão, devem ser mergeadas novamente na `dev`
+### Dev
+- Integration branch for new features  
+- Contains the complete project history  
+- May include features that are not yet released  
 
 ---
 
-## Regras de Nomenclatura
-
-O nome da branch deve obrigatoriamente referenciar o ID da tarefa (ticket/issue), garantindo rastreabilidade.
+### Feature branches
+- Created from the `dev` branch  
+- Used for developing new functionalities  
+- Once completed, they must be merged back into `dev`  
 
 ---
 
-### Padrão Geral
+## Naming Conventions
+
+Branch names must include the task ID (ticket/issue) to ensure traceability.
+
+---
+
+### General Pattern
 
 `[ticket-id]-[short-task-title]`
 
-**Exemplos:**
-- `pk-32-download-gdb`
-- `pk-15-create-user-auth`
+**Examples:**
+- `pk-32-download-gdb`  
+- `pk-15-create-user-auth`  
 
 ---
 
-### Branches de Estudo/Pesquisa (Spike)
+### Research/Study Branches (Spike)
 
 `spike-[us-id]-[us-title]`
 
-**Exemplo:**
-- `spike-us-01-download-pdf`
+**Example:**
+- `spike-us-01-download-pdf`  
 
 ---
 
-## Diretrizes
+## Guidelines
 
-- Substituir espaços por hífens (`-`)
-- Não utilizar letras maiúsculas
-- Evitar caracteres especiais
-- Sempre incluir o ID da tarefa na branch
+- Replace spaces with hyphens (`-`)  
+- Do not use uppercase letters  
+- Avoid special characters  
+- Always include the task ID in the branch name  

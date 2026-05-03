@@ -1,68 +1,68 @@
-# Padrão de Commits
+# Commit Pattern
 
-Para garantir um histórico de commits limpo, legível e padronizado, utilizamos uma convenção baseada no Conventional Commits, com adaptação para incluir o ID da issue.
-
----
-
-## Estrutura do Commit
-
-`tipo(id_do_ticket): descrição`
+To ensure a clean, readable, and consistent commit history, we follow a convention based on Conventional Commits, adapted to include the issue ID.
 
 ---
 
-## Partes da Mensagem de Commit
+## Commit Structure
 
-### tipo
-Obrigatório. Indica a natureza da alteração.
-
-Tipos permitidos:
-
-- `feat`: Nova funcionalidade
-- `fix`: Correção de bug
-- `docs`: Alterações na documentação
-- `style`: Formatação sem alteração de lógica
-- `refactor`: Refatoração sem nova funcionalidade ou correção de bug
-- `test`: Adição ou correção de testes
-- `chore`: Mudanças de build, scripts ou ferramentas auxiliares
-- `ci`: Alterações em arquivos de CI
-- `perf`: Melhorias de performance
-- `build`: Mudanças no sistema de build ou dependências
-- `revert`: Reversão de commit
+`type(ticket_id): description`
 
 ---
 
-### id_do_ticket
-- Identificador da issue relacionada
-- Deve estar entre parênteses `()`
+## Commit Message Components
+
+### Type
+Required. Indicates the nature of the change.
+
+**Allowed types:**
+
+- `feat`: New feature  
+- `fix`: Bug fix  
+- `docs`: Documentation changes  
+- `style`: Formatting changes with no impact on logic  
+- `refactor`: Code refactoring without adding features or fixing bugs  
+- `test`: Adding or updating tests  
+- `chore`: Changes to build processes, scripts, or auxiliary tools  
+- `ci`: Changes to CI configuration files  
+- `perf`: Performance improvements  
+- `build`: Changes to build system or dependencies  
+- `revert`: Reverts a previous commit  
 
 ---
 
-### descrição
-- Breve explicação da alteração
-- Escrita em inglês
-- Utilizar letras minúsculas (exceto nomes próprios)
-- Deve ser clara e objetiva
+### ticket_id
+- Identifier of the related issue  
+- Must be enclosed in parentheses `()`  
 
 ---
 
-## Exemplos
+### description
+- Brief explanation of the change  
+- Written in English  
+- Use lowercase letters (except for proper nouns)  
+- Must be clear and concise  
 
-### Nova funcionalidade
+---
+
+## Examples
+
+### New feature
 `feat(#3): add form to create a new user`
 
-### Correção de bug
+### Bug fix
 `fix(#5): fix button alignment on home page`
 
-### Refatoração
+### Refactoring
 `refactor(#12): optimize product search query`
 
 ---
 
-## Boas Práticas
+## Best Practices
 
-- Manter a descrição com no máximo 50 caracteres
-- Utilizar linguagem clara e objetiva
-- Para descrições mais detalhadas:
-  - Adicionar uma linha em branco após o título
-  - Incluir um corpo explicativo
-  - Utilizar linhas com até 72 caracteres
+- Keep the description within a maximum of 50 characters  
+- Use clear and objective language  
+- For more detailed descriptions:  
+  - Add a blank line after the title  
+  - Include an explanatory body  
+  - Use lines with up to 72 characters  

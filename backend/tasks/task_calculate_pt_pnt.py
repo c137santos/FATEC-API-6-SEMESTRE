@@ -13,7 +13,7 @@ MAX_WAIT_RETRIES = 60
 @celery_app.task(
     bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.calculate_pt_pnt'
 )
-def task_calculate_pt_pnt(self, job_id: str, distribuidora_id: str) -> dict:
+def task_calculate_pt_pnt(self, job_id: str, distribuidora_id: str, sig_agente: str, ano: int) -> dict:
     logger.info('[task_calculate_pt_pnt] Inicio. job_id=%s', job_id)
 
     db = get_mongo_sync_db()
@@ -32,6 +32,8 @@ def task_calculate_pt_pnt(self, job_id: str, distribuidora_id: str) -> dict:
     results = calculate_pt_pnt(
         distribuidora_id=distribuidora_id,
         job_id=job_id,
+        sig_agente=sig_agente,
+        ano=ano
     )
 
     logger.info('[task_calculate_pt_pnt] Concluida. job_id=%s', job_id)

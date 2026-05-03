@@ -13,6 +13,8 @@ from backend.services.calculate_pt_and_pnt import (
 
 JOB_ID = 'job-test-123'
 DIST_ID = 'dist-1'
+SIG_AGENTE = 'ENERGISA MS'
+ANO = 2023
 
 
 def _make_ctmt_record(cod_id: str, pt: float, pnt: float, ene: float) -> dict:
@@ -92,7 +94,7 @@ def test_retorna_lista_com_conjunto():
         _patch_mongo(mock_db),
         patch('backend.services.calculate_pt_and_pnt.salvar_pt_pnt'),
     ):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     assert len(resultado) == 1
     item = resultado[0]
@@ -113,7 +115,7 @@ def test_percentuais():
         _patch_mongo(mock_db),
         patch('backend.services.calculate_pt_and_pnt.salvar_pt_pnt'),
     ):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     item = resultado[0]
     assert item['pct_pt'] == pytest.approx(66.6667, rel=1e-3)
@@ -131,7 +133,7 @@ def test_pct_none():
         _patch_mongo(mock_db),
         patch('backend.services.calculate_pt_and_pnt.salvar_pt_pnt'),
     ):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     assert resultado[0]['pct_pt'] is None
     assert resultado[0]['pct_pnt'] is None
@@ -154,7 +156,7 @@ def test_agregacao():
         _patch_mongo(mock_db),
         patch('backend.services.calculate_pt_and_pnt.salvar_pt_pnt'),
     ):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     item = resultado[0]
     assert item['pt_mwh'] == 3.0
@@ -181,7 +183,7 @@ def test_ordenacao():
         _patch_mongo(mock_db),
         patch('backend.services.calculate_pt_and_pnt.salvar_pt_pnt'),
     ):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     assert resultado[0]['conjunto'] == 'Beta'
 
@@ -191,6 +193,6 @@ def test_lista_vazia():
     mock_db.__getitem__.return_value.find_one.return_value = None
 
     with _patch_mongo(mock_db):
-        resultado = calculate_pt_pnt(DIST_ID, JOB_ID)
+        resultado = calculate_pt_pnt(DIST_ID, JOB_ID, SIG_AGENTE, ANO)
 
     assert resultado == []

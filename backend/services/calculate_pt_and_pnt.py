@@ -64,11 +64,14 @@ def _build_results(accumulated: dict, name_by_conj: dict) -> List[Dict]:
     return results
 
 
-def calculate_pt_pnt(distribuidora_id: str, job_id: str) -> List[Dict]:
+def calculate_pt_pnt(distribuidora_id: str, job_id: str, sig_agente: str, ano: int) -> List[Dict]:
     logger.info(
-        '[pt_pnt] Iniciando cálculo. distribuidora_id=%s job_id=%s',
+        '[pt_pnt] Iniciando cálculo. ' 
+        'distribuidora_id=%s job_id=%s sig_agente=%s ano=%d',
         distribuidora_id,
         job_id,
+        sig_agente,
+        ano
     )
     db = get_mongo_sync_db()
 
@@ -135,19 +138,21 @@ def calculate_pt_pnt(distribuidora_id: str, job_id: str) -> List[Dict]:
     logger.info('[pt_pnt] Cálculo concluído. conjuntos=%d', len(results))
 
     salvar_pt_pnt(
-        distribuidora_id=distribuidora_id, job_id=job_id, records=results
+        distribuidora_id=distribuidora_id, job_id=job_id, records=results, sig_agente=sig_agente, ano=ano
     )
     return results
 
 
 def salvar_pt_pnt(
-    distribuidora_id: str, job_id: str, records: List[Dict]
+    distribuidora_id: str, job_id: str, records: List[Dict], sig_agente: str, ano: int
 ) -> None:
     try:
         db = get_mongo_sync_db()
         db['pt_pnt_resultados'].insert_one({
             'distribuidora_id': distribuidora_id,
             'job_id': job_id,
+            'sig_agente': sig_agente,
+            'ano': ano,
             'processed_at': datetime.now(tz=timezone.utc),
             'records': records,
         })

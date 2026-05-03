@@ -18,6 +18,7 @@ from backend.tasks.task_render_criticidade import (
     task_render_mapa_calor,
     task_render_tabela_score,
 )
+from backend.tasks.task_render_pt_and_pnt import task_render_pt_pnt
 from backend.tasks.task_tam import task_calcular_tam
 from backend.tasks.task_render_tam import task_render_grafico_tam
 from backend.database import get_mongo_async_db
@@ -173,7 +174,8 @@ async def trigger_pipeline_flow(
     result = chain(
         task_download_gdb.si(job_id, download_url, distribuidora_id),
         task_score_criticidade.si(job_id, dist_name, ano),
-        task_calculate_pt_pnt.si(job_id, distribuidora_id),
+        task_calculate_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
+        task_render_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
         task_calculate_sam.si(job_id, distribuidora_id, dist_name, ano),
         task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano),
         task_calcular_tam.si(job_id, {

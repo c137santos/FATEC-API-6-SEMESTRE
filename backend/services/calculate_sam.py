@@ -278,6 +278,6 @@ def salvar_sam(
             job_id,
             len(records),
         )
-    except Exception as e:
-        logger.error('[calculate_sam] Erro ao salvar resultados: %s', e)
+    except Exception:
+        logger.error('[calculate_sam] Erro ao salvar resultados.')
         raise

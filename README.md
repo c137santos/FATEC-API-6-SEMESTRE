@@ -1,87 +1,124 @@
 <h1 align="center">
-API 6º Semestre Banco de Dados
+6th Semester Database API
 <br/>
 Thunderstone
 </h1>
 
+
 <h3 align="center">
-  <img src="docs/img/logo-pokemon.png" alt="logo" width="30" style="vertical-align: middle;"> Equipe Pokémon
+  <img src="docs/img/logo-pokemon.png" alt="logo" width="30" style="vertical-align: middle;"> Pokémon Team
 </h3>
 
+
 <p align="center">
-  | <a href ="#desafio"> Desafio</a>  |
-  <a href ="#solucao"> Solução</a>  |
-  <a href ="#backlog"> Backlog do Produto</a>  |
-  <a href ="#dor">DoR</a>  |
-  <a href ="#dod">DoD</a>  |
-  <a href ="#sprint"> Cronograma de Sprints</a>  |
-  <a href ="#tecnologias">Tecnologias</a> |
-  <a href ="#equipe"> Equipe</a> |
+  | <a href ="#desafio"> Challenge</a> |
+  <a href ="#solucao"> Solution</a> |
+  <a href ="#backlog"> Product Backlog</a> |
+  <a href ="#dor">DoR</a> |
+  <a href ="#dod">DoD</a> |
+  <a href ="#padroes"> Project Standards</a> |
+  <a href ="#sprint"> Sprint Schedule</a> |
+  <a href ="#tecnologias">Technologies</a> |
+  <a href ="#equipe"> Team</a> |
 </p>
 
-> Status do Projeto: Em execução
+
+> Project Status: In progress
 >
-> Pasta de Documentação: [docs](docs)
+> Documentation Folder: [docs](docs)
 >
-> Video do Projeto: 🚧
-
-## 🏅 Desafio <a id="desafio"></a>
-
-O desafio proposto consiste na **identificação do potencial de aplicação de sensores de falta em redes de média e alta tensão**, com foco na melhoria da continuidade e qualidade do fornecimento de energia elétrica.
+> Project Video: 🚧
 
 
-## 🏅 Solução <a id="solucao"></a>
+## 🏅 Challenge <a id="desafio"></a>
 
-O objetivo é **dimensionar o tamanho físico e econômico do sistema de distribuição ou subtransmissão de energia**, em uma região específica definida, a fim de avaliar a **potencialidade de mercado da solução da Tecsys**, voltada ao sensoriamento e telemetria das redes elétricas.
+
+Dimension the power distribution system to enable the expansion of Tecsys telemetry technologies. The main obstacle to be overcome is the standardization of calculations and the high complexity of handling ANEEL’s vast data volume.
+
+
+## 🏅 Solution <a id="solucao"></a>
+
+
+The solution consists of developing a platform capable of processing ANEEL’s massive and unstructured data and standardizing the loss calculation. The system translates this data into strategic visualizations, such as heatmaps and rankings, which geographically highlight the most critical sections of the power grid.
+
 
 ---
 
-## 📋 Backlog do Produto <a id="backlog"></a>
 
-| Rank | Prioridade | User Story | Story Points | Sprint | Requisito do Cliente | Status |
-| :--: | :--------: | ---------- | :----------: | :----: | :------------------: | :----: |
-| 1 |  Alta | Como um consultor comercial/técnico da Tecsys, eu quero visualizar uma tabela de classificação calculando o Índice de Criticidade (desvio percentual de DEC e FEC com base nos limites da ANEEL) de cada conjunto elétrico, para que eu possa identificar e priorizar rapidamente quais regiões possuem a pior eficiência estrutural. | 18 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | |
-| 2 |  Alta | Como um membro do time comercial/técnico, eu quero visualizar um gráfico de barras ordenado pelos conjuntos elétricos com maior índice SAM, para que eu saiba rapidamente quais regiões têm prioridade máxima de implantação de sensores. | 10 | 1 |  [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) |  |
-| 3 |  Alta | Como um membro do time comercial/técnico, eu quero visualizar um gráfico de barras empilhadas que compare o volume absoluto (em MWh) das Perdas Técnicas (PT) e Não Técnicas (PNT) de cada conjunto elétrico, para evidenciar a magnitude das falhas estruturais da rede. | 10 |1  |  [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | |
-| 4 |  Alta | Como um consultor comercial/técnico da Tecsys, eu quero visualizar um ranking com os 10 conjuntos elétricos com maior extensão de média tensão (TAM), para demonstrar os pontos de maior vulnerabilidade operacional. | 12 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-TAM`](process/requisitos.md#rf2-analytics-tam---dimensionamento-físico-tam) |  |
-| 5 |  Média | Como um consultor comercial/técnico da Tecsys, eu quero visualizar um mapa de calor georreferenciado indicando os circuitos mais críticos com base no Índice de Criticidade, para justificar investimentos em sensores inteligentes. | 8 | 2 | [`RF4-MAPS-HEATMAP`](process/requisitos.md#rf4-maps-heatmap---mapas-de-calor-e-polígonos) | |
-| 6 |  Média | Como um usuário do sistema, eu quero dar consentimento sobre o uso dos meus dados, garantir anonimização e ser notificado em caso de incidentes, para assegurar conformidade com a LGPD. |  | 2 | [`RNF3-SEC-LGPD`](process/requisitos.md#rnf3-sec-lgpd---privacidade-e-anonimização) |  |
-| 7 |  Média | Como gestor de segurança, eu quero que o sistema registre logs detalhados de acesso e manipulação de dados, para garantir auditoria e responsabilização. |  | 2 | [`RNF3-SEC-AUDIT`](process/requisitos.md#rnf3-sec-audit---rastreabilidade-logs) |  |
-| 8 |  Baixa | Como um usuário do sistema, eu quero criar conta, fazer login e gerenciar meus dados básicos, para acessar a plataforma com autonomia. |  | 3 | [`RF5-AUTH-CRUD`](process/requisitos.md#rf5-auth-crud---criação-de-conta-e-login) |  |
-| 9 |  Baixa | Como um consultor comercial/técnico da Tecsys, eu quero uma análise preditiva que recomende locais com maior risco de falhas e explique o motivo, para embasar propostas técnicas de instalação de sensores. |  | 3  | [`RF3-PREDICT-API`](process/requisitos.md#rf3-predict-api---api-de-aconselhamento-machine-learning) |  |
+## 📋 Product Backlog <a id="backlog"></a>
+
+
+| Rank | Priority | User Story | Story Points | Sprint | Client Requirement | Status |
+| :--: | :------: | ---------- | :----------: | :----: | :----------------: | :----: |
+| 1 | High | As a Tecsys sales/technical consultant, I want to view a ranking table that calculates the Criticality Index (percentage deviation of DEC and FEC based on ANEEL limits) for each electrical set, so that I can quickly identify and prioritize which regions have the worst structural efficiency. | 18 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | ✅|
+| 2 | High | As a member of the sales/technical team, I want to view a bar chart ordered by the electrical sets with the highest SAM score, so that I can quickly know which regions have the highest priority for sensor deployment. | 10 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | ✅ |
+| 3 | High | As a member of the sales/technical team, I want to view a stacked bar chart comparing the absolute volume (in MWh) of Technical Losses (PT) and Non-Technical Losses (PNT) for each electrical set, in order to show the magnitude of the grid’s structural issues. | 10 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) | ✅ |
+| 4 | High | As a Tecsys sales/technical consultant, I want to view a ranking of the 10 electrical sets with the greatest medium-voltage extension (TAM), to demonstrate the points with the highest operational vulnerability. | 12 | 1 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-TAM`](process/requisitos.md#rf2-analytics-tam---dimensionamento-físico-tam) | ✅ |
+| 5 | Medium | As a Tecsys sales/technical consultant, I want to view a georeferenced heatmap indicating the most critical circuits based on the Criticality Index, in order to justify investments in smart sensors. | 8 | 2 | [`RF4-MAPS-HEATMAP`](process/requisitos.md#rf4-maps-heatmap---mapas-de-calor-e-polígonos) | ✅|
+| 6 | Medium | As a Tecsys sales consultant, I want to automatically generate the complete analysis of a selected distribution company, so that I can prepare and deliver sales presentations autonomously, without needing to understand or interact with any technical step of the process. |  | 2 | [`RF1-DATA-INGEST`](process/requisitos.md#rf1-data-ingest---ingestão-de-dados-regulatórios)<br>[`RF2-ANALYTICS-CRIT`](process/requisitos.md#rf2-analytics-crit---cálculo-de-criticidade-e-perdas) |  |
+| 7 | Medium | As a Tecsys sales consultant, I want the system to automatically generate a PDF report consolidating the SAM, PT/PNT, TAM, Criticality Index, and Heatmap charts as soon as calculations are completed, so that I have the presentation material ready with no manual action, allowing me to focus on the commercial approach with the utility’s engineer. |  | 2 | [`RF6-EXPORT-PDF`](process/requisitos.md#rf6-export-pdf---geração-de-proposta-comercial-em-pdf) |  |
+| 8 | Medium | As a Tecsys sales consultant, I want exclusive and secure access to the platform using my corporate credentials, so that only authenticated team members can view strategic analyses and reports, and I can manage my account with full autonomy, without depending on technical support. |  | 2 | [`RF5-AUTH-CRUD`](process/requisitos.md#rf5-auth-crud---criação-de-conta-e-login) |  |
+| 9 | Medium | As a Tecsys sales consultant, I want to send the PDF report generated by the platform directly to an email address of my choice with my corporate address already suggested, so that I can easily access the presentation material. |  | 2 | [`RF6-EXPORT-PDF`](process/requisitos.md#rf6-export-pdf---geração-de-proposta-comercial-em-pdf) |  |
+| 10 | Low | As a registered consultant, I want to have clarity and assurance that my personal information is fully protected and will be used solely and exclusively for the platform’s operation, so that I feel confident that my privacy is being fully respected. |  | 3 | [`RNF3-SEC-LGPD`](process/requisitos.md#rnf3-sec-lgpd---privacidade-e-anonimização) |  |
+| 11 | Low | As a Tecsys manager, I want to have a clear history of who accessed, generated, changed, or deleted information within the platform, so that I can understand exactly what happened in case of errors, audits, or suspicious behavior, ensuring protection of our business. |  | 3 | [`RNF3-SEC-AUDIT`](process/requisitos.md#rnf3-sec-audit---rastreabilidade-logs) |  |
+| 12 | Low | As a Tecsys technical consultant, I want the platform to identify trends and predict which sections are most likely to face higher risk of outages and fines in the future, so that I can sell sensors as a preventive solution, helping the client act before problems and financial losses occur. |  | 3 | [`RF3-PREDICT-API`](process/requisitos.md#rf3-predict-api---api-de-aconselhamento-machine-learning) |  |
+
 ---
+
 
 ## 🏃‍ DoR - Definition of Ready
 <a id="dor"></a>
 
-Uma User Story será considerada **pronta para desenvolvimento** quando atender aos seguintes critérios:
 
-- A história possui a narrativa estruturada no formato padrão ("Como um... Eu quero... Para que...")
-- O tamanho da tarefa é viável, podendo ser codificada, testada e entregue dentro de um ciclo único de Sprint.
-- Os cenários de uso (Caminho Feliz) estão descritos passo a passo.
-- Os requisitos não funcionais específicos daquela entrega, como regras de LGPD, geração de logs de auditoria ou tempo de resposta, estão explícitos nos critérios.
-- Caso a história impacte na interface visual, o protótipo, wireframe ou esboço da tela está anexado.
+A User Story will be considered **ready for development** when it meets the following criteria:
+
+
+- The story has its narrative structured in the standard format (“As a... I want... So that...”).
+- Task size is feasible, and it can be coded, tested, and delivered within a single Sprint cycle.
+- Usage scenarios (Happy Path) are described step by step.
+- The non-functional requirements specific to that delivery, such as LGPD rules, audit log generation, or response time, are explicitly stated in the criteria.
+- If the story impacts the UI, the prototype, wireframe, or screen sketch is attached.
+> All acceptance criteria and User Story details can be found in Confluence: [Access US's in Confluence](https://jeanroodrigues.atlassian.net/wiki/spaces/~611d654d4016870069296c0d/folder/20742146?atlOrigin=eyJpIjoiOGRhY2I4NzRjMWVlNDEyYzk0YTc1ZDg0OGE5MDFhYWQiLCJwIjoiYyJ9)
+
 
 
 ## 🏆 DoD - Definition of Done <a id="dod"></a>
 
-* Manual de Usuário
-* Manual da Aplicação
-* Documentação da API (Application Programming Interface)
-* Código completo
-* Vídeos de cada etapa de entrega
+
+* [User Manual](docs/guides/user-guide.md)
+* [Application Manual](docs/guides/application-manual.md)
+* API Documentation (Application Programming Interface)
+* Complete source code
+* Videos for each delivery stage
+
+
+---
+## 📖 Project Standards <a id="padroes"></a>
+
+
+Our versioning standards — including **commit standards, Pull Requests (PR), and branch naming convention** — are centralized in our Confluence workspace. To check the guides, rules, or align with team practices, access the link:
+
+
+> 🔗 **[Access Commit, PR and Branch Standards in Confluence](https://jeanroodrigues.atlassian.net/wiki/x/BID5)**
+
 
 ---
 
-## 📅 Cronograma de Sprints <a id="sprint"></a>
 
-| Sprint          |    Período    | Documentação                                     | Vídeo Entrega                                     |
-| --------------- | :-----------: | ------------------------------------------------ | ------------------------------------------------ |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 |[doc](https://github.com/c137santos/FATEC-API-6-SEMESTRE/blob/main/process/sprints-backlog/sprint-1.md)| [video](https://drive.google.com/file/d/14Rk7tpzycikkkxXpeZZ4nF5BHbvCanvW/view?usp=drive_link)
-| 🔖 **SPRINT 2** | 13/04 - 03/05 |🚧||
-| 🔖 **SPRINT 3** | 11/05 - 31/05 |🚧 ||
+## 📅 Sprint Schedule <a id="sprint"></a>
 
-## 💻 Tecnologias <a id="tecnologias"></a>
+
+| Sprint          |   Period    | Documentation                                     | Delivery Video                                      |
+| --------------- | :---------: | ------------------------------------------------- | --------------------------------------------------- |
+| 🔖 **SPRINT 1** | 16/03 - 05/04 |[doc](docs/process/sprints-backlog/sprint-1.md)| [video](https://drive.google.com/file/d/14Rk7tpzycikkkxXpeZZ4nF5BHbvCanvW/view?usp=drive_link)
+| 🔖 **SPRINT 2** | 13/04 - 03/05 |[doc](docs/process/sprints-backlog/sprint-2.md)|🚧|
+| 🔖 **SPRINT 3** | 11/05 - 31/05 |🚧 | 🚧 |
+
+---
+
+
+## 💻 Technologies <a id="tecnologias"></a>
+
 
 <div align="">
   <img src="https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi" alt="FastAPI" />
@@ -92,13 +129,18 @@ Uma User Story será considerada **pronta para desenvolvimento** quando atender 
   <img src="https://img.shields.io/badge/Google_Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252" alt="Google Colab" />
 </div>
 
-## 🎓 Equipe <a id="equipe"></a>
+
+---
+
+
+## 🎓 Team <a id="equipe"></a>
+
 
 <div align="center">
   <table>
     <tr>
-      <th>Membro</th>
-      <th>Função</th>
+      <th>Member</th>
+      <th>Role</th>
       <th>Github</th>
       <th>Linkedin</th>
     </tr>
@@ -116,27 +158,30 @@ Uma User Story será considerada **pronta para desenvolvimento** quando atender 
     </tr>
     <tr>
       <td>Isaque de Souza</td>
-      <td>Desenvolvedor</td>
+      <td>Developer</td>
       <td><a href="https://github.com/Isaque-BD"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/isaque-souza-6760b8270/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
       <td>Marília Moraes</td>
-      <td>Desenvolvedora</td>
+      <td>Developer</td>
       <td><a href="https://github.com/marilia-borgo"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/mariliaborgo/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
       <td>Maria Clara Santos</td>
-      <td>Desenvolvedora</td>
+      <td>Developer</td>
       <td><a href="https://github.com/c137santos"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/c137santos/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
     <tr>
       <td>Yan Yamim</td>
-      <td>Desenvolvedor</td>
+      <td>Developer</td>
       <td><a href="https://github.com/YanYamim"><img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"></a></td>
       <td><a href="https://www.linkedin.com/in/yan-yamim-185220278/"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"></a></td>
     </tr>
   </table>
 </div>
+
+
+---

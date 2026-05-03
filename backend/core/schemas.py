@@ -74,3 +74,26 @@ class DistributorResponse(BaseModel):
     id: str
     nome: str
     ano: int
+
+
+class DistributorMetadata(BaseModel):
+    id: str
+    date_gdb: int
+    dist_name: str
+    job_id: str
+
+class TamRequest(BaseModel):
+    job_id: str
+
+
+class TamResponse(BaseModel):
+    job_id: str
+    id_dist: str
+    dist_name: str
+    ano_gdb: int
+    data_processamento: str
+    CONJ: str
+    CTMT: str
+    NOME: str
+    COMP_KM: float
+    model_config = ConfigDict(from_attributes=True)

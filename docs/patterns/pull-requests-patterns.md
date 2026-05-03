@@ -1,35 +1,34 @@
-# Padrão de Pull Request (PR)
+# Pull Request (PR) Pattern
 
 ---
 
-## Título do PR
+## PR Title
 
-O título deve seguir o mesmo padrão definido para commits:
+The title must follow the same pattern defined for commits:
 
-`tipo(id_do_ticket): descrição`
+`type(ticket_id): description`
 
-**Exemplo:**
-`feat(pk-32): endpoint download gdb`
-
----
-
-## Descrição do PR
-
-A descrição deve ser objetiva, clara e descritiva.
+**Example:**  
+`feat(pk-32): gdb download endpoint`
 
 ---
 
-## Template de PR
+## PR Description
+
+The description should be clear, concise, and objective.
+
+---
+
+## PR Template
 
 ```md
+Provide a brief summary of the implementations included in this PR.
 
-Descreva resumidamente as implementações feitas neste PR.
-
-Exemplo:
-- Adiciona [funcionalidade/endpoint/componente] para [objetivo]
-- [Nome da função/tarefa] executa [ação específica e regras de negócio]
-- Valida [dados, arquivos ou entradas]
-- Integra com [fluxo ou próxima etapa, se aplicável]
-- Implementa tratamento de erros para [cenários de falha]
-- Testes cobrem [cenários de sucesso e erro]
+Example:
+- Adds [feature/endpoint/component] for [purpose]
+- [Function/task name] performs [specific action and business rules]
+- Validates [data, files, or inputs]
+- Integrates with [flow or next step, if applicable]
+- Implements error handling for [failure scenarios]
+- Tests cover [success and failure scenarios]
 ```

@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, HTTPException
 
-from backend.core.calculate_pt_and_pnt import calculate_pt_pnt
+from backend.services.calculate_pt_and_pnt import calculate_pt_pnt
 
 
 router = APIRouter()

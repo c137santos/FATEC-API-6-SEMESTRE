@@ -1,20 +1,25 @@
-import uuid
 import os
+import uuid
+from datetime import datetime
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import factory
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
-from motor.motor_asyncio import AsyncIOMotorClient
-from backend.database import get_session, get_mongo_async_database
 from backend.core import models as _models  # noqa: F401
-from backend.security import get_password_hash
 from backend.core.models import User, table_registry
+from backend.database import get_mongo_async_database, get_session
+from backend.security import get_password_hash
+from backend.services.pipeline_trigger import trigger_pipeline_flow
+from backend.tasks.celery_app import celery_app
 
 
 class UserFactory(factory.Factory):
@@ -26,9 +31,58 @@ class UserFactory(factory.Factory):
     password = factory.LazyAttribute(lambda obj: f'{obj.username}+senha')
 
 
+@pytest.fixture(scope="session", autouse=True)
+def setup_celery_test_config():
+    """Configura o Celery para modo síncrono durante os testes."""
+    celery_app.conf.update(
+        task_always_eager=True,     
+        task_eager_propagates=True, 
+    )
+
+@pytest_asyncio.fixture
+async def triggered_job(session, setup_distribuidora):
+    """Aciona o trigger_pipeline_flow isolando a rede e retorna o job_id gerado."""
+    
+    dist_data = setup_distribuidora
+    
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {
+        "id": dist_data["id"],
+        "name": dist_data["dist_name"],
+        "type": "File Geodatabase",
+        "url": "https://link-da-aneel.com/dados.gdb.zip"
+    }
+
+    with patch("httpx.AsyncClient.get", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = mock_response
+        
+        result = await trigger_pipeline_flow(
+            session=session,
+            distribuidora_id=dist_data["id"],
+            ano=dist_data["date_gdb"]
+        )
+    
+    return {
+        "job_id": result["job_id"],
+        "dist_data": dist_data
+    }
+
 @pytest.fixture(scope='session')
 def postgres_container():
     with PostgresContainer('postgres:16', driver='psycopg') as postgres:
+        host = postgres.get_container_host_ip()
+        port = postgres.get_exposed_port(5432)
+        user = postgres.username
+        password = postgres.password
+        dbname = postgres.dbname
+        
+        url_sa = f"postgresql+asyncpg://{user}:{password}@{host}:{port}/{dbname}"
+        
+        os.environ["DATABASE_URL"] = url_sa
+        os.environ["POSTGRES_HOST"] = host
+        os.environ["POSTGRES_PORT"] = str(port)
+        
         yield postgres
 
 
@@ -61,17 +115,13 @@ async def session(engine):
 
 @pytest_asyncio.fixture
 async def client(session, mongo_db):
-    async def get_session_override():
-        yield session
-
-    async def get_mongo_database_override():
+    app.dependency_overrides[get_session] = lambda: session
+    
+    async def _get_mongo_override():
         yield mongo_db
+    app.dependency_overrides[get_mongo_async_database] = _get_mongo_override
 
-    app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[get_mongo_async_database] = get_mongo_database_override
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url='http://test'
-    ) as ac:
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
         yield ac
     app.dependency_overrides.clear()
 
@@ -121,21 +171,72 @@ async def mongo_db():
     client.close()
 
 
+@pytest.fixture(autouse=True)
+def mock_mongo_db(mongo_db):
+    with patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db:
+        mocked_get_db.return_value = mongo_db
+        yield mocked_get_db
+
+
 @pytest_asyncio.fixture
-async def setup_test_data(mongo_db):
-    colecao = mongo_db['segmentos_mt_tabular']
+async def setup_distribuidora(session):
+    """Cria uma distribuidora com ID real da ANEEL para teste de integração fim-a-fim."""
+    id_real = "75f102e3b2e54e48950d877e8a937a34" 
+    nome_real = "EQUATORIAL ALAGOAS DISTRIBUIDORA DE ENERGIA S.A."
+    ano_teste = 2024
+    
+    await session.execute(
+        text("DELETE FROM distribuidoras WHERE id = :id AND date_gdb = :ano"),
+        {"id": id_real, "ano": ano_teste}
+    )
+    
+    await session.execute(
+        text("""
+            INSERT INTO distribuidoras (id, date_gdb, dist_name) 
+            VALUES (:id, :ano, :nome)
+        """),
+        {"id": id_real, "ano": ano_teste, "nome": nome_real}
+    )
+    await session.commit()
+    
+    return {
+        "id": id_real, 
+        "dist_name": nome_real, 
+        "date_gdb": ano_teste
+    }
 
-    test_job_id = 'test-job-' + str(uuid.uuid4())
 
-    await colecao.insert_one({
-        'job_id': test_job_id,
-        'CTMT': 'ALIMENTADOR_TESTE',
-        'COMP': 1500.0,
-        'CONJ': '999',
-        'DIST': 'DIST_TESTE',
+@pytest_asyncio.fixture
+async def setup_test_data(session, mongo_db, setup_distribuidora):
+    """
+    Simula um job que já passou pelo trigger e download.
+    Prepara o MongoDB exatamente como a pipeline_trigger faria.
+    """
+    dist = setup_distribuidora
+    job_id = str(uuid.uuid4())
+    ano = 2024
+
+    session.execute(
+        text("UPDATE distribuidoras SET job_id = :job_id WHERE id = :id AND date_gdb = :ano"),
+             {"job_id": job_id, "id": dist["id"], "ano": dist["date_gdb"]}
+         )
+        
+    await session.commit()
+
+    await mongo_db['jobs'].insert_one({
+        "job_id": job_id,
+        "distribuidora_id": dist["id"],
+        "dist_name": dist["dist_name"],
+        "ano_gdb": ano,
+        "status": "completed",
+        "created_at": datetime.utcnow()
     })
 
-    return test_job_id
+    await mongo_db['segmentos_mt_tabular'].insert_one({
+        'job_id': job_id, 'COMP': 5000.0, 'CONJ': '100', 'CTMT': 'CIRC_1'
+    })
+
+    return job_id
 
 
 @pytest_asyncio.fixture
@@ -156,3 +257,23 @@ def pytest_sessionstart(session):
     os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')
     os.environ.setdefault('MAIL_PORT', '587')
     os.environ.setdefault('MAIL_FROM', 'admin@test.com')
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_celery_test_config():
+    """
+    Força o Celery a usar configurações de teste, independente de 
+    quando as variáveis de ambiente foram setadas.
+    """
+    celery_app.conf.update(
+        task_always_eager=True,
+        task_eager_propagates=True,
+
+        broker_url="memory://",
+        result_backend="cache+memory://",
+        
+        broker_connection_retry_on_startup=False,
+        broker_connection_max_retries=1
+    )
+    
+    yield celery_app

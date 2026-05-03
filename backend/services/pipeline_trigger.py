@@ -1,13 +1,26 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
-
+from celery import chain
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.models import Distribuidora
+from backend.tasks.task_calculate_pt_pnt import task_calculate_pt_pnt
+from backend.tasks.task_calculate_sam import task_calculate_sam
+from backend.tasks.task_criticidade import (
+    task_mapa_criticidade,
+    task_score_criticidade,
+)
 from backend.tasks.task_download_gdb import task_download_gdb
+from backend.tasks.task_render_criticidade import (
+    task_render_mapa_calor,
+    task_render_tabela_score,
+)
+from backend.tasks.task_tam import task_calcular_tam
+from backend.tasks.task_render_tam import task_render_grafico_tam
+from backend.database import get_mongo_async_db
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
 ARCGIS_DOWNLOAD_URL = (
@@ -100,11 +113,39 @@ async def save_distribuidora_job_tracking(
         )
         .values(
             job_id=job_id,
-            processed_at=datetime.utcnow(),
+            processed_at=datetime.now(timezone.utc).replace(tzinfo=None),
         )
     )
     await session.execute(stmt)
     await session.commit()
+
+
+async def init_tam_metadata(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+    job_id: str,
+) -> None:
+    """Inicializa os dados do Job no MongoDB para que as tasks futuras tenham acesso."""
+    
+    stmt = select(Distribuidora.dist_name).where(
+        Distribuidora.id == distribuidora_id,
+        Distribuidora.date_gdb == ano,
+    )
+
+    result = await session.execute(stmt)
+    dist_name = result.scalar_one_or_none()
+
+    db = get_mongo_async_db()
+    
+    await db.jobs.insert_one({
+        "job_id": job_id,
+        "distribuidora_id": distribuidora_id,
+        "dist_name": dist_name,  
+        "ano_gdb": ano,          
+        "status": "started",
+        "created_at": datetime.utcnow()
+    })
 
 
 async def trigger_pipeline_flow(
@@ -112,8 +153,10 @@ async def trigger_pipeline_flow(
     distribuidora_id: str,
     ano: int,
 ) -> dict:
-    """Orquestra os passos da pipeline de download GDB."""
-    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
+    """Orquestra todos os passos da pipeline: download + criticidade + render."""
+    if await distribuidora_job_already_triggered(
+        session, distribuidora_id, ano
+    ):
         raise ValueError(
             'Pipeline já foi acionada para a distribuidora no ano informado'
         )
@@ -127,7 +170,21 @@ async def trigger_pipeline_flow(
     download_url = await resolve_download_url_from_aneel(distribuidora_id)
     job_id = str(uuid.uuid4())
 
-    task = task_download_gdb.delay(job_id, download_url, distribuidora_id)
+    result = chain(
+        task_download_gdb.si(job_id, download_url, distribuidora_id),
+        task_score_criticidade.si(job_id, dist_name, ano),
+        task_calculate_pt_pnt.si(job_id, distribuidora_id),
+        task_calculate_sam.si(job_id, distribuidora_id, dist_name, ano),
+        task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano),
+        task_calcular_tam.si(job_id, {
+            "id": distribuidora_id, 
+            "dist_name": dist_name, 
+            "date_gdb": ano
+        }),       
+        task_render_grafico_tam.si(job_id),
+        task_render_tabela_score.si(job_id, dist_name, ano),
+        task_render_mapa_calor.si(job_id, dist_name, ano),
+    ).delay()
 
     await save_distribuidora_job_tracking(
         session=session,
@@ -136,9 +193,16 @@ async def trigger_pipeline_flow(
         job_id=job_id,
     )
 
+    await init_tam_metadata(
+        session=session, 
+        distribuidora_id=distribuidora_id, 
+        ano=ano, 
+        job_id=job_id
+    )
+
     return {
         'job_id': job_id,
-        'task_id': task.id,
+        'task_id': result.id,
         'status': 'queued',
         'distribuidora_id': distribuidora_id,
         'ano': ano,

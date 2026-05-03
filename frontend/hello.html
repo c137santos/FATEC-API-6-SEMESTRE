@@ -3,10 +3,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Meu App</title>
-  <link rel="stylesheet" href="./style.css?v=4" />
-  <script src="https://unpkg.com/petite-vue@0.2.2/dist/petite-vue.iife.js" defer init></script>
+  <link rel="stylesheet" href="./style.css?v=7" />
 <body>
-  <div v-scope="app" class="app">
+  <div v-scope class="app">
     <aside class="sidebar">
       <nav class="nav">
         <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'perfil' }" @click="go('perfil')">PERFIL</button>
@@ -31,16 +30,18 @@
         <h1 class="card-subtitle">Configuração de exportação de dados</h1>
         <label class="field">
           <span class="field-label">SELECIONE DISTRIBUIDORA</span>
-          <select v-model="filters.tipo">
-            <option value="">Selecione</option>
-            <option
-              v-for="dist in distOptions"
-              :key="dist.id"
-              :value="dist.id"
-            >
+          <input
+            list="lista-distribuidoras"
+            v-model="filters.tipo"
+            @change="selecionarDist"
+            placeholder="Digite para pesquisar..."
+            class="field-input"
+          />
+          <datalist id="lista-distribuidoras">
+            <option v-for="dist in distOptions" :key="dist.id" :value="dist.nome">
               {{ dist.nome }}
             </option>
-          </select>
+          </datalist>
         </label>
 
         <label class="field">
@@ -76,79 +77,86 @@
     </main>
   </div>
 
-  <script type="module">
-    import { createApp } from 'https://unpkg.com/petite-vue?module'
-    const app = {
-      screen: 'documents',
+<script type="module">
+  import { createApp, reactive } from 'https://unpkg.com/petite-vue@0.4.1?module'
 
-      filters: {
-        tipo: '',
-        ano: ''
-      },
+  const store = reactive({
+    screen: 'documents',
+    filters: { tipo: '', distribuidora_id: '', ano: '' },
+    registros: [],
+    distOptions: [],
+    anoOptions: [],
 
-      registros: [
-        { dist: 'Distribuidora A', dist_id: 'a', ano: 2025 },
-        { dist: 'Distribuidora A', dist_id: 'a', ano: 2024 },
-        { dist: 'Distribuidora B', dist_id: 'b', ano: 2025 },
-        { dist: 'Distribuidora B', dist_id: 'b', ano: 2023 }
-      ],
+    selecionarDist() {
+      store.filters.ano = ''
+      const selected = store.distOptions.find(d => d.nome === store.filters.tipo)
+      store.filters.distribuidora_id = selected ? selected.id : ''
 
-      async mounted() {
-//          TODO: Implementar chamada real para backend
-//          const res = await fetch('http://localhost:9000/distribuidoras-anos')
-//          this.registros = await res.json()
-      },
+      const anos = new Set()
+      store.registros
+        .filter(r => !store.filters.tipo || r.nome === store.filters.tipo)
+        .forEach(r => anos.add(r.ano))
+      store.anoOptions = Array.from(anos).sort((a, b) => b - a)
+    },
 
-      async gerarPDF() {
-        const params = {
-          dist_id: this.filters.tipo,
-          ano: this.filters.ano
-        }
-
-        if (!params.dist_id || !params.ano) {
-          alert('Selecione distribuidora e ano antes de gerar o PDF.')
-          return
-        }
-
-        console.log('[MOCK] Enviaria para backend:', params)
-//        TODO: Implementar chamada real para backend
-//        const params = new URLSearchParams({
-//          dist_id: this.filters.tipo,
-//          ano: this.filters.ano
-//        })
-//        const res = await fetch(`http://localhost:9000/documentos?${params}`)
-//        const data = await res.json()
-//        console.log('Resposta:', data)
-        setTimeout(() => {
-          console.log('[MOCK] Geração simulada com sucesso.')
-          alert('Geração de documentação simulada com sucesso.')
-        }, 800)
-      },
-
-      get distOptions() {
-        const mapa = new Map()
-        this.registros.forEach(r => {
-          if (!mapa.has(r.dist_id)) {
-            mapa.set(r.dist_id, r.dist)
-          }
+    async gerarPDF() {
+      const payload = {
+        distribuidora_id: this.filters.distribuidora_id,
+        ano: this.filters.ano
+      }
+      if (!payload.distribuidora_id || !payload.ano) {
+        alert('Selecione distribuidora e ano antes de gerar o PDF.')
+        return
+      }
+      try {
+        const res = await fetch('http://localhost:8000/pipeline/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(payload)
         })
-        return Array.from(mapa, ([id, nome]) => ({ id, nome }))
-      },
+        let data = null
+        try { data = await res.json() } catch { data = await res.text() }
+        console.log('Resposta de /trigger:', data)
+        alert('Requisição enviada com sucesso.')
+      } catch (e) {
+        console.error('Erro ao chamar /trigger', e)
+        alert('Erro ao iniciar a geração.')
+      }
+    },
 
-      get anoOptions() {
-        const anos = new Set()
-        this.registros
-          .filter(r => !this.filters.tipo || r.dist_id === this.filters.tipo)
-          .forEach(r => anos.add(r.ano))
-
-        return Array.from(anos).sort((a, b) => b - a)
-      },
-
-      go(tela) {
+    go(tela) {
+      if (tela === 'login') {
+        localStorage.removeItem('access_token')
+        window.location.href = 'login.html'
+      } else if (tela === 'perfil') {
+        window.location.href = 'profile.html'
+      } else {
         this.screen = tela
       }
     }
-    createApp(app).mount()
+  })
+
+  fetch('http://localhost:8000/dist/distributors', {
+    headers: { accept: 'application/json' }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const mapa = new Map()
+    data.forEach(r => {
+      if (!mapa.has(r.nome)) mapa.set(r.nome, r.id)
+    })
+
+    store.registros = data
+    store.distOptions = Array.from(mapa, ([nome, id]) => ({ id, nome }))
+
+    const anos = new Set()
+    data.forEach(r => anos.add(r.ano))
+    store.anoOptions = Array.from(anos).sort((a, b) => b - a)
+
+    console.log('Distribuidoras únicas:', store.distOptions.length)
+  })
+
+  createApp(store).mount()
   </script>
 </body>
 </html>

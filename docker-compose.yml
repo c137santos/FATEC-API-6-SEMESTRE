@@ -84,6 +84,13 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
 volumes:
   mongo_data:
   postgres_data:

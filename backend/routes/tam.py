@@ -1,38 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import List
 
-from backend.core.calculo_tam import calculo_tam
-from backend.database import get_mongo_async_database
-
+from fastapi import APIRouter, HTTPException
+from backend.services.calculo_tam import obter_resultados_tam
+from backend.core.schemas import TamResponse
 
 router = APIRouter()
 
+@router.get(
+    "/tam/{job_id}",
+    response_model=List[TamResponse],
+    status_code=200
+)
+async def get_tam_results(job_id: str):
+    resultados = await obter_resultados_tam(job_id)
 
-@router.get('/tam/{job_id}')
-async def get_json_tam(job_id: str, db=Depends(get_mongo_async_database)):
-
-    try:
-        calculo_trechos, ranking_conjunto, top_10_conjunto = await calculo_tam(
-            db, job_id
-        )
-
-        if not calculo_trechos:
-            raise ValueError('Job inexistente ou sem dados')
-
-        return {
-            'status': 'success',
-            'metadata': {
-                'job_id': job_id,
-            },
-            'data': {
-                'trechos': calculo_trechos,
-                'ranking_por_conjunto': ranking_conjunto,
-                'top_10': top_10_conjunto,
-            },
-        }
-
-    except ValueError as ve:
-        raise HTTPException(status_code=404, detail=str(ve))
-    except Exception as e:
+    if not resultados:
         raise HTTPException(
-            status_code=500, detail=f'Erro interno ao processar TAM: {str(e)}'
+            status_code=404, 
+            detail="Resultados não encontrados para o job informado."
         )
+
+    return resultados

@@ -1049,7 +1049,6 @@ def task_finalizar(
                             "date_gdb": date_gdb_int
                         }
                         logger.info('[task_finalizar] Disparando cálculo automático do TAM. job_id=%s', job_id)
-                        task_calcular_tam.delay(job_id=job_id, metadados_dist=metadados_dist)
 
         except Exception as tam_exc:
             logger.error('[task_finalizar] Falha ao disparar task do TAM. job_id=%s erro=%s', job_id, tam_exc)

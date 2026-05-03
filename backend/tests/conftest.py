@@ -216,10 +216,11 @@ async def setup_test_data(session, mongo_db, setup_distribuidora):
     job_id = str(uuid.uuid4())
     ano = 2024
 
-    await session.execute(
-        text("UPDATE distribuidoras SET job_id = :job_id WHERE id = :id"),
-        {"job_id": job_id, "id": dist["id"]}
-    )
+    session.execute(
+        text("UPDATE distribuidoras SET job_id = :job_id WHERE id = :id AND date_gdb = :ano"),
+             {"job_id": job_id, "id": dist["id"], "ano": dist["date_gdb"]}
+         )
+        
     await session.commit()
 
     await mongo_db['jobs'].insert_one({

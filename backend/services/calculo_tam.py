@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
-from collections import defaultdict
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 from backend.core.schemas import TamResponse, DistributorMetadata
 from backend.database import get_mongo_async_db, get_mongo_sync_db

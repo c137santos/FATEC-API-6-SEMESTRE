@@ -16,6 +16,7 @@ from backend.tasks.task_render_criticidade import (
     task_render_tabela_score,
 )
 from backend.tasks.task_tam import task_calcular_tam
+from backend.tasks.task_render_tam import task_render_grafico_tam
 from backend.database import get_mongo_async_db
 
 ARCGIS_ITEM_URL = 'https://www.arcgis.com/sharing/rest/content/items/{item_id}'
@@ -176,6 +177,7 @@ async def trigger_pipeline_flow(
             "dist_name": dist_name, 
             "date_gdb": ano
         }),       
+        task_render_grafico_tam.si(job_id),
         task_render_tabela_score.si(job_id, dist_name, ano),
         task_render_mapa_calor.si(job_id, dist_name, ano),
     ).delay()

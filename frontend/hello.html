@@ -49,7 +49,8 @@
             list="lista-distribuidoras"
             v-model="filters.tipo"
             @change="selecionarDist"
-            placeholder="Digite para pesquisar..."
+            :placeholder="loading ? 'Carregando distribuidoras...' : 'Digite para pesquisar...'"
+            :disabled="loading"
             class="field-input"
           />
           <datalist id="lista-distribuidoras">
@@ -82,7 +83,7 @@
           </div>
         </div>
 
-        <button class="primary-btn" @click="gerarPDF">
+        <button class="primary-btn" @click="gerarPDF" :disabled="loading">
           <img src="./assets/pdfbutton.svg" alt="" class="nav-icon">
           GERAR DOCUMENTAÇÃO PDF
         </button>
@@ -156,25 +157,35 @@
     }
   })
 
-  fetch('http://localhost:8000/dist/distributors', {
-    headers: { accept: 'application/json' }
-  })
-  .then(r => r.json())
-  .then(data => {
-    const mapa = new Map()
-    data.forEach(r => {
-      if (!mapa.has(r.nome)) mapa.set(r.nome, r.id)
+    store.loading = true
+
+    fetch('http://localhost:8000/dist/sync', {
+      method: 'POST',
+      headers: {accept: 'application/json'}
     })
+    .then(() => {
+      return fetch('http://localhost:8000/dist/distributors', {
+        headers: { accept: 'application/json' }
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      store.loading = false
+      const mapa = new Map()
+      data.forEach(r => {
+        if (!mapa.has(r.nome)) mapa.set(r.nome, r.id)
+      })
 
-    store.registros = data
-    store.distOptions = Array.from(mapa, ([nome, id]) => ({ id, nome }))
+      store.registros = data
+      store.distOptions = Array.from(mapa, ([nome, id]) => ({ id, nome }))
 
-    const anos = new Set()
-    data.forEach(r => anos.add(r.ano))
-    store.anoOptions = Array.from(anos).sort((a, b) => b - a)
+      const anos = new Set()
+      data.forEach(r => anos.add(r.ano))
+      store.anoOptions = Array.from(anos).sort((a, b) => b - a)
 
-    console.log('Distribuidoras únicas:', store.distOptions.length)
-  })
+      console.log('Distribuidoras únicas:', store.distOptions.length)
+    })
+    .catch(e => {console.error('Erro ao sincronizar ou buscar distribuidoras:', e); store.loading = false})
 
   createApp(store).mount()
   </script>

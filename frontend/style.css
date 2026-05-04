@@ -49,7 +49,17 @@
   padding: 14px;
 }
 
-/* CONTEÚDO PRINCIPAL */
+.nav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon {
+  width: 14px;
+  height: 14px;
+}
+
 .main {
   flex: 1;
   display: flex;
@@ -57,6 +67,43 @@
   justify-content: center;
   padding: 24px;
   background: #000F08;
+}
+
+.main--perfil {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 40px;
+}
+
+.screen-title{
+  display: flex;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 30px;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 12px;
+}
+
+.screen-subtitle{
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+
+.screen-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.screen-wrapper--perfil {
+  align-items: flex-start;
+  width: 100%;
 }
 
 .card {
@@ -84,6 +131,7 @@
   font-family: Arial;
   font-size: 11px;
   font-style: normal;
+  letter-spacing: 1px;
   font-weight: 400;
   padding-bottom: 20px;
 }
@@ -93,6 +141,7 @@
   flex-direction: column;
   gap: 4px;
   padding-bottom: 16px;
+  width: 100%;
 }
 
 .field-label {
@@ -143,7 +192,7 @@ select:hover {
 .primary-btn {
   display: flex;
   width: 100%;
-  padding: 10px 0;
+  padding: 12px 0;
   justify-content: center;
   align-items: center;
   gap: 10px;
@@ -164,15 +213,28 @@ select:hover {
   opacity: 0.9;
 }
 
-.nav-item {
-  display: inline-flex;
+.secondary-btn {
+  display: flex;
+  width: auto;
+  padding: 10px;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  align-self: stretch;
+  border-radius: 4px;
+  background: #DD7230;
+  color: #FFF;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05) inset;
+  font-size: 10px;
+  font-family: Arial;
+  text-transform: uppercase;
+  font-weight: 800;
+  border: 1px solid #DD7230;
 }
 
-.nav-icon {
-  width: 14px;
-  height: 14px;
+.secondary-btn:hover{
+  border-color: #DD7230;
+  opacity: 0.9;
 }
 
 .background-icon{
@@ -184,32 +246,6 @@ select:hover {
   border-radius: 2px;
   background: #DD7230;
   margin-right: 6px;
-}
-
-.screen-title{
-  display: flex;
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 30px;
-  text-align: center;
-  font-weight: 700;
-  letter-spacing: 1px;
-  padding: 12px;
-}
-
-.screen-subtitle{
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 12px;
-  text-align: center;
-  letter-spacing: 1px;
-  margin-bottom: 24px;
-}
-
-.screen-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .project-label{

@@ -2,16 +2,20 @@
 <html lang="pt-BR">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Meu App</title>
-  <link rel="stylesheet" href="./style.css?v=10" />
+  <title>Thunderstone</title>
+  <link rel="stylesheet" href="./style.css?v=12" />
 <body>
   <div v-scope class="app">
     <aside class="sidebar">
       <nav class="nav">
-        <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'perfil' }" @click="go('perfil')">PERFIL</button>
+        <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">
+          <img class="nav-icon" src="./assets/profileicon.svg">PERFIL
+        </button>
         <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'documents' }" @click="go('documents')">
-          <img class="nav-icon"src="./assets/docsidebaricon.svg">DOCUMENTOS</button>
-        <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR</button>
+          <img class="nav-icon" src="./assets/docsidebaricon.svg">DOCUMENTOS</button>
+        <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR
+          <img class="nav-icon" src="./assets/logouticon.svg">
+        </button>
       </nav>
     </aside>
 
@@ -85,7 +89,7 @@
 
         <button class="primary-btn" @click="gerarPDF" :disabled="loading">
           <img src="./assets/pdfbutton.svg" alt="" class="nav-icon">
-          GERAR DOCUMENTAÇÃO PDF
+          Enviar Documento por E-mail
         </button>
         <div class="project-label">Sistema Thunderstone • Acesso Seguro Protegido</div>
       </section>

@@ -64,12 +64,14 @@ def _make_db(score_doc=_SCORE_DOC, mapa_doc=_MAPA_DOC, geo_docs=None):
     mapa_col.find_one.return_value = mapa_doc
     geo_col = MagicMock()
     geo_col.find.return_value = geo_docs if geo_docs is not None else []
+    jobs_col = MagicMock()
 
     def _getitem(name):
         return {
             'score_criticidade': score_col,
             'mapa_criticidade': mapa_col,
             'segmentos_mt_geo': geo_col,
+            'jobs': jobs_col,
         }.get(name, MagicMock())
 
     db.__getitem__.side_effect = _getitem
@@ -257,3 +259,83 @@ def test_render_mapa_salva_arquivo_no_caminho_correto(tmp_path):
 
     saved_path = mock_savefig.call_args[0][0]
     assert str(saved_path).endswith('mapa_calor_ENEL RJ_2024.png')
+
+
+# ---------------------------------------------------------------------------
+# RF-1: task_render_tabela_score — persistência em jobs.render_paths
+# ---------------------------------------------------------------------------
+
+
+def test_render_tabela_persiste_path_no_mongo_ao_concluir(tmp_path):
+    db = _make_db()
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch(PATCH_SAVEFIG),
+        patch(PATCH_CLOSE),
+        patch(PATCH_OUTPUT_DIR, return_value=tmp_path),
+    ):
+        result = task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.tabela_score': result['path']}},
+    )
+
+
+def test_render_tabela_persiste_null_no_mongo_quando_skipped():
+    db = _make_db(mapa_doc={**_MAPA_DOC, 'conjuntos': []})
+    with patch(PATCH_DB, return_value=db):
+        task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.tabela_score': None}},
+    )
+
+
+# ---------------------------------------------------------------------------
+# RF-1: task_render_mapa_calor — persistência em jobs.render_paths
+# ---------------------------------------------------------------------------
+
+
+def test_render_mapa_persiste_path_no_mongo_ao_concluir(tmp_path):
+    geo_docs = [
+        {'CONJ': 100, 'geometry': _LINE_GEOM},
+        {'CONJ': 200, 'geometry': _LINE_GEOM},
+    ]
+    db = _make_db(geo_docs=geo_docs)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch(PATCH_SAVEFIG),
+        patch(PATCH_CLOSE),
+        patch(PATCH_OUTPUT_DIR, return_value=tmp_path),
+    ):
+        result = task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.mapa_calor': result['path']}},
+    )
+
+
+def test_render_mapa_persiste_null_quando_skipped_sem_categorias():
+    mapa_inv = {**_MAPA_DOC, 'conjuntos': [{'ide_conj': 'nao-inteiro', 'categoria': 'Verde'}]}
+    db = _make_db(mapa_doc=mapa_inv)
+    with patch(PATCH_DB, return_value=db):
+        task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.mapa_calor': None}},
+    )
+
+
+def test_render_mapa_persiste_null_quando_skipped_sem_geometrias():
+    db = _make_db(geo_docs=[])
+    with patch(PATCH_DB, return_value=db):
+        task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.mapa_calor': None}},
+    )

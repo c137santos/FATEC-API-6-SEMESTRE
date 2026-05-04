@@ -66,6 +66,10 @@ def task_render_tabela_score(
             '[task_render_tabela_score] Nenhum conjunto disponível. job_id=%s',
             job_id,
         )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.tabela_score': None}},
+        )
         return {
             'job_id': job_id,
             'status': 'skipped',
@@ -135,6 +139,11 @@ def task_render_tabela_score(
     plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
 
+    db['jobs'].update_one(
+        {'job_id': job_id},
+        {'$set': {'render_paths.tabela_score': str(out_path)}},
+    )
+
     logger.info(
         '[task_render_tabela_score] Concluida. job_id=%s path=%s',
         job_id,
@@ -180,6 +189,10 @@ def task_render_mapa_calor(
             '[task_render_mapa_calor] Nenhum conjunto com categoria. job_id=%s',
             job_id,
         )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.mapa_calor': None}},
+        )
         return {
             'job_id': job_id,
             'status': 'skipped',
@@ -213,6 +226,10 @@ def task_render_mapa_calor(
         logger.warning(
             '[task_render_mapa_calor] Nenhuma geometria disponível. job_id=%s',
             job_id,
+        )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.mapa_calor': None}},
         )
         return {
             'job_id': job_id,
@@ -251,6 +268,11 @@ def task_render_mapa_calor(
     out_path = _output_dir() / f'mapa_calor_{sig}_{ano}.png'
     plt.savefig(out_path, dpi=150, bbox_inches='tight')
     plt.close(fig)
+
+    db['jobs'].update_one(
+        {'job_id': job_id},
+        {'$set': {'render_paths.mapa_calor': str(out_path)}},
+    )
 
     logger.info(
         '[task_render_mapa_calor] Concluida. job_id=%s path=%s',

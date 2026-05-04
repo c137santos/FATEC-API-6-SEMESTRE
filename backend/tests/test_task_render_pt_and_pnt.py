@@ -117,3 +117,26 @@ def test_busca_doc_com_job_id_e_distribuidora_id(
         {'job_id': JOB_ID, 'distribuidora_id': DIST_ID},
         {'_id': 0},
     )
+
+
+# ---------------------------------------------------------------------------
+# RF-1: persistência em jobs.render_paths
+# ---------------------------------------------------------------------------
+
+
+def test_persiste_path_no_mongo_ao_concluir(mock_mongo_com_doc, mock_output_dir):
+    result = task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
+
+    mock_mongo_com_doc['jobs'].update_one.assert_called_once_with(
+        {'job_id': JOB_ID},
+        {'$set': {'render_paths.pt_pnt': result['path']}},
+    )
+
+
+def test_persiste_null_no_mongo_quando_skipped(mock_mongo_sem_records):
+    task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
+
+    mock_mongo_sem_records['jobs'].update_one.assert_called_once_with(
+        {'job_id': JOB_ID},
+        {'$set': {'render_paths.pt_pnt': None}},
+    )

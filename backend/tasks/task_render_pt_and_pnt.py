@@ -102,6 +102,10 @@ def task_render_pt_pnt(
             '[task_render_pt_pnt] Nenhum registro disponível. job_id=%s',
             job_id,
         )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.pt_pnt': None}},
+        )
         return {'job_id': job_id, 'status': 'skipped', 'reason': 'no_records'}
 
     conjuntos = [r.get('conjunto', '') for r in records][::-1]
@@ -147,9 +151,14 @@ def task_render_pt_pnt(
 
     plt.tight_layout()
 
-    out_path = _output_dir() / f'pt_pnt_{sig_agente}_{ano}.png'
+    out_path = _output_dir() / f'pt_pnt_{sig_agente}_{ano}_{job_id}.png'
     plt.savefig(out_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
+
+    db['jobs'].update_one(
+        {'job_id': job_id},
+        {'$set': {'render_paths.pt_pnt': str(out_path)}},
+    )
 
     logger.info(
         '[task_render_pt_pnt] Concluida. job_id=%s path=%s',

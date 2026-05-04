@@ -174,7 +174,7 @@ def task_score_criticidade(
     }
 
     db['score_criticidade'].update_one(
-        {'ano': ano, 'distribuidora': distribuidora.upper()},
+        {'ano': ano, 'distribuidora': distribuidora.upper(), 'job_id': job_id},
         {'$set': resultado},
         upsert=True,
     )
@@ -185,6 +185,7 @@ def task_score_criticidade(
         score_medio,
     )
     return {'job_id': job_id, 'status': 'done', 'score': score_medio}
+
 
 
 @celery_app.task(

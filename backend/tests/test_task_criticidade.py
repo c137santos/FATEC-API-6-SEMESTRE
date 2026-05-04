@@ -191,7 +191,7 @@ def test_task_score_criticidade_upsert_com_campos_corretos():
     score_col = db['score_criticidade']
     score_col.update_one.assert_called_once()
     filter_arg, update_arg = score_col.update_one.call_args[0]
-    assert filter_arg == {'ano': 2024, 'distribuidora': 'ENEL RJ'}
+    assert filter_arg == {'ano': 2024, 'distribuidora': 'ENEL RJ', 'job_id': 'job-1'}
     doc = update_arg['$set']
     assert doc['distribuidora'] == 'ENEL RJ'
     assert doc['ano'] == 2024

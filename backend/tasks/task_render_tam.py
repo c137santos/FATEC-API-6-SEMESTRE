@@ -102,11 +102,16 @@ def task_render_grafico_tam(self, job_id: str) -> dict:
         plt.savefig(out_path, dpi=150, bbox_inches='tight')
         plt.close(fig)
 
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.grafico_tam': str(out_path)}},
+        )
+
         logger.info('[task_render_grafico_tam] Concluída. job_id=%s path=%s', job_id, out_path)
-        
+
         return {
-            'job_id': job_id, 
-            'status': 'done', 
+            'job_id': job_id,
+            'status': 'done',
             'path': str(out_path)
         }
 

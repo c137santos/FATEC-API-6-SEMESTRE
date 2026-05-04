@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
+from backend.tasks.task_render_sam import task_render_sam
 import httpx
 from celery import chain
 from sqlalchemy import select, update
@@ -186,6 +187,7 @@ async def trigger_pipeline_flow(
         task_render_grafico_tam.si(job_id),
         task_render_tabela_score.si(job_id, dist_name, ano),
         task_render_mapa_calor.si(job_id, dist_name, ano),
+        task_render_sam.si(job_id, distribuidora_id, dist_name, ano),
     ).delay()
 
     await save_distribuidora_job_tracking(

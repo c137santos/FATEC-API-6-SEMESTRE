@@ -130,8 +130,8 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[10].task == 'etl.render_sam'
     assert sigs[10].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
-    assert sigs[10].task == 'etl.gerar_report'
-    assert sigs[10].args == (job_id,)
+    assert sigs[11].task == 'etl.gerar_report'
+    assert sigs[11].args == (job_id,)
 
     mock_chain.return_value.delay.assert_called_once()
 

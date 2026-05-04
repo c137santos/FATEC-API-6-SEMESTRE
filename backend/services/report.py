@@ -27,6 +27,7 @@ _CHARTS = [
     ('pt_pnt', 'Perdas Técnicas e Não Técnicas (PT x PNT)'),
     ('tabela_score', 'Score de Criticidade'),
     ('mapa_calor', 'Mapa de Calor de Criticidade'),
+    ('grafico_sam', 'Gráfico de todos os Conjuntos (SAM)'),
 ]
 
 
@@ -61,13 +62,22 @@ def _scaled_image(img_path: Path, max_width: float) -> Image:
     return Image(str(img_path), width=max_width, height=max_width * aspect)
 
 
+def _safe_filename(name: str) -> str:
+    """Removes/replaces characters unsafe for filenames."""
+    return ''.join(c if c.isalnum() or c in ' _-' else '_' for c in name).strip()
+
+
 def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
     """
     Builds the consolidated PDF from image paths stored in render_paths.
     Returns the absolute path of the generated PDF.
     """
     out_dir = _reports_dir(job_id)
-    pdf_path = out_dir / 'report.pdf'
+
+    dist_name = _safe_filename(job_meta.get('dist_name', 'distribuidora'))
+    ano = job_meta.get('ano_gdb', '')
+    pdf_filename = f'report_{dist_name}_{ano}.pdf' if ano else f'report_{dist_name}.pdf'
+    pdf_path = out_dir / pdf_filename
     placeholder_dir = out_dir / 'placeholders'
     placeholder_dir.mkdir(exist_ok=True)
 

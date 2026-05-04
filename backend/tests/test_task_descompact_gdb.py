@@ -3,6 +3,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+from celery.exceptions import Ignore
 
 from backend.tasks.task_descompact_gdb import (
     REQUIRED_SCHEMA,
@@ -86,30 +87,43 @@ def _fiona_layers(missing_layer: str | None = None) -> list[str]:
     return layers
 
 
-def test_retorna_status_extracted(tmp_dir, valid_zip):
+# ── helpers para extrair gdb_path do chord ──────────────────────────────────
+
+
+def _gdb_path_from_chord(mock_chord) -> str:
+    """Extrai o gdb_path a partir das assinaturas passadas ao chord."""
+    header, _ = mock_chord.call_args.args
+    # cada signature em header_tasks tem args=(job_id, gdb_path, dist_id)
+    return header[0].args[1]
+
+
+# ── testes de sucesso ────────────────────────────────────────────────────────
+
+
+def test_extracao_bem_sucedida_aciona_chord(tmp_dir, valid_zip):
     with (
         patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
         patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
         patch(f'{TASK_MODULE}.chord') as mock_chord,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        result = task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    assert result['job_id'] == 'job-1'
-    assert result['status'] == 'extracted'
+        mock_chord.assert_called_once()
 
 
-def test_gdb_path_no_retorno_e_string(tmp_dir, valid_zip):
+def test_gdb_path_e_string(tmp_dir, valid_zip):
     with (
         patch(f'{TASK_MODULE}.fiona.listlayers', return_value=_fiona_layers()),
         patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
         patch(f'{TASK_MODULE}.chord') as mock_chord,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        result = task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    assert isinstance(result['gdb_path'], str)
-    assert result['gdb_path'].endswith('.gdb')
+        gdb_path = _gdb_path_from_chord(mock_chord)
+        assert isinstance(gdb_path, str)
+        assert gdb_path.endswith('.gdb')
 
 
 def test_gdb_extraido_no_diretorio_tmp(tmp_dir, valid_zip):
@@ -118,10 +132,11 @@ def test_gdb_extraido_no_diretorio_tmp(tmp_dir, valid_zip):
         patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
         patch(f'{TASK_MODULE}.chord') as mock_chord,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        result = task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    assert str(tmp_dir / 'job-1') in result['gdb_path']
+        gdb_path = _gdb_path_from_chord(mock_chord)
+        assert str(tmp_dir / 'job-1') in gdb_path
 
 
 def test_chord_disparado_uma_vez(tmp_dir, valid_zip):
@@ -130,12 +145,10 @@ def test_chord_disparado_uma_vez(tmp_dir, valid_zip):
         patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
         patch(f'{TASK_MODULE}.chord') as mock_chord,
     ):
-        mock_chord_instance = MagicMock()
-        mock_chord.return_value = mock_chord_instance
-        task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    mock_chord.assert_called_once()
-    mock_chord_instance.delay.assert_called_once()
+        mock_chord.assert_called_once()
 
 
 def test_chord_header_tem_quatro_tasks(tmp_dir, valid_zip):
@@ -144,11 +157,11 @@ def test_chord_header_tem_quatro_tasks(tmp_dir, valid_zip):
         patch(f'{TASK_MODULE}.fiona.open', side_effect=_fiona_open_ok()),
         patch(f'{TASK_MODULE}.chord') as mock_chord,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    header, _callback = mock_chord.call_args.args
-    assert len(header) == 4
+        header, _callback = mock_chord.call_args.args
+        assert len(header) == 4
 
 
 def test_gdb_path_passado_como_string_para_cada_task(tmp_dir, valid_zip):
@@ -158,10 +171,10 @@ def test_gdb_path_passado_como_string_para_cada_task(tmp_dir, valid_zip):
         patch(f'{TASK_MODULE}.chord') as mock_chord,
         patch(f'{TASK_MODULE}.signature') as mock_sig,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        result = task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
-    gdb_path = result['gdb_path']
+    gdb_path = mock_sig.call_args_list[0].kwargs['args'][1]
     calls_with_gdb = [
         c
         for c in mock_sig.call_args_list
@@ -193,8 +206,8 @@ def test_usa_tasks_chunk_de_ssdmt_quando_habilitado(
         patch(f'{TASK_MODULE}.chord') as mock_chord,
         patch(f'{TASK_MODULE}.signature') as mock_sig,
     ):
-        mock_chord.return_value.delay = MagicMock()
-        task_descompact_gdb.run('job-1', str(valid_zip))
+        with pytest.raises(Ignore):
+            task_descompact_gdb.run('job-1', str(valid_zip))
 
     chunk_calls = [
         c
@@ -202,6 +215,9 @@ def test_usa_tasks_chunk_de_ssdmt_quando_habilitado(
         if c.args and c.args[0] == 'etl.processar_ssdmt_chunk'
     ]
     assert len(chunk_calls) == 3
+
+
+# ── testes de erro ───────────────────────────────────────────────────────────
 
 
 def test_sem_gdb_lanca_runtime_error(tmp_dir, no_gdb_zip):

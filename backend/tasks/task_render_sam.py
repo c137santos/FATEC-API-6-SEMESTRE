@@ -12,6 +12,8 @@ import numpy as np
 from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
+_RENDER_KEY = 'grafico_sam'
+
 logger = logging.getLogger(__name__)
 
 WAIT_COUNTDOWN = 30
@@ -48,6 +50,10 @@ def task_render_sam(
     if not records:
         logger.warning(
             '[task_render_sam] Nenhum registro disponível. job_id=%s', job_id
+        )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {f'render_paths.{_RENDER_KEY}': None}},
         )
         return {'job_id': job_id, 'status': 'skipped', 'reason': 'no_records'}
 
@@ -110,6 +116,10 @@ def task_render_sam(
     plt.savefig(out_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
 
+    db['jobs'].update_one(
+        {'job_id': job_id},
+        {'$set': {f'render_paths.{_RENDER_KEY}': str(out_path)}},
+    )
     logger.info(
         '[task_render_sam] Concluida. job_id=%s path=%s', job_id, out_path
     )

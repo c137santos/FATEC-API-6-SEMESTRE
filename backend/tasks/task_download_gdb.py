@@ -4,7 +4,6 @@ from pathlib import Path
 import zipfile
 
 import httpx
-from celery import signature
 
 from backend.tasks.celery_app import celery_app
 
@@ -97,17 +96,6 @@ def task_download_gdb(
             )
             zip_path.unlink(missing_ok=True)
             raise RuntimeError('Arquivo baixado não é um ZIP válido')
-
-        # Enfileira próxima task com assinatura Celery válida.
-        signature(
-            'etl.extrair_gdb',
-            args=(job_id, str(zip_path), distribuidora_id),
-        ).delay()
-        logger.info(
-            '[task_download_gdb] Proxima task enfileirada. job_id=%s next_task=etl.extrair_gdb zip_path=%s',
-            job_id,
-            zip_path,
-        )
 
         return {
             'job_id': job_id,

@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 WAIT_COUNTDOWN = 30
 MAX_WAIT_RETRIES = 120
 
-_REQUIRED_RENDER_KEYS = {'grafico_tam', 'pt_pnt', 'tabela_score', 'mapa_calor'}
+_REQUIRED_RENDER_KEYS = {'grafico_tam', 'pt_pnt', 'tabela_score', 'mapa_calor', 'grafico_sam'}
 
 
 @celery_app.task(bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.gerar_report')

@@ -91,47 +91,55 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
 
     mock_chain.assert_called_once()
     sigs = mock_chain.call_args.args
-    assert len(sigs) == 12
+    assert len(sigs) == 14
 
     assert sigs[0].task == 'etl.download_gdb'
     assert sigs[0].args == (job_id, 'https://www.arcgis.com/sharing/rest/content/items/item-chain/data', 'item-chain')
 
-    assert sigs[1].task == 'etl.score_criticidade'
-    assert sigs[1].args == (job_id, 'DIST CHAIN', 2026)
-    
-    assert sigs[2].task == 'etl.calculate_pt_pnt'
-    assert sigs[2].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
-    
-    assert sigs[3].task == 'etl.render_pt_pnt'
+    assert sigs[1].task == 'etl.extrair_gdb'
+    assert sigs[1].args[0] == job_id
+    assert sigs[1].args[1].endswith(f'{job_id}.zip')
+    assert sigs[1].args[2] == 'item-chain'
+
+    assert sigs[2].task == 'etl.score_criticidade'
+    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026)
+
+    assert sigs[3].task == 'etl.calculate_pt_pnt'
     assert sigs[3].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
-    
-    assert sigs[4].task == 'etl.calcular_sam'
+
+    assert sigs[4].task == 'etl.render_pt_pnt'
     assert sigs[4].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
-    assert sigs[5].task == 'etl.mapa_criticidade'
+    assert sigs[5].task == 'etl.calcular_sam'
     assert sigs[5].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
-    
-    assert sigs[6].task == 'etl.calcular_tam'
-    assert sigs[6].args == (job_id, {
+
+    assert sigs[6].task == 'etl.mapa_criticidade'
+    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
+
+    assert sigs[7].task == 'etl.calcular_tam'
+    assert sigs[7].args == (job_id, {
         "id": "item-chain",
         "dist_name": "DIST CHAIN",
         "date_gdb": 2026
     })
-    
-    assert sigs[7].task == 'etl.render_grafico_tam'
-    assert sigs[7].args == (job_id,)
 
-    assert sigs[8].task == 'etl.render_tabela_score'
-    assert sigs[8].args == (job_id, 'DIST CHAIN', 2026)
+    assert sigs[8].task == 'etl.render_grafico_tam'
+    assert sigs[8].args == (job_id,)
 
-    assert sigs[9].task == 'etl.render_mapa_calor'
+    assert sigs[9].task == 'etl.render_tabela_score'
     assert sigs[9].args == (job_id, 'DIST CHAIN', 2026)
-    
-    assert sigs[10].task == 'etl.render_sam'
-    assert sigs[10].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
-    assert sigs[11].task == 'etl.gerar_report'
-    assert sigs[11].args == (job_id,)
+    assert sigs[10].task == 'etl.render_mapa_calor'
+    assert sigs[10].args == (job_id, 'DIST CHAIN', 2026)
+
+    assert sigs[11].task == 'etl.render_sam'
+    assert sigs[11].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
+
+    assert sigs[12].task == 'etl.gerar_report'
+    assert sigs[12].args == (job_id,)
+
+    assert sigs[13].task == 'etl.cleanup_files'
+    assert sigs[13].args == (job_id,)
 
     mock_chain.return_value.delay.assert_called_once()
 

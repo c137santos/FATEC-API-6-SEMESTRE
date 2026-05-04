@@ -16,8 +16,9 @@ _JOB_DOC = {
     'render_paths': {
         'grafico_tam': '/output/images/grafico_tam_job-report-abc.png',
         'pt_pnt': '/output/images/pt_pnt_ENEL_2024.png',
-        'tabela_score': None,
-        'mapa_calor': None,
+        'tabela_score': '/output/images/tabela_score_ENEL_2024.png',
+        'mapa_calor': '/output/images/mapa_calor_ENEL_2024.png',
+        'grafico_sam': '/output/images/sam_ENEL_2024.png',
     },
 }
 

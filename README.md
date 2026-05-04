@@ -110,8 +110,8 @@ Our versioning standards — including **commit standards, Pull Requests (PR), a
 
 | Sprint          |   Period    | Documentation                                     | Delivery Video                                      |
 | --------------- | :---------: | ------------------------------------------------- | --------------------------------------------------- |
-| 🔖 **SPRINT 1** | 16/03 - 05/04 |[doc](docs/process/sprints-backlog/sprint-1.md)| [video](https://drive.google.com/file/d/14Rk7tpzycikkkxXpeZZ4nF5BHbvCanvW/view?usp=drive_link)
-| 🔖 **SPRINT 2** | 13/04 - 03/05 |[doc](docs/process/sprints-backlog/sprint-2.md)|🚧|
+| 🔖 **SPRINT 1** | 16/03 - 05/04 |[doc](docs/process/sprints-backlog/sprint-1.md)| [vídeo](https://drive.google.com/file/d/14Rk7tpzycikkkxXpeZZ4nF5BHbvCanvW/view?usp=drive_link)|
+| 🔖 **SPRINT 2** | 13/04 - 03/05 |[doc](docs/process/sprints-backlog/sprint-2.md)|[vídeo](https://drive.google.com/file/d/1hOaQ2Mi72_bA9QUv8dnIa_hKymUO8RsV/view?usp=sharing)|
 | 🔖 **SPRINT 3** | 11/05 - 31/05 |🚧 | 🚧 |
 
 ---

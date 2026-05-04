@@ -125,8 +125,9 @@
     },
 
     async gerarPDF() {
+      const record = store.registros.find(r => r.nome === store.filters.tipo && r.ano === store.filters.ano)
       const payload = {
-        distribuidora_id: this.filters.distribuidora_id,
+        distribuidora_id: record ? record.id : '',
         ano: this.filters.ano
       }
       if (!payload.distribuidora_id || !payload.ano) {

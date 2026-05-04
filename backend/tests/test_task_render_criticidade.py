@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from celery.exceptions import Retry
 from shapely.geometry import LineString, mapping
 
 from backend.tasks.task_render_criticidade import (
@@ -103,18 +102,28 @@ def test_cor_score_acima_50_retorna_vermelho():
 # ---------------------------------------------------------------------------
 
 
-def test_render_tabela_retry_quando_score_ausente():
+def test_render_tabela_skipped_quando_score_ausente():
     db = _make_db(score_doc=None)
-    with patch(PATCH_DB, return_value=db):
-        with pytest.raises(Retry):
-            task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 0),
+        patch('backend.tasks.task_render_criticidade.time.sleep'),
+    ):
+        result = task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+    assert result['status'] == 'skipped'
+    assert result['reason'] == 'timeout_waiting_data'
 
 
-def test_render_tabela_retry_quando_mapa_ausente():
+def test_render_tabela_skipped_quando_mapa_ausente():
     db = _make_db(mapa_doc=None)
-    with patch(PATCH_DB, return_value=db):
-        with pytest.raises(Retry):
-            task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 0),
+        patch('backend.tasks.task_render_criticidade.time.sleep'),
+    ):
+        result = task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+    assert result['status'] == 'skipped'
+    assert result['reason'] == 'timeout_waiting_data'
 
 
 def test_render_tabela_sem_conjuntos_retorna_skipped():
@@ -170,29 +179,60 @@ def test_render_tabela_usa_nome_da_distribuidora_do_score_doc(tmp_path):
     assert 'ENEL_RJ_CUSTOM' in str(saved_path)
 
 
+def test_render_tabela_retry_quando_score_ausente(tmp_path):
+    """Testa que a tarefa faz retry quando score está ausente inicialmente."""
+    db = _make_db()
+    # Mock find_one to return None on first 2 calls, then the data
+    db['score_criticidade'].find_one.side_effect = [None, None, _SCORE_DOC]
+    db['mapa_criticidade'].find_one.side_effect = [None, None, _MAPA_DOC]
+
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 5),
+        patch('backend.tasks.task_render_criticidade.time.sleep') as mock_sleep,
+        patch(PATCH_SAVEFIG),
+        patch(PATCH_CLOSE),
+        patch(PATCH_OUTPUT_DIR, return_value=tmp_path),
+    ):
+        result = task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+
+    assert result['status'] == 'done'
+    assert mock_sleep.call_count == 2  # Slept twice before finding data
+
+
 # ---------------------------------------------------------------------------
 # task_render_mapa_calor
 # ---------------------------------------------------------------------------
 
 
-def test_render_mapa_retry_quando_score_ausente():
+def test_render_mapa_skipped_quando_score_ausente():
     db = _make_db(score_doc=None)
-    with patch(PATCH_DB, return_value=db):
-        with pytest.raises(Retry):
-            task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 0),
+        patch('backend.tasks.task_render_criticidade.time.sleep'),
+    ):
+        result = task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+    assert result['status'] == 'skipped'
+    assert result['reason'] == 'timeout_waiting_data'
 
 
-def test_render_mapa_retry_quando_mapa_ausente():
+def test_render_mapa_skipped_quando_mapa_ausente():
     db = _make_db(mapa_doc=None)
-    with patch(PATCH_DB, return_value=db):
-        with pytest.raises(Retry):
-            task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 0),
+        patch('backend.tasks.task_render_criticidade.time.sleep'),
+    ):
+        result = task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
+    assert result['status'] == 'skipped'
+    assert result['reason'] == 'timeout_waiting_data'
 
 
-def test_render_mapa_retry_quando_job_id_ausente():
+def test_render_mapa_error_quando_job_id_ausente():
     db = _make_db(mapa_doc={**_MAPA_DOC, 'job_id': None})
     with patch(PATCH_DB, return_value=db):
-        with pytest.raises(Retry):
+        with pytest.raises(RuntimeError, match='job_id ausente'):
             task_render_mapa_calor.run('job-1', 'ENEL RJ', 2024)
 
 
@@ -282,9 +322,24 @@ def test_render_tabela_persiste_path_no_mongo_ao_concluir(tmp_path):
     )
 
 
-def test_render_tabela_persiste_null_no_mongo_quando_skipped():
+def test_render_tabela_persiste_null_no_mongo_quando_no_conjuntos():
     db = _make_db(mapa_doc={**_MAPA_DOC, 'conjuntos': []})
     with patch(PATCH_DB, return_value=db):
+        task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
+
+    db['jobs'].update_one.assert_called_once_with(
+        {'job_id': 'job-1'},
+        {'$set': {'render_paths.tabela_score': None}},
+    )
+
+
+def test_render_tabela_persiste_null_no_mongo_quando_timeout():
+    db = _make_db(score_doc=None)
+    with (
+        patch(PATCH_DB, return_value=db),
+        patch('backend.tasks.task_render_criticidade.MAX_WAIT_RETRIES', 0),
+        patch('backend.tasks.task_render_criticidade.time.sleep'),
+    ):
         task_render_tabela_score.run('job-1', 'ENEL RJ', 2024)
 
     db['jobs'].update_one.assert_called_once_with(

@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from celery.exceptions import Retry
 
 from backend.tasks.task_render_tam import task_render_grafico_tam
 
@@ -38,10 +37,13 @@ def _make_db(dados=None):
 # ---------------------------------------------------------------------------
 
 
-def test_render_tam_retry_quando_dados_ausentes():
+def test_render_tam_levanta_runtime_error_quando_dados_ausentes():
     db = _make_db(dados=[])
-    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
-        with pytest.raises(Retry):
+    with (
+        patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{TASK_MODULE}.MAX_WAIT_RETRIES', 0),
+    ):
+        with pytest.raises(RuntimeError):
             task_render_grafico_tam.run(JOB_ID)
 
 
@@ -106,10 +108,13 @@ def test_render_tam_persiste_path_no_mongo_ao_concluir(tmp_path):
 
 
 def test_render_tam_nao_persiste_quando_dados_ausentes():
-    """Retry antes do plot — update_one não deve ser chamado."""
+    """RuntimeError antes do plot — update_one não deve ser chamado."""
     db = _make_db(dados=[])
-    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
-        with pytest.raises(Retry):
+    with (
+        patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{TASK_MODULE}.MAX_WAIT_RETRIES', 0),
+    ):
+        with pytest.raises(RuntimeError):
             task_render_grafico_tam.run(JOB_ID)
 
     db['jobs'].update_one.assert_not_called()

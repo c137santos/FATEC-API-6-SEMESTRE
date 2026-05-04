@@ -1,5 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch, call
+from celery.exceptions import Retry
 
 from backend.tasks.task_report import task_gerar_report
 
@@ -78,18 +79,12 @@ def test_task_report_persiste_completed_no_mongo(tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_task_report_retorna_failed_quando_job_nao_encontrado():
+def test_task_report_dispara_retry_quando_job_nao_encontrado():
     db = _make_db(job_doc=None)
 
     with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
-        result = task_gerar_report.run(JOB_ID)
-
-    assert result['status'] == 'failed'
-    assert result['reason'] == 'job_not_found'
-
-    update_call = db['jobs'].update_one.call_args
-    _, update_doc = update_call.args
-    assert update_doc['$set']['report_status'] == 'failed'
+        with pytest.raises(Retry):
+            task_gerar_report.run(JOB_ID)
 
 
 # ---------------------------------------------------------------------------
@@ -123,24 +118,14 @@ def test_task_report_persiste_failed_quando_erro_de_escrita():
 # ---------------------------------------------------------------------------
 
 
-def test_task_report_usa_render_paths_vazio_quando_ausente(tmp_path):
-    """Task must succeed even when render_paths is missing — service handles placeholders."""
+def test_task_report_dispara_retry_quando_render_paths_incompleto():
+    """render_paths ausente ou sem as chaves obrigatórias → retry aguardando renders."""
     job_doc_sem_paths = {**_JOB_DOC, 'render_paths': None}
     db = _make_db(job_doc=job_doc_sem_paths)
-    fake_pdf = str(tmp_path / 'report.pdf')
 
-    with (
-        patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db),
-        patch(f'{TASK_MODULE}.gerar_pdf_report', return_value=fake_pdf) as mock_gerar,
-    ):
-        result = task_gerar_report.run(JOB_ID)
-
-    assert result['status'] == 'completed'
-    mock_gerar.assert_called_once_with(
-        job_id=JOB_ID,
-        render_paths={},
-        job_meta=job_doc_sem_paths,
-    )
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        with pytest.raises(Retry):
+            task_gerar_report.run(JOB_ID)
 
 
 # ---------------------------------------------------------------------------

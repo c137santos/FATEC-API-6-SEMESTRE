@@ -135,12 +135,11 @@ def test_task_score_criticidade_retry_quando_job_pendente():
             task_score_criticidade.run('job-1', 'ENEL RJ', 2024)
 
 
-def test_task_score_criticidade_sem_realizados_retorna_skipped():
+def test_task_score_criticidade_sem_realizados_levanta_runtime_error():
     db = _make_db(job={'status': 'completed'}, realizados=[], limites=[])
     with patch(PATCH_DB, return_value=db):
-        result = task_score_criticidade.run('job-1', 'ENEL RJ', 2024)
-    assert result['status'] == 'skipped'
-    assert result['reason'] == 'no_data'
+        with pytest.raises(RuntimeError):
+            task_score_criticidade.run('job-1', 'ENEL RJ', 2024)
 
 
 def test_task_score_criticidade_sem_dados_completos_retorna_skipped():
@@ -228,12 +227,11 @@ def test_task_mapa_criticidade_retry_quando_job_nao_completado():
             task_mapa_criticidade.run('job-1', 'dist-001', 'ENEL RJ', 2024)
 
 
-def test_task_mapa_criticidade_sem_realizados_retorna_skipped():
+def test_task_mapa_criticidade_sem_realizados_levanta_runtime_error():
     db = _make_db(job={'status': 'completed'}, realizados=[])
     with patch(PATCH_DB, return_value=db):
-        result = task_mapa_criticidade.run('job-1', 'dist-001', 'ENEL RJ', 2024)
-    assert result['status'] == 'skipped'
-    assert result['reason'] == 'no_data'
+        with pytest.raises(RuntimeError):
+            task_mapa_criticidade.run('job-1', 'dist-001', 'ENEL RJ', 2024)
 
 
 def test_task_mapa_criticidade_happy_path():

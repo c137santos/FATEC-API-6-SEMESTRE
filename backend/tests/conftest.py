@@ -262,7 +262,7 @@ def pytest_sessionstart(session):
 @pytest.fixture(scope="session", autouse=True)
 def setup_celery_test_config():
     """
-    Força o Celery a usar configurações de teste, independente de 
+    Força o Celery a usar configurações de teste, independente de
     quando as variáveis de ambiente foram setadas.
     """
     celery_app.conf.update(
@@ -271,9 +271,15 @@ def setup_celery_test_config():
 
         broker_url="memory://",
         result_backend="cache+memory://",
-        
+
         broker_connection_retry_on_startup=False,
         broker_connection_max_retries=1
     )
-    
+
     yield celery_app
+
+
+@pytest.fixture(autouse=True)
+def mock_time_sleep():
+    with patch('time.sleep'):
+        yield

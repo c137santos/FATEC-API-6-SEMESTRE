@@ -17,7 +17,6 @@ SSDMT_PARALLEL_CHUNK_SIZE = int(os.getenv('SSDMT_PARALLEL_CHUNK_SIZE', '0'))
 REQUIRED_SCHEMA: dict[str, set[str]] = {
     'CTMT': {
         'COD_ID',
-        'NOME',
         'DIST',
         'ENE_01',
         'ENE_02',
@@ -73,7 +72,7 @@ REQUIRED_SCHEMA: dict[str, set[str]] = {
         'COMP',
         'DIST',
     },
-    'CONJ': {'COD_ID', 'NOME', 'DIST'},
+    'CONJ': {'COD_ID', 'DIST'},
     'UNSEMT': {'COD_ID', 'CONJ', 'TIP_UNID', 'SIT_ATIV'},
 }
 

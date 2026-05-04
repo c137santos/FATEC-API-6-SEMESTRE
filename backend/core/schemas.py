@@ -82,6 +82,7 @@ class DistributorMetadata(BaseModel):
     dist_name: str
     job_id: str
 
+
 class ReportStatusResponse(BaseModel):
     job_id: str
     etl_status: str
@@ -101,6 +102,6 @@ class TamResponse(BaseModel):
     data_processamento: str
     CONJ: str
     CTMT: str
-    NOME: str
+    NOME: str | None
     COMP_KM: float
     model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,7 @@
 import logging
 import json
 import os
+import shutil
 from datetime import datetime, timezone
 from itertools import islice
 from pathlib import Path
@@ -296,7 +297,6 @@ def _persist_unsemt(
 
 REQUIRED_CTMT_COLUMNS: set[str] = {
     'COD_ID',
-    'NOME',
     'DIST',
     'ENE_01',
     'ENE_02',
@@ -347,7 +347,7 @@ REQUIRED_CTMT_COLUMNS: set[str] = {
 }
 
 REQUIRED_UNSEMT_COLUMNS: set[str] = {'COD_ID', 'CONJ', 'TIP_UNID', 'SIT_ATIV'}
-REQUIRED_CONJ_COLUMNS: set[str] = {'COD_ID', 'NOME', 'DIST'}
+REQUIRED_CONJ_COLUMNS: set[str] = {'COD_ID', 'DIST'}
 REQUIRED_SSDMT_COLUMNS: set[str] = {'COD_ID', 'CTMT', 'CONJ', 'COMP', 'DIST'}
 SSDMT_BATCH_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
 SSDMT_PROGRESS_LOG_INTERVAL_BATCHES = int(
@@ -1010,10 +1010,16 @@ def task_finalizar(
             unsemt_total,
         )
 
-        try:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
+        logger.info(
+            '[task_finalizar] Diretorio temporario removido. job_id=%s tmp_dir=%s',
+            job_id,
+            tmp_dir,
+        )
 
+        try:
             job_info = _get_collection('jobs').find_one({'job_id': job_id})
-            
+
             if not job_info:
                 logger.error(
                     '[task_finalizar] Metadados do job não encontrados para disparar TAM. job_id=%s',
@@ -1036,7 +1042,7 @@ def task_finalizar(
                 else:
                     try:
                         date_gdb_int = int(date_gdb)
-                    except (TypeError, ValueError):
+                    except TypeError, ValueError:
                         logger.error(
                             '[task_finalizar] Campo ano_gdb inválido para disparar TAM. job_id=%s ano_gdb=%r',
                             job_id,
@@ -1044,15 +1050,22 @@ def task_finalizar(
                         )
                     else:
                         metadados_dist = {
-                            "id": distribuidora_id,
-                            "dist_name": dist_name,
-                            "date_gdb": date_gdb_int
+                            'id': distribuidora_id,
+                            'dist_name': dist_name,
+                            'date_gdb': date_gdb_int,
                         }
-                        logger.info('[task_finalizar] Disparando cálculo automático do TAM. job_id=%s', job_id)
+                        logger.info(
+                            '[task_finalizar] Disparando cálculo automático do TAM. job_id=%s',
+                            job_id,
+                        )
 
         except Exception as tam_exc:
-            logger.error('[task_finalizar] Falha ao disparar task do TAM. job_id=%s erro=%s', job_id, tam_exc)
-        
+            logger.error(
+                '[task_finalizar] Falha ao disparar task do TAM. job_id=%s erro=%s',
+                job_id,
+                tam_exc,
+            )
+
         return {
             'job_id': job_id,
             'distribuidora_id': distribuidora_id,

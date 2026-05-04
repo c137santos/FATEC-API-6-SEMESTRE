@@ -23,6 +23,8 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
     session,
     monkeypatch,
 ):
+    _mock_pipeline(monkeypatch)
+
     session.add(
         Distribuidora(
             id='item-123',
@@ -185,6 +187,9 @@ async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
     )
     await session.commit()
 
+    mock_chain = MagicMock()
+    mock_chain.return_value.delay.side_effect = RuntimeError('ANEEL indisponível no momento')
+    monkeypatch.setattr(_CHAIN_PATH, mock_chain)
 
     response = await client.post(
         '/pipeline/trigger',

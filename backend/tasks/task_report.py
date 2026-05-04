@@ -2,6 +2,7 @@ import logging
 from datetime import datetime
 
 from backend.database import get_mongo_sync_db
+from backend.email.envio_email import send_email_sync
 from backend.services.report import gerar_pdf_report
 from backend.tasks.celery_app import celery_app
 
@@ -45,6 +46,14 @@ def task_gerar_report(self, job_id: str) -> dict:
             }},
         )
         logger.info('[task_gerar_report] Concluida. job_id=%s path=%s', job_id, pdf_path)
+
+        user_email = job_doc.get('user_email')
+        if user_email:
+            try:
+                send_email_sync(recipient_email=user_email, pdf_path=pdf_path)
+            except Exception:
+                logger.exception('[task_gerar_report] Falha ao enviar e-mail. job_id=%s email=%s', job_id, user_email)
+
         return {'job_id': job_id, 'status': 'completed', 'path': pdf_path}
 
     except Exception as exc:

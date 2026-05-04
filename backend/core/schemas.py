@@ -82,6 +82,13 @@ class DistributorMetadata(BaseModel):
     dist_name: str
     job_id: str
 
+class ReportStatusResponse(BaseModel):
+    job_id: str
+    etl_status: str
+    report_status: str
+    report_pdf_path: str | None
+
+
 class TamRequest(BaseModel):
     job_id: str
 

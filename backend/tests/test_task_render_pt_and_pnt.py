@@ -19,18 +19,6 @@ RECORDS = [
 ]
 
 
-@pytest.fixture(autouse=True)
-def _mock_retry():
-    with patch.object(
-        task_render_pt_pnt,
-        'retry',
-        side_effect=Exception('retry triggered'),
-    ):
-        task_render_pt_pnt.push_request()
-        yield
-        task_render_pt_pnt.pop_request()
-
-
 @pytest.fixture
 def mock_output_dir(tmp_path):
     with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
@@ -69,9 +57,10 @@ def mock_mongo_sem_records():
         yield mock_db
 
 
-def test_dispara_retry_quando_doc_nao_encontrado(mock_mongo_sem_doc):
-    with pytest.raises(Exception, match='retry triggered'):
-        task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
+def test_levanta_runtime_error_quando_doc_nao_encontrado(mock_mongo_sem_doc):
+    with patch(f'{TASK_MODULE}.MAX_WAIT_RETRIES', 0):
+        with pytest.raises(RuntimeError):
+            task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
 
 def test_retorna_skipped_quando_records_vazio(mock_mongo_sem_records):
@@ -116,4 +105,27 @@ def test_busca_doc_com_job_id_e_distribuidora_id(
     mock_mongo_com_doc['pt_pnt_resultados'].find_one.assert_called_once_with(
         {'job_id': JOB_ID, 'distribuidora_id': DIST_ID},
         {'_id': 0},
+    )
+
+
+# ---------------------------------------------------------------------------
+# RF-1: persistência em jobs.render_paths
+# ---------------------------------------------------------------------------
+
+
+def test_persiste_path_no_mongo_ao_concluir(mock_mongo_com_doc, mock_output_dir):
+    result = task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
+
+    mock_mongo_com_doc['jobs'].update_one.assert_called_once_with(
+        {'job_id': JOB_ID},
+        {'$set': {'render_paths.pt_pnt': result['path']}},
+    )
+
+
+def test_persiste_null_no_mongo_quando_skipped(mock_mongo_sem_records):
+    task_render_pt_pnt.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
+
+    mock_mongo_sem_records['jobs'].update_one.assert_called_once_with(
+        {'job_id': JOB_ID},
+        {'$set': {'render_paths.pt_pnt': None}},
     )

@@ -1,4 +1,5 @@
 import logging
+import time
 from functools import lru_cache
 from pathlib import Path
 
@@ -79,11 +80,9 @@ def _estilizar_eixos(ax):
     )
 
 
-@celery_app.task(
-    bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.render_pt_pnt'
-)
+@celery_app.task(name='etl.render_pt_pnt')
 def task_render_pt_pnt(
-    self, job_id: str, distribuidora_id: str, sig_agente: str, ano: int
+    job_id: str, distribuidora_id: str, sig_agente: str, ano: int
 ) -> dict:
     logger.info('[task_render_pt_pnt] Inicio. job_id=%s', job_id)
 
@@ -93,14 +92,27 @@ def task_render_pt_pnt(
         {'_id': 0},
     )
 
-    if not doc:
-        raise self.retry(countdown=WAIT_COUNTDOWN)
+    for attempt in range(MAX_WAIT_RETRIES):
+        if doc:
+            break
+        logger.info('[task_render_pt_pnt] Aguardando dados. tentativa=%d job_id=%s', attempt + 1, job_id)
+        time.sleep(WAIT_COUNTDOWN)
+        doc = db['pt_pnt_resultados'].find_one(
+            {'job_id': job_id, 'distribuidora_id': distribuidora_id},
+            {'_id': 0},
+        )
+    else:
+        raise RuntimeError(f'[task_render_pt_pnt] Timeout aguardando dados. job_id={job_id}')
 
     records = doc.get('records', [])
     if not records:
         logger.warning(
             '[task_render_pt_pnt] Nenhum registro disponível. job_id=%s',
             job_id,
+        )
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.pt_pnt': None}},
         )
         return {'job_id': job_id, 'status': 'skipped', 'reason': 'no_records'}
 
@@ -147,9 +159,14 @@ def task_render_pt_pnt(
 
     plt.tight_layout()
 
-    out_path = _output_dir() / f'pt_pnt_{sig_agente}_{ano}.png'
+    out_path = _output_dir() / f'pt_pnt_{sig_agente}_{ano}_{job_id}.png'
     plt.savefig(out_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
+
+    db['jobs'].update_one(
+        {'job_id': job_id},
+        {'$set': {'render_paths.pt_pnt': str(out_path)}},
+    )
 
     logger.info(
         '[task_render_pt_pnt] Concluida. job_id=%s path=%s',

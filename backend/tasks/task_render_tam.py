@@ -1,4 +1,5 @@
 import logging
+import time
 from functools import lru_cache
 from pathlib import Path
 
@@ -23,12 +24,8 @@ def _output_dir() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
-@celery_app.task(
-    bind=True, 
-    max_retries=MAX_WAIT_RETRIES, 
-    name='etl.render_grafico_tam'
-)
-def task_render_grafico_tam(self, job_id: str) -> dict:
+@celery_app.task(name='etl.render_grafico_tam')
+def task_render_grafico_tam(job_id: str) -> dict:
     """
     Task síncrona para geração do gráfico TAM com lógica de retentativa.
     """
@@ -46,9 +43,15 @@ def task_render_grafico_tam(self, job_id: str) -> dict:
     cursor = db['TAM'].find({'job_id': job_id}, projection)
     dados = list(cursor)
 
-    if not dados:
-        logger.info('[task_render_grafico_tam] Dados não encontrados, tentando novamente... job_id=%s', job_id)
-        raise self.retry(countdown=WAIT_COUNTDOWN)
+    for attempt in range(MAX_WAIT_RETRIES):
+        if dados:
+            break
+        logger.info('[task_render_grafico_tam] Aguardando dados TAM. tentativa=%d job_id=%s', attempt + 1, job_id)
+        time.sleep(WAIT_COUNTDOWN)
+        cursor = db['TAM'].find({'job_id': job_id}, projection)
+        dados = list(cursor)
+    else:
+        raise RuntimeError(f'[task_render_grafico_tam] Timeout aguardando dados TAM. job_id={job_id}')
 
     try:
         df = pd.DataFrame(dados)
@@ -102,13 +105,19 @@ def task_render_grafico_tam(self, job_id: str) -> dict:
         plt.savefig(out_path, dpi=150, bbox_inches='tight')
         plt.close(fig)
 
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'render_paths.grafico_tam': str(out_path)}},
+        )
+
         logger.info('[task_render_grafico_tam] Concluída. job_id=%s path=%s', job_id, out_path)
-        
+
         return {
-            'job_id': job_id, 
-            'status': 'done', 
+            'job_id': job_id,
+            'status': 'done',
             'path': str(out_path)
         }
 
-    except Exception:
-         logger.exception('[task_render_grafico_tam] Erro fatal. job_id=%s', job_id)
+    except Exception as exc:
+        logger.exception('[task_render_grafico_tam] Erro fatal. job_id=%s', job_id)
+        return {'job_id': job_id, 'status': 'failed', 'reason': str(exc)}

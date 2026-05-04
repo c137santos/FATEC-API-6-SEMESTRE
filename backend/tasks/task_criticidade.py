@@ -97,12 +97,23 @@ def task_score_criticidade(
     dados_limites = _buscar_limites(db, ano, distribuidora)
 
     if not dados_realizados or not dados_limites:
-        logger.warning(
-            '[task_score_criticidade] Dados não encontrados. distribuidora=%s ano=%s',
-            distribuidora,
-            ano,
+        msg = (
+            '\n'
+            '=' * 70 + '\n'
+            'ERRO CRÍTICO: Dados DEC/FEC ausentes — pipeline interrompida\n'
+            '=' * 70 + '\n'
+            f'  Distribuidora : {distribuidora.upper()}\n'
+            f'  Ano           : {ano}\n'
+            '\n'
+            '  Nenhum registro encontrado nas coleções do MongoDB:\n'
+            f'    dec_fec_realizado  (sig_agente={distribuidora.upper()}, ano_indice={ano})\n'
+            f'    dec_fec_limite     (sig_agente={distribuidora.upper()}, ano_limite={ano})\n'
+            '\n'
+            '  Carregue os dados DEC/FEC antes de executar a pipeline.\n'
+            '=' * 70
         )
-        return {'job_id': job_id, 'status': 'skipped', 'reason': 'no_data'}
+        logger.error(msg)
+        raise RuntimeError(msg)
 
     realizados_dict = {
         (r['sig_agente'], r['ide_conj'], r['sig_indicador']): r[
@@ -174,7 +185,7 @@ def task_score_criticidade(
     }
 
     db['score_criticidade'].update_one(
-        {'ano': ano, 'distribuidora': distribuidora.upper()},
+        {'ano': ano, 'distribuidora': distribuidora.upper(), 'job_id': job_id},
         {'$set': resultado},
         upsert=True,
     )
@@ -185,6 +196,7 @@ def task_score_criticidade(
         score_medio,
     )
     return {'job_id': job_id, 'status': 'done', 'score': score_medio}
+
 
 
 @celery_app.task(
@@ -202,12 +214,22 @@ def task_mapa_criticidade(
 
     dados_realizados = _buscar_realizados(db, ano, distribuidora)
     if not dados_realizados:
-        logger.warning(
-            '[task_mapa_criticidade] Sem dados realizados. distribuidora=%s ano=%s',
-            distribuidora,
-            ano,
+        msg = (
+            '\n'
+            '=' * 70 + '\n'
+            'ERRO CRÍTICO: Dados DEC/FEC ausentes — pipeline interrompida\n'
+            '=' * 70 + '\n'
+            f'  Distribuidora : {distribuidora.upper()}\n'
+            f'  Ano           : {ano}\n'
+            '\n'
+            '  Nenhum registro encontrado na coleção do MongoDB:\n'
+            f'    dec_fec_realizado  (sig_agente={distribuidora.upper()}, ano_indice={ano})\n'
+            '\n'
+            '  Carregue os dados DEC/FEC antes de executar a pipeline.\n'
+            '=' * 70
         )
-        return {'job_id': job_id, 'status': 'skipped', 'reason': 'no_data'}
+        logger.error(msg)
+        raise RuntimeError(msg)
 
     dados_limites = _buscar_limites(db, ano, distribuidora)
 
@@ -270,7 +292,7 @@ def task_mapa_criticidade(
     }
 
     db['mapa_criticidade'].update_one(
-        {'distribuidora_id': distribuidora_id, 'ano': ano},
+        {'distribuidora_id': distribuidora_id, 'ano': ano, 'job_id': job_id},
         {'$set': documento},
         upsert=True,
     )

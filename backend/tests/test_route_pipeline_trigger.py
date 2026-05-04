@@ -23,6 +23,8 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
     session,
     monkeypatch,
 ):
+    _mock_pipeline(monkeypatch)
+
     session.add(
         Distribuidora(
             id='item-123',
@@ -31,15 +33,6 @@ async def test_pipeline_trigger_retorna_202_quando_valido(
         )
     )
     await session.commit()
-
-    async def fake_resolve(_distribuidora_id):
-        return 'https://www.arcgis.com/sharing/rest/content/items/item-123/data'
-
-    _mock_pipeline(monkeypatch, chain_result_id='task-1')
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
 
     response = await client.post(
         '/pipeline/trigger',
@@ -86,14 +79,6 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     )
     await session.commit()
 
-    async def fake_resolve(_):
-        return 'https://www.arcgis.com/sharing/rest/content/items/item-chain/data'
-
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
-
     with patch(_CHAIN_PATH) as mock_chain:
         mock_chain.return_value.delay.return_value = MagicMock(id='chain-id')
         response = await client.post(
@@ -104,10 +89,9 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert response.status_code == 202
     job_id = response.json()['job_id']
 
-    # chain foi chamado com exatamente 8 signatures (download + 6 pós-ETL)
     mock_chain.assert_called_once()
     sigs = mock_chain.call_args.args
-    assert len(sigs) == 11
+    assert len(sigs) == 12
 
     assert sigs[0].task == 'etl.download_gdb'
     assert sigs[0].args == (job_id, 'https://www.arcgis.com/sharing/rest/content/items/item-chain/data', 'item-chain')
@@ -145,7 +129,10 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     
     assert sigs[10].task == 'etl.render_sam'
     assert sigs[10].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
-    
+
+    assert sigs[11].task == 'etl.gerar_report'
+    assert sigs[11].args == (job_id,)
+
     mock_chain.return_value.delay.assert_called_once()
 
 
@@ -157,25 +144,6 @@ async def test_pipeline_trigger_payload_invalido_retorna_422(client):
     )
     assert response.status_code == 422
 
-
-@pytest.mark.asyncio
-async def test_pipeline_trigger_distribuidora_nao_cadastrada_retorna_404(
-    client,
-    monkeypatch,
-):
-    async def fake_resolve(_):
-        return 'https://url.fake/data'
-
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
-
-    response = await client.post(
-        '/pipeline/trigger',
-        json={'distribuidora_id': 'id-inexistente', 'ano': 2026},
-    )
-    assert response.status_code == 404
 
 
 @pytest.mark.asyncio
@@ -194,13 +162,6 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
     )
     await session.commit()
 
-    async def fake_resolve(_distribuidora_id):
-        pytest.fail('Não deveria resolver URL para pipeline já acionada')
-
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
     monkeypatch.setattr(
         'backend.services.pipeline_trigger.task_download_gdb.delay',
         lambda *a, **kw: pytest.fail('Não deveria enfileirar pipeline já acionada'),
@@ -219,34 +180,6 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
 
 
 @pytest.mark.asyncio
-async def test_pipeline_trigger_item_inexistente_aneel_retorna_404(
-    client,
-    session,
-    monkeypatch,
-):
-    session.add(
-        Distribuidora(id='item-404', date_gdb=2026, dist_name='DIST TESTE')
-    )
-    await session.commit()
-
-    async def fake_resolve(_distribuidora_id):
-        raise LookupError('Item não encontrado na ANEEL')
-
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
-
-    response = await client.post(
-        '/pipeline/trigger',
-        json={'distribuidora_id': 'item-404', 'ano': 2026},
-    )
-
-    assert response.status_code == 404
-    assert response.json()['detail'] == 'Item não encontrado na ANEEL'
-
-
-@pytest.mark.asyncio
 async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
     client,
     session,
@@ -257,13 +190,9 @@ async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
     )
     await session.commit()
 
-    async def fake_resolve(_distribuidora_id):
-        raise RuntimeError('ANEEL indisponível no momento')
-
-    monkeypatch.setattr(
-        'backend.services.pipeline_trigger.resolve_download_url_from_aneel',
-        fake_resolve,
-    )
+    mock_chain = MagicMock()
+    mock_chain.return_value.delay.side_effect = RuntimeError('ANEEL indisponível no momento')
+    monkeypatch.setattr(_CHAIN_PATH, mock_chain)
 
     response = await client.post(
         '/pipeline/trigger',

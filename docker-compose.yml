@@ -9,12 +9,14 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - REPORTS_DIR=/app/output/reports
     depends_on:
       - db
       - mongodb
       - redis
     volumes:
       - gdb_data:/data
+      - ./output:/app/output
       - /var/run/docker.sock:/var/run/docker.sock
 
   worker:
@@ -37,10 +39,12 @@ services:
       - SSDMT_BATCH_SIZE=${SSDMT_BATCH_SIZE:-10000}
       - SSDMT_PROGRESS_LOG_INTERVAL_BATCHES=${SSDMT_PROGRESS_LOG_INTERVAL_BATCHES:-25}
       - SSDMT_PARALLEL_CHUNK_SIZE=${SSDMT_PARALLEL_CHUNK_SIZE:-0}
+      - REPORTS_DIR=/app/output/reports
     depends_on:
       - redis
     volumes:
       - gdb_data:/data
+      - ./output:/app/output
     cpus: ${WORKER_CPUS:-4.0}
     mem_limit: ${WORKER_MEMORY:-8g}
 

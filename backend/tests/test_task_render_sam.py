@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -35,6 +36,12 @@ _DOC_BASE = {
         for i in range(5)
     ],
 }
+
+
+@pytest.fixture
+def local_tmp_path():
+    with tempfile.TemporaryDirectory() as tmp:
+        yield Path(tmp)
 
 
 @pytest.fixture(autouse=True)
@@ -76,8 +83,10 @@ def mock_mongo_sem_records():
         yield mock_db
 
 
-def test_retorna_status_done_com_doc_valido(mock_mongo_com_doc, tmp_path):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+def test_retorna_status_done_com_doc_valido(
+    mock_mongo_com_doc, local_tmp_path
+):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     assert result['status'] == 'done'
@@ -85,8 +94,8 @@ def test_retorna_status_done_com_doc_valido(mock_mongo_com_doc, tmp_path):
     assert 'path' in result
 
 
-def test_salva_arquivo_png(mock_mongo_com_doc, tmp_path):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+def test_salva_arquivo_png(mock_mongo_com_doc, local_tmp_path):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     out = Path(result['path'])
@@ -94,15 +103,15 @@ def test_salva_arquivo_png(mock_mongo_com_doc, tmp_path):
     assert out.suffix == '.png'
 
 
-def test_nome_arquivo_contem_sig_agente(mock_mongo_com_doc, tmp_path):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+def test_nome_arquivo_contem_sig_agente(mock_mongo_com_doc, local_tmp_path):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     assert SIG_AGENTE in Path(result['path']).name
 
 
-def test_nome_arquivo_contem_ano(mock_mongo_com_doc, tmp_path):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+def test_nome_arquivo_contem_ano(mock_mongo_com_doc, local_tmp_path):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     assert str(ANO) in Path(result['path']).name
@@ -114,17 +123,19 @@ def test_dispara_retry_quando_doc_nao_encontrado(mock_mongo_sem_doc):
 
 
 def test_retorna_skipped_quando_records_vazio(
-    mock_mongo_sem_records, tmp_path
+    mock_mongo_sem_records, local_tmp_path
 ):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     assert result['status'] == 'skipped'
     assert result['reason'] == 'no_records'
 
 
-def test_busca_por_job_id_e_distribuidora_id(mock_mongo_com_doc, tmp_path):
-    with patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path):
+def test_busca_por_job_id_e_distribuidora_id(
+    mock_mongo_com_doc, local_tmp_path
+):
+    with patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path):
         task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     mock_mongo_com_doc['sam_resultados'].find_one.assert_called_once_with(
@@ -133,7 +144,7 @@ def test_busca_por_job_id_e_distribuidora_id(mock_mongo_com_doc, tmp_path):
     )
 
 
-def test_plota_todos_os_records(tmp_path):
+def test_plota_todos_os_records(local_tmp_path):
     doc = {
         **_DOC_BASE,
         'records': [
@@ -145,14 +156,14 @@ def test_plota_todos_os_records(tmp_path):
 
     with (
         patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=mock_db),
-        patch(f'{TASK_MODULE}._output_dir', return_value=tmp_path),
+        patch(f'{TASK_MODULE}._output_dir', return_value=local_tmp_path),
     ):
         result = task_render_sam.run(JOB_ID, DIST_ID, SIG_AGENTE, ANO)
 
     assert result['status'] == 'done'
 
 
-def test_propaga_excecao_do_mongo(tmp_path):
+def test_propaga_excecao_do_mongo():
     with (
         patch(
             f'{TASK_MODULE}.get_mongo_sync_db',

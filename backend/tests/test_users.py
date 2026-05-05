@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from core.schemas import UserPublic
+from backend.core.schemas import UserPublic
 
 
 async def test_create_user(client):

@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from core.models import User
+from backend.core.models import User
 
 
 async def test_create_user(session):

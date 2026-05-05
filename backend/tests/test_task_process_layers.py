@@ -801,8 +801,8 @@ def test_task_finalizar_persiste_ssdmt_full_em_mongo(tmp_path):
                 }
             ],
             'job-1',
-            '/tmp/a.zip',
-            '/tmp',
+            str(tmp_path / 'a.zip'),
+            str(tmp_path),
         )
 
     assert result['status'] == 'completed'
@@ -913,8 +913,8 @@ def test_task_finalizar_consolida_ssdmt_chunk(tmp_path):
                 },
             ],
             'job-2',
-            '/tmp/a.zip',
-            '/tmp',
+            str(tmp_path / 'a.zip'),
+            str(tmp_path),
         )
 
     assert result['status'] == 'completed'
@@ -993,8 +993,8 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
                     }
                 ],
                 'job-3',
-                '/tmp/a.zip',
-                '/tmp',
+                str(tmp_path / 'a.zip'),
+                str(tmp_path),
             )
 
     assert tab_col.docs == []
@@ -1002,7 +1002,7 @@ def test_task_finalizar_falha_no_ssdmt_faz_rollback(tmp_path):
     assert jobs_col.updates[-1][1]['$set']['status'] == 'failed'
 
 
-def test_task_finalizar_persiste_conj_para_notebooks():
+def test_task_finalizar_persiste_conj_para_notebooks(tmp_path):
     jobs_col = _FakeMongoCollection()
     conj_col = _FakeMongoCollection()
 
@@ -1031,8 +1031,8 @@ def test_task_finalizar_persiste_conj_para_notebooks():
                 }
             ],
             'job-conj-1',
-            '/tmp/a.zip',
-            '/tmp',
+            str(tmp_path / 'a.zip'),
+            str(tmp_path),
         )
 
     assert result['status'] == 'completed'
@@ -1046,7 +1046,7 @@ def test_task_finalizar_persiste_conj_para_notebooks():
     assert jobs_update['conj_total'] == 2
 
 
-def test_task_finalizar_falha_no_conj_faz_rollback():
+def test_task_finalizar_falha_no_conj_faz_rollback(tmp_path):
     jobs_col = _FakeMongoCollection()
     conj_col = _FakeMongoCollection()
     conj_col.fail_on_replace = True
@@ -1078,8 +1078,8 @@ def test_task_finalizar_falha_no_conj_faz_rollback():
                     }
                 ],
                 'job-conj-2',
-                '/tmp/a.zip',
-                '/tmp',
+                str(tmp_path / 'a.zip'),
+                str(tmp_path),
             )
 
     assert jobs_col.updates[-1][1]['$set']['status'] == 'failed'

@@ -1042,7 +1042,7 @@ def task_finalizar(
                 else:
                     try:
                         date_gdb_int = int(date_gdb)
-                    except TypeError, ValueError:
+                    except (TypeError, ValueError):
                         logger.error(
                             '[task_finalizar] Campo ano_gdb inválido para disparar TAM. job_id=%s ano_gdb=%r',
                             job_id,

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thunderstone</title>
+  <link rel="stylesheet" href="./style.css?v=12" />
+<body>
+  <div v-scope class="app">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">
+          <img class="nav-icon" src="./assets/profileicon.svg">PERFIL
+        </button>
+        <button :class="{ 'nav-item' : true,'nav-item--active': screen === 'documents' }" @click="go('documents')">
+          <img class="nav-icon" src="./assets/docsidebaricon.svg">DOCUMENTOS</button>
+        <button :class="{ 'nav-item' : true }" @click="go('login')">SAIR
+          <img class="nav-icon" src="./assets/logouticon.svg">
+        </button>
+      </nav>
+    </aside>
+
+    <div v-if="showSuccessModal" class="modal-backdrop">
+      <div class="modal">
+        <div class="modal-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          <h2 style="color: #DD7230; font-size: 24px; margin-bottom: 16px; font-weight: bold;"> Sucesso! </h2>
+          <p> Seu relatório está sendo compilado e quando estiver pronto </p>
+          <p> será enviado para o e-mail cadastrado. </p>
+          <button class="modal-btn" @click="closeSuccessModal">Ok</button>
+        </div>
+      </div>
+    </div>
+
+    <main class="main">
+      <div class="screen-wrapper" v-if="screen === 'documents'">
+      <div class="screen-title">Geração de  <span style="color: #DD7230; margin-left: 10px;">Documentação</span></div>
+      <div class="screen-subtitle">
+        <p>Selecione os parâmetros necessários para compilar e gerar os relatórios</p>
+        <p>oficiais em formato digital e enviar por e-mail.</p>
+        </div>
+      <section class="card" >
+        <h1 class="card-title">
+          <span class="background-icon">
+            <img src="./assets/Icon.svg" alt="" class="nav-icon">
+          </span> Documentação</h1>
+        <h1 class="card-subtitle">Configuração de exportação de dados</h1>
+        <label class="field">
+          <span class="field-label">SELECIONE DISTRIBUIDORA</span>
+          <input
+            list="lista-distribuidoras"
+            v-model="filters.tipo"
+            @change="selecionarDist"
+            :placeholder="loading ? 'Carregando distribuidoras...' : 'Digite para pesquisar...'"
+            :disabled="loading"
+            class="field-input"
+          />
+          <datalist id="lista-distribuidoras">
+            <option v-for="dist in distOptions" :key="dist.id" :value="dist.nome">
+              {{ dist.nome }}
+            </option>
+          </datalist>
+        </label>
+
+        <label class="field">
+          <span class="field-label">SELECIONE ANO</span>
+          <select v-model="filters.ano">
+            <option value="">Selecione</option>
+            <option
+              v-for="ano in anoOptions"
+              :key="ano"
+              :value="ano"
+              >
+              {{ ano }}
+            </option>
+          </select>
+        </label>
+
+        <div class="info-card">
+          <img src="./assets/infoicon.svg" alt="Info" class="info-icon">
+          <div class="info-text">
+            <p style="margin-bottom: 4px;">A geração do documento pode levar um tempo</p>
+            <p style="margin-bottom: 4px;">dependendo do volume de dados processados para a </p>
+            <p style="margin-bottom: 4px;">distribuidora selecionada.</p>
+          </div>
+        </div>
+
+        <button class="primary-btn" @click="gerarPDF" :disabled="loading">
+          <img src="./assets/pdfbutton.svg" alt="" class="nav-icon">
+          Enviar Documento por E-mail
+        </button>
+        <div class="project-label">Sistema Thunderstone • Acesso Seguro Protegido</div>
+      </section>
+      </div>
+    </main>
+  </div>
+
+<script type="module">
+  import { createApp, reactive } from 'https://unpkg.com/petite-vue@0.4.1?module'
+
+  const store = reactive({
+    screen: 'documents',
+    filters: { tipo: '', distribuidora_id: '', ano: '' },
+    registros: [],
+    distOptions: [],
+    anoOptions: [],
+    showSuccessModal: false,
+
+    closeSuccessModal() {
+    this.showSuccessModal = false
+   },
+
+    selecionarDist() {
+      store.filters.ano = ''
+      const selected = store.distOptions.find(d => d.nome === store.filters.tipo)
+      store.filters.distribuidora_id = selected ? selected.id : ''
+
+      const anos = new Set()
+      store.registros
+        .filter(r => !store.filters.tipo || r.nome === store.filters.tipo)
+        .forEach(r => anos.add(r.ano))
+      store.anoOptions = Array.from(anos).sort((a, b) => b - a)
+    },
+
+    async gerarPDF() {
+      const record = store.registros.find(r => r.nome === store.filters.tipo && r.ano === store.filters.ano)
+      const payload = {
+        distribuidora_id: record ? record.id : '',
+        ano: this.filters.ano
+      }
+      if (!payload.distribuidora_id || !payload.ano) {
+        alert('Selecione distribuidora e ano antes de gerar o PDF.')
+        return
+      }
+      try {
+        const res = await fetch('http://localhost:8000/pipeline/trigger', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        let data = null
+        try { data = await res.json() } catch { data = await res.text() }
+        console.log('Resposta de /trigger:', data)
+        store.showSuccessModal = true
+      } catch (e) {
+        console.error('Erro ao chamar /trigger', e)
+        alert('Erro ao iniciar a geração.')
+      }
+    },
+
+    go(tela) {
+      if (tela === 'login') {
+        localStorage.removeItem('access_token')
+        window.location.href = 'login.html'
+      } else if (tela === 'perfil') {
+        window.location.href = 'profile.html'
+      } else {
+        this.screen = tela
+      }
+    }
+  })
+
+    store.loading = true
+
+    fetch('http://localhost:8000/dist/sync', {
+      method: 'POST',
+      headers: {accept: 'application/json'}
+    })
+    .then(() => {
+      return fetch('http://localhost:8000/dist/distributors', {
+        headers: { accept: 'application/json' }
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      store.loading = false
+      const mapa = new Map()
+      data.forEach(r => {
+        if (!mapa.has(r.nome)) mapa.set(r.nome, r.id)
+      })
+
+      store.registros = data
+      store.distOptions = Array.from(mapa, ([nome, id]) => ({ id, nome }))
+
+      const anos = new Set()
+      data.forEach(r => anos.add(r.ano))
+      store.anoOptions = Array.from(anos).sort((a, b) => b - a)
+
+      console.log('Distribuidoras únicas:', store.distOptions.length)
+    })
+    .catch(e => {console.error('Erro ao sincronizar ou buscar distribuidoras:', e); store.loading = false})
+
+  createApp(store).mount()
+  </script>
+</body>
+</html>

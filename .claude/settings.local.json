@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run *)",
+      "Bash(xargs cat *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(python3 -c \"import sys; sys.path.insert\\(0, '.'\\); from backend.core.utils import normalize_cnpj; print\\(normalize_cnpj\\('76.535.764/0001-43'\\)\\)\")"
+    ]
+  }
+}

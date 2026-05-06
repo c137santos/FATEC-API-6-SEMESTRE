@@ -1,0 +1,71 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "celery[redis]>=5.6.2",
+    "fastapi[standard]>=0.135.1",
+    "fiona>=1.9",
+    "geopandas>=1.0.0",
+    "motor>=3.7.1",
+    "psycopg2-binary>=2.9.11",
+    "psycopg[binary]>=3.3.3",
+    "pwdlib[argon2]>=0.3.0",
+    "pydantic-settings>=2.13.1",
+    "pyproj>=3.7.2",
+    "pyjwt>=2.11.0",
+    "pymongo>=4.16.0",
+    "python-multipart>=0.0.22",
+    "sqlalchemy>=2.0.48",
+    "shapely>=2.1.2",
+    "matplotlib>=3.9.0",
+    "numpy>=2.0.0",
+    "pandas>=3.0.2",
+    "requests>=2.33.1",
+    "reportlab>=4.4.10",
+    "fastapi-mail>=1.6.2",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3.3",
+    "freezegun>=1.5.5",
+    "pre-commit>=4.1.0",
+    "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.4",
+    "taskipy>=1.14.1",
+    "testcontainers>=4.14.1",
+]
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.lint.per-file-ignores]
+'backend/tests/**/*.py' = ['PLR2004']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.pytest.ini_options]
+pythonpath = "."
+addopts = '-p no:warnings'
+asyncio_mode = 'auto'
+asyncio_default_fixture_loop_scope = 'function'
+
+[tool.taskipy.tasks]
+lint = 'ruff check'
+format = 'ruff format'
+run = 'uv run fastapi dev app.py'
+test = 'pytest --cov=. -vv'

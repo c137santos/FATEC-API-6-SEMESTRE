@@ -1,0 +1,10120 @@
+[
+  {
+    "id": "2691ec754ee24b89be279fe5d306dabf",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "88b59d4801f94ca8a64e8a3519af0854",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "dc09113fc0dc40da9d49df2b66b8b0ca",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "edce7befd4284944ae89d32ef040fb2b",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "0791c13440c54ce183a11ef0a23f4361",
+    "nome": "CPFL_SUL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SUL_PAULISTA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "bc96c84b56af415a9df471231dd2e061",
+    "nome": "CPFL_LESTE_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_LESTE_PAULISTA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "d4ce4fe908944f75946c1e04893f028b",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "a100c7f0f2414fda95dd95772d2a2b55",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "3c42051874104379a26199f0fded47ce",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "c83833cf1ed44ffaa80fa8ba35177aad",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "bf82c69298e4401083adcf985415aa9a",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "aef5179f336d4528a78e063d3559831c",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "78ad23a2259945f0a325c993fc46becd",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "885bf776757c42a2aee322fc8c30f433",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "3fe203240ac749c6832ab04f5f537d13",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "cedbd7f9641b4c5185b065b6b6713db0",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "076efbc4c7ee46dda8b2d427e50ee4c9",
+    "nome": "ENERGISA_NOVA_FRIBURGO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_NOVA_FRIBURGO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "0c38d51444fb460eac881a0ee231b21e",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "17efbff57f8f460d84968ae737d15eab",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "69e0d09656d94f309047725c39ec9b45",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "42f5bf71be5c4a69b658b99d01d01ca9",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "0a2997a24d9a4db3bbbf5a926fa51dd3",
+    "nome": "CPFL_SUL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SUL_PAULISTA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "9dfdfd43c0354126bcddcfaffba2a6b4",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ba04215e72d94f5fae587192a694e995",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "2cea7a5fe8444f74b22707678688f409",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "56d513320cee4323a285a8f511b4c83b",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "627620bb084e4554b77c8139363b2e47",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "8a684172e8654357b09136c79098c8a6",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "76e919b7dea54b1bace939ec75ce688b",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "a3e8c1c85d8b4573984ab83280125eae",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ac249f8a387643e0b67e11c7ba98a209",
+    "nome": "CERAL_ANITAPOLIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ANITAPOLIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "edcd764e5ae14238b0fb42cd6e6e2161",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "bbfe728563844b7ba8311f6fd2439212",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "e8ec10340b3041ba863b1f9625b83646",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "859930b898134723b9b8b9b857305a24",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "d673489dbcc34ce6b28c477e3078c559",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "e0cde9ff20ac486484d7b26dc38617b6",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "b6900e72a13946b6a2dc015aaf6d6ccd",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "052279e44fc743af97204f80fa5dc160",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "bc4340ba49c9405586499d6346d5074b",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "2dcc3e0e7ced45e8be6237ad643466ef",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "4b77cfc3e97d4ce9b6b01c8cbd066305",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "0b77e0692b8c46f0bab02781af09d9af",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "028b5fd526e443ff97670e5a21606788",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "ca9892d976674197a60cddc317dd99a7",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "e79589e3c6cd4cc1ad0c2dec81e2624f",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "1667070c26d54555bcd4fb38c51f44ed",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "3dddbba425534997985506b99e8ece27",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "5cbe27a57c684b51b8c0b2683f90ae9c",
+    "nome": "CERAL_ANITAPOLIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ANITAPOLIS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "9be0776170224a3c888f3e833904f1e4",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "2d416d010c0f4feca0e55975df2fdf68",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "c8f04a4a33c54adfa31d5a77dd1f40d0",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "1309df5ee3cf451fafc152b6b9385282",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "bf430d6ac7a440858737ca78954207a8",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "7898816393fc48fcbd0fe20a3e8c31ca",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "ac5d1cf9096e4e44b214fd51047a824f",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "14d8e29053674e0490cade03bcd7c9ff",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "938c6b2b13154c9a87dd6d948e5b6108",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "8d49ceabd01d4415affdea72a3d6fe2c",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "80fa767d2c214310bdb4b5fedeb01f95",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "eca2c82e4dc04a9c9427ef7974edf267",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "8b572c58282f4f388b745842370cae8d",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "d6edeb48d2a04a388c234c7b2811c499",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "1ef08f897c4646b78d845cc83847015e",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "75f43d4d19d54614944050005cbbe718",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "906090842e7f42b98d4e917aa6b9fd93",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "0540fe548edf4e04826021d1e4f3e892",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "86db58fd3f984479a80faa246a90236e",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "762a19ae88e34b6ea90079d9cd9c843e",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d471230a79b94e558dcf342637f3a546",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "53aa22eacc784f428ffbb8445e96dc3b",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "fe56dce0714f4b6795d3b23130f5898a",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "28ea65df8a5b4847b5a1ae671790ddc1",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "e255819ed8ba4ebc991a0c10ed6edfac",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "047874d2fa7e404b9d59ac9d9c1d5fac",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "ac481a6d94ea42b5be62232d23d64ee4",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "4a93c275bb5e487bb0b7d36bbb382cb8",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "76cfda3efbc34058ad491757c3d95594",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "75bc89b206b045728d3cbf331afa7812",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d1a44c7b82df4341b19f4b81172ed58f",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "1e459ab4bcca4917a0e9e9133bfb84b2",
+    "nome": "CERAL_ARARUAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ARARUAMA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "ebe870474e7a4a30bd38a66b774b46b4",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "c926f2ff3f3f4137bee520085d83fb1d",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "da4bbf627b7d4f0ebf813bc98cd38e5d",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "bd0035dca9fe495f85dd2badc1155d7b",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "a2c161b4dd7b4ea7a5bed854767de792",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "6fd06a6507004d188856b0cad479f568",
+    "nome": "ENERGISA_AC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_AC",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "3740226570704e80871a3ff5f8ee92fc",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "6fa5031ae9324b039bcf8ff60dd1a473",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f83495b1599d4066b92c13659eaae903",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e61b2011aada4e1f848e69f6af1c1319",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "a48dc9c5870d4c708c7318763898088f",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "409b5d12beb5425c9c23848113c6210e",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e488e3c4a73947d699b18524baa19c63",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "965ada9d68e64721889c419195e8ae4c",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "92cd763520ad425e8533f9013ada10f8",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "a75dadaa4e9e4566921b416e44b15307",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "84bf8797caec4c8da4c3f3f86ba05b21",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "ac83cfab013542c1935281b7d8c5551c",
+    "nome": "CERAL_ARARUAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ARARUAMA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "dee34f1965474afa970834901213cfef",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "813ea221bd1e48938b9aeb52ad238cb8",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "52683032a8134d43951ddc860d360f4d",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "736b2b9a738e4b18ac7e8faba3cec06f",
+    "nome": "ENERGISA_AC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_AC",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "9b708147a18949c08f59cbe0084073ac",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "f5970bd2f1464758beb23633cf82c808",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "67cec30415704bddad3e86fa31585ea3",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "b94f000a78d449ddae622c13e7823d0e",
+    "nome": "COOPERZEM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERZEM",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "d0388f8ad96744beb3d56c9dc0fb0416",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "e75f5a0281b94e72b85b0212d69f7b78",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "27ba60c10db340e09cb17d47a4fafe16",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "e204dc45d91e43159b04a4f76151ad5b",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ecb877d4c2c9453f916e024a2df260db",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "0fad25aa821a498d8eedd0236b8307be",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6f08e3a224554d7696426b1ff8a9e294",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "de53df7f382c427b8e54d57262ff2286",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "0e002ab7306f464dbd1a384a6f540ef3",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "9e2597c3f83d4f59a5f2b9b9ccd46bb4",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "dfa59e2a485f4656a632a9daa94c8bde",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "34daab0f50be4141b67333c07162ecf3",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "cb44503521154e9880a9ac45c395266d",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "27a718bd4c0846a996f26795f129f3e8",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "991f67542c4a4703bebf057f515a976b",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "58a640cb54e74d52b303f7f5827e8295",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "a0ce9331b4da4dbf868159d4d4889c6f",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3101a9d30ed2409bb68b7da91dfb619e",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "713833ce3c5042ae85f28ca763adacfb",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "76348c9a402c4f0998f0ec7995e3b8e3",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "24964098ead842c8a743af4a97a07469",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "985887ce166a4097b33c446c59e02c77",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "f8ee224f82404c1588f01d42d0526afd",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "4661302976cb408da29f994e5b58accd",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "4626843a29064ae6b6744873c00c4dc3",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "e55a3554166b43db8b234074e9b12de6",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "ba59d4a881684374b53f51656b945b18",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "1bfec53ce077408581c6b2a82076d89a",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "45081d05c49d4e428200311ba9d09acf",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "53dbe5599e1b44f9a2a903d563fb5384",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "8f9341132b3d484ea6ea6f3f7d1ed0ac",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "c74678897d2442e68941014aff2b4ea9",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "69182b89eb5241898eb1ee71be0e5f95",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "7282499e2d18489da4288d374dcee572",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "33154fd6d3954317baa47a6f075b5a3f",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "15b77072ab3b46bb8581cca726cdf08a",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "123cf701fce4495bab5a673435fb4cbc",
+    "nome": "CEA_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEA_EQUATORIAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "b7ad164d258245e79c1b8e0593d65cc0",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "f5ea24ac56b5426898c476fec8212786",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "e06aec3182194560a2e29bc9ba22ea59",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "3d93876abccc4a489129f67a498797db",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "a90ae1421c524d99806d2ec15689d8f2",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "fa961e3765624920a1713c9fcc56ba23",
+    "nome": "EDEVP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDEVP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "23aec1725c5b43f5b2ba57f35cefb520",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "6bd31f78002c45bda411ee9441efb107",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "133a1fd6a78b43a49ad384d401d2a1b6",
+    "nome": "CNEE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CNEE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "b874aa24bd32491a8c67889560a6f20f",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "62860b5ea0f44162be9c686f116a024a",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "049d17f435c6442ab1f99b87d1947d66",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "0dbc7091af994247bfb58780b5f26fef",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "26acbce0b6e24537a0385508a211de14",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "b403147a9b244e219dff44fec9a0fd40",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "fea96942efc64dcb8be2d2f4da7d67a9",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "859bced583af40d693a70f3404053a8f",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "262e25f7a8244345bb3cddf770b13080",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "0c1d6d3761b5464091b747b56f13b80a",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "35f99442645a4a1ab2deaf8ed6b177f3",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "5207143d047f45c1b9510ef855fbb033",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "39bf13408b59469298b24606411c2ad4",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "19302b285aa14610b2a35a72b4de9a84",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "0e2f00e636434d4dae6c8dc9841a4eda",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ce24f13b47b94e0cb2858270bd769c9e",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "aae4eeca382b41619c984bd845e3d643",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "f6f6ba8bb0db4a1cbeafc4683d336296",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "eaf6fbfa8b9e41078fab9578f1a3db26",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "fc56c83754c546069aee0da764471f61",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c1d20c1149374adda4d26b63e424d988",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "f2e2a24cee8d4fd7a91cfd4238e9d645",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "106abb8bc1fe48b48fa961fba9484d0e",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "3c4041fe73b3487880e70e4653e92de1",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6e068a21cb6b48ba91e3561e4b11c953",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "30e24692e29c400ab7b334f85f29b2a9",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "83132b0bf1d6467d8080c2af36013b14",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c05e84a5eb76483fa304789158edce34",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "2bdae747974040ea87e600bfffbc56df",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "422be1d9d7414975abd6d8da74b5efd2",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "a5779740aee449cf99823f649eb89c71",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "5382c59d7cc7494a9a1f8cd865187457",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "d488f5f69c6b4c29978e215dfe108b69",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "f14105b19d644152827e9bb0d71dff50",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "f995c587944548c8ad9b4eeb689bc303",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "9309aa6fb1b0453ea2de93f24c04c198",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "ac9b65f56db14570b50e30e16b7e6652",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "80e5ad0123074e87ba0f01c72eabf298",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "d8393e846fc44beab6abd156ef0b49af",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "12fbfc669ed042e398108175228dcdea",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "dc0bafea9ca84258b0dca21e3cbbd8a1",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "c11537066f7f47f29b0216bd0b6a12c9",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "33977986ec0b4175b9d73fbb56571e1f",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "f15e84cabd564d31869c3af5d7855376",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "b83ad867a35b43189f41b68988f7f0b6",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "054456575bd5468d8f5484165527184a",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e2a8925c1d404ccf8289380f14429a88",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "da4d84a628c34982afaaa07ff1ca598d",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "994b95949c5f43848f0d915a61c5d777",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "115d911c26d5409c89c1917808f5ee91",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "acd74226aeb7400ca830ef66aba9c9d9",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "9603118b3a224a6387d4557f96722b30",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "91a1f5c6abd440b29960d8c92cc08f3d",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "041587a2b65b41beb8a33abb5a802b6a",
+    "nome": "CERAL_ANITAPOLIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ANITAPOLIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "a13dce823eab44bc814c6a82719061a4",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "f57bc6f5d458489f88e42c37e30aadcc",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "88a6dcfb6ddc47cdb744b6fe550000c9",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "22fea2eb23904840836124a5e4da6567",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e852c3dcb3f84da3a28ee16479fcc0a4",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "480d6cebddde43f0beba77ea5bc04ad5",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "2a9d2d8ee1734ce9be673b9e0ec22f08",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "8c5ea3c1d8fc498798459edc4a09319b",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "4d509900b13d45a786092ab15591fd4b",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "6ddb726db72c4d609099f662ed7c8352",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "a4687c2b82b1450db2147daff7cffd2a",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "eafba5a6df2445a5806db62b8d269b9b",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d5af0bd1627c48628854a6fcd704f0a7",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "c41236336f6c48b889b4ca9edfe70476",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "0e10b7200f144131a374a0c8fe00b218",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "e1d47e2652254677b14d582cec14b438",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "9ece709530f44d5ab835c15bfc8592ef",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "75fb017543f14315be38f408b69c2659",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "7fe495a683d74aedba9885af29b4e31a",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "a798115d05ba4b85acdae553b0c1899f",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "5af0c585ef1442e8a8fd3f16b39920ca",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e8748422baa4417f9dc8615357ad2fa5",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "079bf95a05fe4fcd9d905ee07960ed55",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "2303508e8338454094bc23d3ad961d95",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "82ce5307bf0648a69d3722eff37444c6",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "21c0aa1bbdaf400d82f8bda1b495fa6e",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "8ce240f839cd465aa9227cdd20986dd8",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "5f3223c9ac3d4dc89a8a6073b004c173",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "43c615c23db542abbaf2c9e86a3253d3",
+    "nome": "COOPERZEM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERZEM",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "617b2c5be4424794b0739caca64d4249",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "9d134cae59f142cd85d9121e94e227dd",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "9cefe914b6a54ddd877c185b88af5075",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "18e0061530e8458cbc1f6bccbcd13ed5",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "fe792cb998954a54a19baacbe8c0392a",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "259d3af99da74c32b37321dd7a9c4858",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "537ed18f020343c58cdc6b3aea07919d",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "0a95d1790e9e44f08014a68fa26cd09e",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "59b05978377649768d6a6ed4ce90e30e",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3c4f729fb9c94f08b596673a25c3d915",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "bfa0f82465584fa2bde61880a0f4a062",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "1ef08c8743fc4fa2832668a4a937178f",
+    "nome": "ENERGISA_NOVA_FRIBURGO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_NOVA_FRIBURGO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "94a1b3fa56e3442fb8a2b3a8a3dc4df8",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "d7c0cae61ac14b9789c393a6ba14f635",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "492ce8a1c4584a439244f3eaeaf262f5",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "594b721997e14db5a76c73b8ac432171",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "51688c383fd84815bebb1f29cb175252",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3bf1059093874fb6af4c75f117dcc9c2",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "e1312136f0ab41029323f494e307db86",
+    "nome": "COOPERNORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERNORTE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ea0bd88583b34aa69d688a0366f49a0a",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "b673dc877a144864aca32a1c5955d39b",
+    "nome": "CERVAM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERVAM",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "45d56614d0d4428a83c1dddb833c796c",
+    "nome": "CERTHIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTHIL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "8419d25599244c1e8fa35db1148dfdae",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "c187f43cee3d4efcb55a9bbfc249845b",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "406f1d6bd52549d78a8bc46a8ccb0420",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "e4c77b60c3094ea9bba23006892b09c7",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "8d9841123f2a40bfa92b8520b79496de",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "ae6b1c2fcf8a47319c4c65dc68392c42",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "5fb8355acbe4485a8ff6d571bda411a7",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3bf43d35e8fc409f8bd23e2dffd9841f",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "a5965d84a15244b9ab26e567ce22a11b",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0cd65c3a977d417a8d1eabdd817791ca",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "2c235ceca5af469caa89754d2b148010",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "d67f4d2a181d47b5989cd288ba86f1f7",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0cb23e98e49e4a89b2b72ee315112a78",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "aa13f439ad714ae0acc890d84683aa21",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "4ed79715985245598321224b3040d5ab",
+    "nome": "CERVAM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERVAM",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "69402716d09e4015991f1fbde10a1a6a",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "bcdff14b9d59454fa0efb2bd4acdfa3b",
+    "nome": "CERTHIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTHIL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0db8378e9fb94c958d3d631b366bd2c4",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "cd0e868483874844a2723e54d1d1af25",
+    "nome": "CERSAD",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSAD",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "20cd433fe3154958b9511aea7331f0e5",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "591086426182453bab0e73d7d4048443",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "fe0ac68201b4433ba621236763d27985",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "34727428a26d4f179ca549caf83b40cc",
+    "nome": "CERAL_ARARUAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ARARUAMA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3b2ac65a74e9429ab4397aa2f201789f",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "becc39151024466793632626c02536a4",
+    "nome": "CELETRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELETRO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "b31c6b984ab3444e9f4236bdc87bce58",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "67d8d6175282450abb5d17c533753639",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "11a1feed9e3242d1bce8fe8af0a48e4b",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "73fbf2ce59ca406aaf7830e98a01a34a",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "78d8ae0fe3cc46888dc37f2c87bc3f00",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "910e329827a04ffda153c235ac9c5bc1",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "8fed7443387d4d04a361e7f4d1edea64",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "6d53789f98c74cbb84c070ecb4633b0f",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "afac3e9a099746928ecf63c73e4c510b",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "5cd60c9c3ea5449593ea91b2390edfad",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "5a7dd0d2eb594f12812f391f07aa3354",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "131d6dfef13d42e0b3583b1152034b33",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "17c27244d7a94cdbbf0fcdbf7874f76d",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "bdc33e41063e4ce1a3e4088f40675d00",
+    "nome": "CERVAM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERVAM",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "e95fa5bed397492491a1e29ffe27c0b3",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f8856cad71a343778ae704d8c52148e7",
+    "nome": "CERFOX",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERFOX",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "7d51c9ed62cb4a43b037743285ae6769",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "63a99c446fcc4e50b334f714e69b03dd",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "ac26f816c3944236983090dc6c8e90c8",
+    "nome": "CERTHIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTHIL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "509d049d00f2461a8a94e52e76ff1b34",
+    "nome": "CERSAD",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSAD",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "6ce156fb31cb4a989949b7e5566f94ec",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "d9ef4e21c97e4ce4a3268b3366a1a647",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "820368193ce848f98b61811a2952c6d8",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "376fcb917a5340efb68a74fc0c02f21a",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f4a28743c9ce4aa6beb653aea0cfa16e",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "9f1fb5764e9847b2b55d0adb716a463b",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "2942ed2fa6844126b7b4243dcbdc6df6",
+    "nome": "CEMIRIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIRIM",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "2c33183fd1084232b4f5ebeed2e43568",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "eecd643f90b045ecb5629fc349862b8d",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "2ea88eb611c14fd2ad53a336a85f1e9c",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "fa63a39aade5422fa3daadabfcdd1276",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "d777f303c9f3492d8beab9aa575c3695",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "350980c57f7049679b719ffdcbc35a14",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "4ad562af8fb74a7ab4d522e508e0c336",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "b9adc67c07b5415eae4c9bbb5a9ae60c",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "6d9e8907ba8a4ff99883399d89eed886",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "f035e15c4cfd4605a39f5d00eef6193a",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "93bf0900501e4b059b52e2ba86a59b34",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "6ed5193b0e204ebd8182bed6aeaa0918",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "bc8cb0b1474c44a5bfd4b963d8844078",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "555467fd03084154a390e88eca572e88",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "724fb8e53d1641ce80eb29fb80a56383",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "7003fe678ec24ac68d4dfeca97612aa5",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "445d767c8b304642ab9f126fbc235dc1",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "bb8cfb148cbd4a9bae46aabaf81c8c19",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "0e17f4c11de84ff4b63afd0becce006b",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "77744960deb34ba0a2ac4feed469d2a4",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "e8afc329e96749e8b1dada7c39a2f009",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "a1f8fa7d307c4aaeb7c08b0413f2ed6f",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "b7e90e548d364335b141cfb445a3a093",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "8142c35f1a2540e9b3a80f3a869fa1cd",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "df226dab139e46d6972f50b7a2e69ba4",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "72d1e5c14a1a44e083f7c85f0b4f97ae",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "fa767583a9bb4af6b3e023f7c43bd85a",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6622f3c3b1494aaaac641073a3f8a2f2",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "860b7cb50d094f7eb206c9a77b28db2f",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c7ff9abd38424e989e5410e0449b3aee",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6393e8387f9e4c93839b51fbf7eed04d",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c5e3532d24654d2aae1b2f62ad48d3d1",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "91526b5ba912453caa220e7a2d0b8545",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "f0da9fecdf30418d958223154a3be928",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "1a62b0ed217c452db64baa3eaab6a2b4",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "bd9525aac59e40bda388e63a09745030",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "61811aa6a4654a65ac44e0b3ed992a4e",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "22a4d7268c6b4ca4944008e54057fbd4",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "9da885a6b1bd4b3584fe57d7977cedf2",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "4f423ebb019b4919a3d4b5ba283adc79",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "58c8bdc3d7884c7f88716ee7bc02547b",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "6725be0f892040c69fbec5659c6edde6",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "26579426705f4d0eb4e6bdefcd7c2871",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "bc40a0c2708648858e5737a04e809ab7",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "eea31226fb914333af0b80f13cb8a314",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "fe40b9c398ce417ca99d48fa2315b9bc",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "775c0a77a1594b6992dc2a24561bc24b",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "3cda448ca9984a05aee03c8b1a896237",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "0d070e2106a840adae8f54741fffc197",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "6a5a611d8a884c32bb1eb19bfcdf4877",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "74ae81e9bc894716b3b8c1404c83284d",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "f9dbff4c21b14766a25844ac968254c1",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "80930df382a247f1850a02418477abda",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "4316a26516124a50a93b7cb66db923a2",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "bb2822b14b124af4aa6259ec6db064d5",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "5b38b284c5734c2399ee206c5ca6b9ee",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "152fb4dc317f4f3cb84533e9d9616623",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "c064142cd68e4d469104d740ea6ea7d7",
+    "nome": "ENERGISA_AC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_AC",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "da4d84a628c34982afaaa07ff1ca598d",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "994b95949c5f43848f0d915a61c5d777",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "115d911c26d5409c89c1917808f5ee91",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "acd74226aeb7400ca830ef66aba9c9d9",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "9603118b3a224a6387d4557f96722b30",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "91a1f5c6abd440b29960d8c92cc08f3d",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "041587a2b65b41beb8a33abb5a802b6a",
+    "nome": "CERAL_ANITAPOLIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ANITAPOLIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "a13dce823eab44bc814c6a82719061a4",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "f57bc6f5d458489f88e42c37e30aadcc",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "88a6dcfb6ddc47cdb744b6fe550000c9",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "22fea2eb23904840836124a5e4da6567",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e852c3dcb3f84da3a28ee16479fcc0a4",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "480d6cebddde43f0beba77ea5bc04ad5",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "2a9d2d8ee1734ce9be673b9e0ec22f08",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "8c5ea3c1d8fc498798459edc4a09319b",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "4d509900b13d45a786092ab15591fd4b",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "6ddb726db72c4d609099f662ed7c8352",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "a4687c2b82b1450db2147daff7cffd2a",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "eafba5a6df2445a5806db62b8d269b9b",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d5af0bd1627c48628854a6fcd704f0a7",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "c41236336f6c48b889b4ca9edfe70476",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "0e10b7200f144131a374a0c8fe00b218",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "e1d47e2652254677b14d582cec14b438",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "9ece709530f44d5ab835c15bfc8592ef",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "75fb017543f14315be38f408b69c2659",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "7fe495a683d74aedba9885af29b4e31a",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "a798115d05ba4b85acdae553b0c1899f",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "5af0c585ef1442e8a8fd3f16b39920ca",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e8748422baa4417f9dc8615357ad2fa5",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "079bf95a05fe4fcd9d905ee07960ed55",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "2303508e8338454094bc23d3ad961d95",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "82ce5307bf0648a69d3722eff37444c6",
+    "nome": "ENERGISA_BORBOREMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_BORBOREMA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "baf5761fcfc8480cb20d785b4c2a28f1",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "35774be9c247438f89ce5136c23fff29",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "408e3c2b801b4dedb60cb411dd0e8bf6",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e31c344eaca64d52872adb2e193dd510",
+    "nome": "EQUATORIAL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_GO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "27fffb64afa14b3ca006d4b6e8bb9ef0",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "66ad4b457d554b8cb7fcbf1eaeaadb91",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6e19e2f1c1824dc8b1ce17ba34590be9",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "0110911b7f54466c8e6e08a551a8f8ef",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "c56b6191b0ab4ccd81aa504046a1c032",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "7c2a2b3f2b92404798b8d1aa2c5b7eed",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "eaa3d292200940459f29848132f2d123",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "f224824054394e8ab30b3d8a42eca14a",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "f0c29a078e9b4b7b81a569708da9275f",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "76514137eac54fd88e7d4dc8f6b7b298",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ba8bcb5fcda84af3ae9c3943ea2cf482",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ad16327fa019474ea1ececc930c42d9d",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "64652d2a622442c4ad7bf7717319bc8a",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "73e5d87a4a0644ab9a7f400517269ddc",
+    "nome": "CERSAD",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSAD",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3d11dcc8674f42859d576eeae4781372",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "bbabacad4aea4b5690136cf41afb118a",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "558b5be40a624a14ac712961f4b0ba7f",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "103071f24c614d60bddbfcaee8826317",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "df74612569b244fd91bd8ffe251e374d",
+    "nome": "CERAL_ARARUAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ARARUAMA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3fb6a2bbaccf48ca8748108f653eed9b",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6001a97324e247729837867c71498859",
+    "nome": "CEA_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEA_EQUATORIAL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "866ac48304e841489261059370af6b8a",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "cdaf2c9dcc954952867192243a75156e",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "e0200d6c4ef649f3a53f2d5c4cd99124",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0c5d99bb2c62439ab1565f75e825c408",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "8f1198612cc64a71943462a3909be4d3",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "f2dc25c4b2924edb9629ba601a0fd742",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "52cca1a5fd234edcaa23bed5a442da45",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "6299b5179b0f42a98fab581977f971ed",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "6fd6253e93d9446388abff3f063db878",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "b0c6475a3a0d47f59d45e61129502a33",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "cba2dfd01fdb48f1bec1fdd16eabe7d4",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0d4acb98aefc46d0be7e364e7152963b",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "e20a5539d22b4ec6a33436930ac657cb",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "cc75c3b83ac64267a8cf0b274af296ac",
+    "nome": "CERCI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCI",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "07f0229ce48c4d38a13a64b4c37a8cb0",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "7c1f2236e027453b9c04c3492741b81b",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "8f0da870f14b40438b478b705524f3b0",
+    "nome": "CEGERO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEGERO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "69dbc577d09545efa56100b09744cda0",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "63188321f61c43e4917d196814be91ac",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "55554e98165b43acb5090df7dc015184",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "fe8b0d27ba59472780303d06a3f2ff43",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "c50b02337f2141c9814255c149433437",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "49af07c503ca4477bc660d7b6e3efe89",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "912aad3fa24e4f7a8e6f86d4948492ec",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "cb6bd431508544a49256c4a03cdf7cc7",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "700e0bfcb04349fea9d1d0af43c2a354",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "bc209c308cac42b9b03fb963ca9c5602",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f9d38bba5dcb4525bcf19b03666197da",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "659c0309e8f2433a9d08bf4de2715d99",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "dc96ad6d57684c3e97dd38d063501d1a",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "48c6b688785644ffa29a8b642b2cdaad",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "015e722b89524d48b6b0f046c828debf",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "fce533df00a84886aa30c9e5a0b2e332",
+    "nome": "COOPERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERSUL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "63a99c446fcc4e50b334f714e69b03dd",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "ac26f816c3944236983090dc6c8e90c8",
+    "nome": "CERTHIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTHIL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "509d049d00f2461a8a94e52e76ff1b34",
+    "nome": "CERSAD",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSAD",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "6ce156fb31cb4a989949b7e5566f94ec",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "d9ef4e21c97e4ce4a3268b3366a1a647",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "820368193ce848f98b61811a2952c6d8",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "376fcb917a5340efb68a74fc0c02f21a",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f4a28743c9ce4aa6beb653aea0cfa16e",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "9f1fb5764e9847b2b55d0adb716a463b",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "2942ed2fa6844126b7b4243dcbdc6df6",
+    "nome": "CEMIRIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIRIM",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "2c33183fd1084232b4f5ebeed2e43568",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "eecd643f90b045ecb5629fc349862b8d",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f14c001c941a489791bfa2b6ed332364",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "935305cbf7d74e729901dbaa9b6c521a",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "1a67eea6e14743adb143163d801c4767",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "3789be8bb75b47eaa7db9b6080fcf058",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "e483d35017a64c5db2fce276010ccb77",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "1466c7f7f9d8424f996300cf502f48eb",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "29134881688c4047bae415665f698c9d",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "9195644785cf4f878e5b94782af161a7",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "2ceb870c218e42c88f033c4ede0ac32f",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "f4903c3e04a74e89bf750a3bce207645",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "e8602d35f08e45a1ab91766ecc9586f1",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "68af0e6a11424f9fbfb0f3e6967681c7",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "d3dafdf596f44b53b4e340470517f41b",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "dcef0634acdf462297e62714a57cba02",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "6b84d0142b3e4fb29775c89e3d191771",
+    "nome": "CFLO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CFLO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "87157547d890433dac3cdb0b4f605bf7",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "6a12d5e3dbe5454f98ee626744ab89f8",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "54c513e4556e42f5991b62ad70d01a11",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "3b6be122f14e48debe1b34801ddcb001",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "9f6bf437b0154cb88f0a2d471248ac33",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "afc6b9b97cf940748b0de7fb8424c855",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "cfeae80d9c874c90bdbbe406244dcf86",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "83b67a45ecea4b92b4700c338d0dd850",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ca62f825f26e43ba8947480e1c896443",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "a83a97af1a3747f69eb83066f14c8263",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ca8e374c3f5f409d844fcdc2b218cb87",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "d7626675dece4790bb08586ef912d72a",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "2ff66f33b24a49198c8192f14610bad7",
+    "nome": "CPFL_MOCOCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_MOCOCA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "f3a577448af3474f9d1421fb228a4040",
+    "nome": "CPFL_LESTE_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_LESTE_PAULISTA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "d683662bb7b7436f86722783bc206839",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "106abb8bc1fe48b48fa961fba9484d0e",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "3c4041fe73b3487880e70e4653e92de1",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6e068a21cb6b48ba91e3561e4b11c953",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "30e24692e29c400ab7b334f85f29b2a9",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "83132b0bf1d6467d8080c2af36013b14",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c05e84a5eb76483fa304789158edce34",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "2bdae747974040ea87e600bfffbc56df",
+    "nome": "CERACA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERACA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "422be1d9d7414975abd6d8da74b5efd2",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "a5779740aee449cf99823f649eb89c71",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "5382c59d7cc7494a9a1f8cd865187457",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "d488f5f69c6b4c29978e215dfe108b69",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "f14105b19d644152827e9bb0d71dff50",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "f995c587944548c8ad9b4eeb689bc303",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "9309aa6fb1b0453ea2de93f24c04c198",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "ac9b65f56db14570b50e30e16b7e6652",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "80e5ad0123074e87ba0f01c72eabf298",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "d8393e846fc44beab6abd156ef0b49af",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "12fbfc669ed042e398108175228dcdea",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "dc0bafea9ca84258b0dca21e3cbbd8a1",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "c11537066f7f47f29b0216bd0b6a12c9",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "33977986ec0b4175b9d73fbb56571e1f",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "f15e84cabd564d31869c3af5d7855376",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "b83ad867a35b43189f41b68988f7f0b6",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "054456575bd5468d8f5484165527184a",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e2a8925c1d404ccf8289380f14429a88",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "b5340f7e04304bf3a7d9fff5afa28d50",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "bd3acfb525624dc097847ccbc638453a",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "3429bf359338466bb9e698f36ef67890",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "2a4e31164f384bf1959140aff5880c8a",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "df04a1282a6a4484ba7029bd8d6d75a9",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e9ce9272d7f748c799983df3df439b3f",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "fcc9815054704c72a218441b46ed5562",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "7692489bdeec40918f18e38c32838fb9",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "eb1152c035f947b490010b482e5526a2",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "b7da0b40e4bd4edbbf87e84ead9ca609",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "9d51a5785a0c4fd58918353bb42c72fd",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "e08fa261d51c490296975a6ed3bac0f9",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "6353d67b0c594c38affa684c548e8525",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "370fac9e029d4b06a266fb05c8ac5467",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "b69eff42f12b4cc6aa3a8d024969cd2c",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d0a4fbef954948d591d6e60734bad382",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_GO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "64d091395aa041e0ad880a647349919b",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "406cbf98e69040ff8fc1cc65c4e9c8ba",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "e661f2fdeb41415181359419b8a02d59",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "6ea26a49301741f28594228435bba5c2",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "070c2b6cdb7e4a9688bd984862910262",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "c9110acdde8c4a87998e06bbf419ea7a",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "38c3a472dd19407b9f02724a36979ef4",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "fb2facbe8d0a4681b51e82e31f001f0c",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "2ebd2b8bb7fe4c438387a63b2a40e848",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "4308d2303e6f428da7f14b1d63d97eff",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "cba1ae7de4964c4a8c1ebed15e2fdf9a",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "573a7a880a274e53b40bf3bc77a5f848",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "5475bff114574ea286605bf56233564a",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "ed16c2b21c664535a6d14d7567589dd5",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "cf579d43496a4b968c3f0e1e72f54e62",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "77666799d5224e7e83691754d42ce6e5",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "5c74c94b0d9742b1a4e62a65da8352a1",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "aa7ad008d5744c05be720a841f9d905d",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f859abc2e8f14ef89b6fe453bfbd15e2",
+    "nome": "ENERGISA_NOVA_FRIBURGO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_NOVA_FRIBURGO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "13d6ff510a4c4a7fac64f0e119beb245",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "a19a3b6d624f44da9a761af40f99c7ad",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "88f8390481244112b154a93de6098162",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f9db2bd449e945f08b11ce1a1cf60135",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "15b4d1f34dd54a9f96427a731268d9e8",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "1e92f44100cf4a078827281edc2058b7",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "532ae989dda541cbbe3be8fa00514a4e",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "baf5761fcfc8480cb20d785b4c2a28f1",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "35774be9c247438f89ce5136c23fff29",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "408e3c2b801b4dedb60cb411dd0e8bf6",
+    "nome": "CEEE_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEEE_EQUATORIAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e31c344eaca64d52872adb2e193dd510",
+    "nome": "EQUATORIAL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_GO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "27fffb64afa14b3ca006d4b6e8bb9ef0",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "66ad4b457d554b8cb7fcbf1eaeaadb91",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6e19e2f1c1824dc8b1ce17ba34590be9",
+    "nome": "EQUATORIAL_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_AL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "0110911b7f54466c8e6e08a551a8f8ef",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "c56b6191b0ab4ccd81aa504046a1c032",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "7c2a2b3f2b92404798b8d1aa2c5b7eed",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "eaa3d292200940459f29848132f2d123",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "f224824054394e8ab30b3d8a42eca14a",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "f0c29a078e9b4b7b81a569708da9275f",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "76514137eac54fd88e7d4dc8f6b7b298",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ba8bcb5fcda84af3ae9c3943ea2cf482",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ad16327fa019474ea1ececc930c42d9d",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "64652d2a622442c4ad7bf7717319bc8a",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "73e5d87a4a0644ab9a7f400517269ddc",
+    "nome": "CERSAD",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSAD",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3d11dcc8674f42859d576eeae4781372",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "bbabacad4aea4b5690136cf41afb118a",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "558b5be40a624a14ac712961f4b0ba7f",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "103071f24c614d60bddbfcaee8826317",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "df74612569b244fd91bd8ffe251e374d",
+    "nome": "CERAL_ARARUAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL_ARARUAMA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3fb6a2bbaccf48ca8748108f653eed9b",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6001a97324e247729837867c71498859",
+    "nome": "CEA_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEA_EQUATORIAL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "866ac48304e841489261059370af6b8a",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "cdaf2c9dcc954952867192243a75156e",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "e0200d6c4ef649f3a53f2d5c4cd99124",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0c5d99bb2c62439ab1565f75e825c408",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "8f1198612cc64a71943462a3909be4d3",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "f2dc25c4b2924edb9629ba601a0fd742",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "52cca1a5fd234edcaa23bed5a442da45",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "6299b5179b0f42a98fab581977f971ed",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "f6095aa7e5c64119ab46e3efe46b77d5",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "28d6e111e7084a699d7f9796eae554a0",
+    "nome": "ENERGISA_AC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_AC",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "46fa2747a9a5491c8161a77bf288919b",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "d9cfadb4d95b4443a7527e3b67f58c8e",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3ebc8c083e324c76adc5afb867caf2f5",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "9aa1cf8dd0d64b3eb08fae8ecb2b02e9",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "be28e75ad8df439e89d574ec1493fd35",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "9683a7390aeb44689e7f80a1dcdcb774",
+    "nome": "COOPERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERSUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "5734560a2323467c9be6d674951c8051",
+    "nome": "COOPERMILA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERMILA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "4aa9ad15849a4a5f8113da5a623dc96e",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "d70572f92648474fa2338ae4cfed8e70",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "687b096dac954abab6fda72460106347",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "425d4e2feafe4db58ce6b4fa204b0241",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "61672ea3de6c47baa27929c56c7f1cba",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "48a92bf698a14a169165acbc0de5338a",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "fabf64de24da41f096b5ab82ac4cd2fa",
+    "nome": "CERIPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIPA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "0b705db154054aa3b9e435846e7cc0fb",
+    "nome": "CERCI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCI",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "a3fbba2989db461eae9694d602a4bf98",
+    "nome": "CEA_EQUATORIAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEA_EQUATORIAL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "97569d2a029d4287a3af18ed6546b7b0",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "8eaa712a707745adac9948b24e188bd9",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "aee6d2c787624fea9a6026c02816b262",
+    "nome": "MUX_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "MUX_ENERGIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "6a3c464bde7b4c0b9dc661f99341e050",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "adb9f687a2b84bc7ac80ed9f99fbbe1e",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "642e8c25d57d4a3893c0d069c4363911",
+    "nome": "EQUATORIAL_PI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PI",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "60a26bb11754487db39fa6bb91e5dce2",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "b7fad4cd388845a08a01643599ec747b",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "0d3f9d648eb54c758b592b794faf2ccc",
+    "nome": "ENERGISA_AC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_AC",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "4670fc267d3e45dd9470d9087b2b185c",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "dd8e8f831f60453c8c668eb61c2ec221",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "c174916eee534efa82df1485ce6e9790",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "49db85328cb04f14a5d0ae110079fb35",
+    "nome": "COOPERNORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERNORTE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "b5c82a08b6334d3483ec4bafe42e7243",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "aaae476304ac4ad29f1974cf92466df7",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "53953a2fbb334d9aac1e5ad9a08ec9af",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "6406e7fa9b224485afcdf5b34ac3dc04",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "680a06de08e94aa7ab11a10f1d6db947",
+    "nome": "CEDRAP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRAP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "f7f2d8505ede499280237b16a54c84c4",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "1bc5e54e97954034954176cf811941ac",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "906f35f8293d4df5b9b9252803a00208",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "ef1dd39afcc84d6ba9579f9aaf2e3deb",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "c49890f520114254b586f476caa447f5",
+    "nome": "ENERGISA_NOVA_FRIBURGO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_NOVA_FRIBURGO",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "b644552ad5124185a9065f413eae985f",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "9e4a1a80de884c7a80a52d007f894ea1",
+    "nome": "EEB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EEB",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "ab920b232be34f82b8e8d6c5ce4e616d",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "23aab4b9bef247778bf267f7661063cb",
+    "nome": "CPFL_MOCOCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_MOCOCA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "c89177c46f35463bb3963c92118831eb",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "7fa19c572c1840ab9ba2ae63d3ce4c68",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "486de810b17d4fdcba5f4db430a6bc41",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "4dd194af75ec44488e8969f6fa06bbdb",
+    "nome": "CERMISSOES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMISSOES",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "ddf5158921d846468b77940e87a1eca8",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "5951a5b71ffc427ca295d617515a0885",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "01228832223646bc9bb4d4c4fd2b144d",
+    "nome": "SANTA_MARIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SANTA_MARIA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "7e786ba30a6e4f42bad0200a24ce38e0",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "ab4cbb3d1e794167835e5c74d371f7b5",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "780f22a0ca6b4145a69bc2743091b30b",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "56b7f3d2c42c421d8d1bb0b3c9aa5624",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_RJ",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "a534dcb483c040cb8affcc0bc09446d6",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_CE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "4e9fe20372314ef0bdb7b879ad0b3c4b",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "c1b32ed7b84f4c2c960ed98da8df6f13",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "7f4b887ec8374fb686a96e1697b9b32c",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "3783e35347e44f9b912648c70851d14e",
+    "nome": "CERTEL_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTEL_ENERGIA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "bd0c8ced23124f8cbaaa50da4e0904da",
+    "nome": "CERRP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERRP",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "65017384dc11435da8d224b26557fe97",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "631b1d86990c4d8087ace6ca8e504152",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "1fef1bca98aa4a39867be4a094cb2ac1",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6d29f25a4fe14dc5b28133d416aef85e",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "SULGIPE",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "4c26658d1bca4a29ba380853b6c04049",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "7338cb4c02604f1886a24b92bf0f61a8",
+    "nome": "ENERGISA_SE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SE",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "252df105a8004d7fb5be2236e3103469",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "39143b625622497bbcf45c55fa056aba",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "5fb4f4eb263a44ddb14b6a6a01651a2c",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "073b59366bf94432adc15047658d61de",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "a0dc53b7e4d949e58f8174e0da0481d8",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "ced767233c144fbfa597f16e34a72179",
+    "nome": "CETRIL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CETRIL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "61304bc2007549258d13532b0e39735f",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "29de31f286e54343b9cf8ffa0f162cdc",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "bb9f656146844ed9a74cc74046dc18a3",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "295d97194ec8493a81b24989b3a79978",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "3c2e7dc8bfc44e91848b3572e8a81c53",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "1cf542c040954612adff44595225609d",
+    "nome": "CEJAMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEJAMA",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "e766be84c55046e683c83bd79e47380b",
+    "nome": "CEDRI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEDRI",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "10e3e156761d462fa754cc3f1a646619",
+    "nome": "RORAIMA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RORAIMA_ENERGIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "3b5e2edf42c749349428fe25d0af5676",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "74d24a7b035b4cc6bcafc47f18193eba",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "df2089284f6848b9b75820227f6806af",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "8bc961e2e22a4d42a539b936e4d4e6df",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ELETROCAR",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "096d3e6bb5a2440083a1dd5893fbd953",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_SP",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "5ca6dab423cb49679deba7af330f48e7",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "c6a1f89e5b064ccaa09cdfdd6497688b",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DEMEI",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "ed30dd82749f4a698e92aa8c7c62e900",
+    "nome": "DCELT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DCELT",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "8b89a05a9b9d488ab901b282636dc889",
+    "nome": "CPFL_SANTA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_SANTA_CRUZ",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "29ca9994df654af987c5fd058fb6e1b6",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "9268b95959614d41a6b915377011ea31",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "09885a3d101146c1b6b5ccb31d41f060",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "36673fc9755d4ebabd013dc14a1c196f",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "fb84aec793e74563a722e2e39cb80e6d",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "872f93ae3f9c434bb7106ad843a0b06a",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "b00b6649062a417fbed92ddd67b0c9a2",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "e6a7d6fc94b0412fbaf6808e636a40fa",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "a5c3f3c406394717bab5a8ad4644c95b",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "33777a8b6ed242acbe53c8a3fe7b27ea",
+    "nome": "NEOENERGIA_COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COSERN",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "cfaa3746bbed45028eaba66b929f0ed6",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d23dedddf9ef4391b6fdb6f9d4bf4b2d",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "FORCEL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "6f511398864c47ca9c9adf0ef1618eb7",
+    "nome": "ENERGISA_PB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_PB",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "bc9ef518725a416a99e08c99e2d979d1",
+    "nome": "ENERGISA_MT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MT",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "04d38dfb20a74bcab9d0789a8b0770fd",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "f40f7a0a7a734dd6b7c98bb77ded600f",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "9284593c401545dfbcf7ebef9ed604f4",
+    "nome": "COOPERZEM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERZEM",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "37a27e3e4eab490993c1d4a1d7330669",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "d086825b53ba4d328dfa2d3ba5598a35",
+    "nome": "CERPRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPRO",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "35ae6257db9d4b7da9786739af296087",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "680cba3e4c9a41a3a999808ff43e7808",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "7e95c11315e6422993334040a7fd559a",
+    "nome": "CERGAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "5e4a0829112d4681bd93f5b4339fd75e",
+    "nome": "CERES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERES",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "a81a95bc1cdc4240bb1b0fefe0b51a09",
+    "nome": "CERBRANORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERBRANORTE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "c60ad248f5184e9a9232cf552eddf12d",
+    "nome": "NOVA_PALMA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NOVA_PALMA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "fdc7dc42b775409ea80d4ef6d2f78c1e",
+    "nome": "NEOENERGIA_PERNAMBUCO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_PERNAMBUCO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "90624a09789e4b55b976c41a33c5b0c8",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "b867074b139f46bea66f0a3ec47c556e",
+    "nome": "EQUATORIAL_PA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_PA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "9dadff3239df405dbfa67549816dfa74",
+    "nome": "ENERGISA_TO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_TO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "933af69c57dd41ea8f6048118b8d07e7",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f364e1ac54004ded95e2407abe56ec4f",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "DMED",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e26044131e6c4a51bd89b7dd8c27ecb4",
+    "nome": "CRERAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRERAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f8a124ecc86e40f49f415f43ca75a010",
+    "nome": "COORSEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COORSEL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "324e8795125d4e7785c762e6dc68a288",
+    "nome": "COOPERCOCAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERCOCAL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "3ca90031a5b14231b9d9b3f75b0fcf75",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERALIANCA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "8d6e472244a2443e8903c36aa9e2d819",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COCEL",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "63d49de8309f42d8964882c127386469",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "0dfb26e7ff9e4c8a9e8664c0ee8a2666",
+    "nome": "CERPALO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERPALO",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "f41a499b1ba64fa397b476b5048ba4b6",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "c27c1ba9124f4e039fde888106df536b",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "bb0a2649bd51468daca302a9ddaf6fae",
+    "nome": "CEREJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEREJ",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "885ada34af8946a0b9dd386924cf7f68",
+    "nome": "AMAZONAS_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "AMAZONAS_ENERGIA",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e0dbaa95bbe04900ab559dbe995e91a2",
+    "nome": "NEOENERGIA_ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_ELEKTRO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "c37d15b3a99c4132b4e325e1c6eaca81",
+    "nome": "JOAO_CESA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "JOAO_CESA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "9963b778b7e54215aed656100e4fd7c0",
+    "nome": "HIDROPAN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "HIDROPAN",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "ff5242147c86428e88971941a35c7cd1",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "299900a25724417098749da3ccae7414",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "b47acf21a7e44a20b6965a67230c0017",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PIRATININGA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "7990de7f137e4e49857b48f18e633558",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CPFL_PAULISTA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "15b23d4fbb964981b29d5bb1b79cee29",
+    "nome": "COPREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPREL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "1d232ce6d9204d248eb73c85d6ffbb11",
+    "nome": "COOPERA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERA",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "3a44bcca54254772a13e5d097a7a92c4",
+    "nome": "CERIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "de4d63afa2004745a53c568440918b7d",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "561aaa5b40984a6c87fa86e99a0f3d8b",
+    "nome": "CERFOX",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERFOX",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "dd43b113716241f08796b49916bfcb8b",
+    "nome": "CERCOS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCOS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "fb5561f38300459d9de14142f431964a",
+    "nome": "CERCI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERCI",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "5c6b3c2d4c0b4704a174af9d6c59dca8",
+    "nome": "CELETRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELETRO",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "67458dcd6f4448088196f0502dfdce62",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "67764984f94d452eb3782d32c88c348a",
+    "nome": "NEOENERGIA_BRASILIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_BRASILIA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "111ae92a6f594e4181e3f18507b6331d",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "LIGHT",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3b9633c37a7c478582a6e2d19393fd32",
+    "nome": "EQUATORIAL_MA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_MA",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "ab958fdeba9840fdbb3f1eac36d34c5c",
+    "nome": "EQUATORIAL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_GO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "613405c27d7d49d7bfcbb105df77dc05",
+    "nome": "ENERGISA_RO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_RO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "975f18dfdb0c479cb237893c5b296ca9",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "b8c585ae35224ac8aa0648587ec61bcb",
+    "nome": "ENERGISA_MS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "7211ed57711c4e15bc57b2a402a54757",
+    "nome": "ENERGISA_MINAS_RIO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_MINAS_RIO",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "5ae7dc011378453587f39ac5e61b606d",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EDP_ES",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "880fc36cb0274cc1981abece79053980",
+    "nome": "COOPERNORTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERNORTE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "b331c292d0f34752893de88a9272af4b",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "4e4da507d1a04fd08e00db551778f26f",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CHESP",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "7e52e7e614094168a977ca3ebb4652cd",
+    "nome": "CERNHE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERNHE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "855e08a700a144d7bea44d93d54d3bb4",
+    "nome": "CERMOFUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMOFUL",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "09bc82e42468412e94fc4b5713f97185",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "8967a491e8e94caa87255dc0ee0707c6",
+    "nome": "CERFOX",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERFOX",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "8668f0464a2a44e3a6ebf5d7e0da643d",
+    "nome": "CEPRAG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEPRAG",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "756ac342de9343a9adf673519c4873ab",
+    "nome": "CEMIRIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIRIM",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "ac3bf2f2b06447ec80493372ca4c9845",
+    "nome": "NEOENERGIA_COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "NEOENERGIA_COELBA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "4c2fc0e35982454bbc54db53d1532b90",
+    "nome": "EQUATORIAL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EQUATORIAL_GO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "afa54a48397745a2b2fbc550880aa2d7",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENEL_SP",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "8197c932d3ea4555898b720fb3209746",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "EFLUL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "47e3e195590243b6a2a466450171eace",
+    "nome": "COOPERZEM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERZEM",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "3537dcaea7764f2885328733aef1aa59",
+    "nome": "COOPERLUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COOPERLUZ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "91d772e6e44843f4abcaa4649a274071",
+    "nome": "CERTREL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTREL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "ddc1475f9a074b9db912402154e2c4df",
+    "nome": "CERTAJA_ENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERTAJA_ENERGIA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "95087e6227be430ba078b528e9116a96",
+    "nome": "CERSUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERSUL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "0a61ad39a91a4063b485cc7b2db90a1b",
+    "nome": "CERMC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERMC",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "04a03ac2efe244399536aa974ae41737",
+    "nome": "CERIM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERIM",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "15d9c8197f5e43438fbede5f2b0c9a41",
+    "nome": "CERILUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERILUZ",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "e5973ecde6ef4778ab9449fc2f0c2f80",
+    "nome": "CERGRAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGRAL",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "5f9106ff9a1c4ee5a14eef13d9d6f810",
+    "nome": "CERGAPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERGAPA",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "d984afaac96e4eb08806dd05497410d9",
+    "nome": "CELETRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELETRO",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "905d1e6c803145a19f27879fdd6d431e",
+    "nome": "UHENPAL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "UHENPAL",
+      "2022-01-31"
+    ]
+  },
+  {
+    "id": "3cf87a8338e34b5c9fcba51aede2ce38",
+    "nome": "SULGIPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "SULGIPE",
+      "2021-11-30"
+    ]
+  },
+  {
+    "id": "88c1e7635e8c438aa159399d492132d2",
+    "nome": "ESS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ESS",
+      "2021-01-31"
+    ]
+  },
+  {
+    "id": "8cb754d57d2d4ef097add342174f9d51",
+    "nome": "EQT_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EQT_AL",
+      "2019-11-30"
+    ]
+  },
+  {
+    "id": "1d2c9c8f44ff4486a28a278ca00fb1ef",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENEL_SP",
+      "2023-01-31"
+    ]
+  },
+  {
+    "id": "d2af4deaf72a414f96ac932470c1cf73",
+    "nome": "ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELEKTRO",
+      "2023-02-28"
+    ]
+  },
+  {
+    "id": "c961fe0920c042269c75c68e027fb556",
+    "nome": "EBO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EBO",
+      "2020-08-31"
+    ]
+  },
+  {
+    "id": "2a61b7f084ce41ba8407e36a6e18c7e8",
+    "nome": "DMED",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "DMED",
+      "2020-05-31"
+    ]
+  },
+  {
+    "id": "e3a18c34c28944939ecdc9e528922bb8",
+    "nome": "COPEL_DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "COPEL_DIS",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "0b446cb278454b15afd7632ca7725a8c",
+    "nome": "COELBA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "COELBA",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "16a0a86e2bd4468a82029f021ec7ce7a",
+    "nome": "CEMIG_D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEMIG_D",
+      "2022-11-30"
+    ]
+  },
+  {
+    "id": "440fa3c62fb043bd865acc8b6723af1e",
+    "nome": "CEMAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEMAR",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "1fe1469ff3624e43b5bd0994d669b62c",
+    "nome": "CELESC_DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CELESC_DIS",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "e7342cb9ce804a85b4f5d76c37bb8a15",
+    "nome": "CEEE_D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEEE_D",
+      "2021-05-31"
+    ]
+  },
+  {
+    "id": "a58d3d4c86eb4a9aa11dc0d63fd0cd89",
+    "nome": "AME",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "AME",
+      "2023-11-30"
+    ]
+  },
+  {
+    "id": "55942cc541fd4bfb84f8403c4c38fe6c",
+    "nome": "RGE-397",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-397",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "c9ac1e82d70d4b278e3bb641d0a7570b",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "7bfc5834d674447fa48b27d1830373a4",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "edbb3894aab84727a92b5a1780658f56",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "6c526ab4d81e43a49b00200d5d90c347",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "4874305734754fff8b399d79105df5f5",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "24c7c5392d424a81aa9b9be496917710",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "5a72cc093a0a4ce4a5170b11e99a7757",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "c225b539876b42a594ab91fe4ac228cd",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "c0747d1ac7ae4a2f86f56988fb3a4717",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "79948f08a558421eac7b64a8134537f8",
+    "nome": "CASTRO-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CASTRO-DIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "eadcb67cd1c440f39663f9dd63d91fec",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "3a7d3a8d1eba48199d9fe6e62639a8ef",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "52904205104349d19142c5892ec50844",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "6d4a6c8cbdec49f6a736997d67b7a5d5",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "afc0925f493d43c28397ab9fba48624e",
+    "nome": "ENEL_GO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENEL_GO",
+      "2023-04-30"
+    ]
+  },
+  {
+    "id": "c1d29629f58d48d9966940aba6d9083a",
+    "nome": "EMT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EMT",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "41b39f4cf1a2449a9df2489c1b134694",
+    "nome": "ELFSM",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELFSM",
+      "2021-03-31"
+    ]
+  },
+  {
+    "id": "eff7077ea0d847769194cab1c7c85245",
+    "nome": "ELETROACRE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELETROACRE",
+      "2023-06-30"
+    ]
+  },
+  {
+    "id": "e19d2f00829345bab29f7718f6a007fb",
+    "nome": "ELEKTRO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELEKTRO",
+      "2019-02-28"
+    ]
+  },
+  {
+    "id": "4859990b83144923aa7cbcadba156c21",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EDP_ES",
+      "2019-02-28"
+    ]
+  },
+  {
+    "id": "6a0ae2e7eaf54556b8f06a9c6391674b",
+    "nome": "CPFL_PAULISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CPFL_PAULISTA",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "83fc948dc8224ffda24a6481f7c8d156",
+    "nome": "COOPERALIANCA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "COOPERALIANCA",
+      "2022-02-28"
+    ]
+  },
+  {
+    "id": "b6fe622815dd4a75ad5704c6de90e5e1",
+    "nome": "CHESP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CHESP",
+      "2021-05-31"
+    ]
+  },
+  {
+    "id": "813b0a8443b44e1b96eb9f9728e1d2c0",
+    "nome": "CEA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEA",
+      "2023-06-30"
+    ]
+  },
+  {
+    "id": "16d2fae6ed4e43438cf129e2fa4216dc",
+    "nome": "RGE-397",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-397",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "3ae68e104eeb4a8f960cfbe451f9910b",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "5a22dca2a0c242778d9726c7df170925",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "a2a4eb2ca78645e3a32e26a252ab1b41",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "1e88884deda14a0f9f55f8431b0c43b3",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "3a5e3be0813f4c1084066c561a3259d5",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "59c2f5d68aaa438985e608ef14840cb9",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "2a0e3388af314869999d9c0d5b4e6bc5",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "20a25b74966d4b7481f7662a2393f704",
+    "nome": "FORCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "FORCEL",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "6424f4d44e5647eab847241e6f8728dc",
+    "nome": "ETO",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ETO",
+      "2020-01-31"
+    ]
+  },
+  {
+    "id": "093c6e8230c04e39a279611997743861",
+    "nome": "EQT_AL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EQT_AL",
+      "2023-11-30"
+    ]
+  },
+  {
+    "id": "6e1f61abbd934778a693802619a57257",
+    "nome": "EPB",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EPB",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "8fed46b23249459987a9fb6323be0d01",
+    "nome": "EMG",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EMG",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "dda2f91346f0453b86f20819dc32a615",
+    "nome": "EFLUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EFLUL",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "cdd9cb644b964df3ad7f935dd139c4cb",
+    "nome": "EDP_ES",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EDP_ES",
+      "2022-02-28"
+    ]
+  },
+  {
+    "id": "b06c9247dd6446478ba5e84ab7257d14",
+    "nome": "CERON",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CERON",
+      "2023-06-30"
+    ]
+  },
+  {
+    "id": "1c670c15fae744519c2a2bd4b20d067e",
+    "nome": "CEB_DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEB_DIS",
+      "2021-04-30"
+    ]
+  },
+  {
+    "id": "93b5dc7a03c141c5abcbbae29b3c8569",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "24ff7c833f56430681ff514e0ec0512e",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "3f2e9b5dcf9c4d60a5873e05eacbd347",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "ba9987a3c07e44febab3597c76e8110a",
+    "nome": "RGE-397",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-397",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "432c18ce608a40b884cce628e5a741bf",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "a33f871f20dd44909185404bb4af7a1d",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "3510422153e34f938b6ce570b8e1a314",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "ba8014325eea4199a0ee680ac59cbc93",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "61daa25b174042cf8c6cf8596f000808",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "2a09d655e97248e7883b946bc1ffec9d",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "7d20595de6c3432098d1f8ba3690eec2",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "d31f897573b64963ba31a820aabca897",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "e5ca1625686f48919e8cdb84b5b4b358",
+    "nome": "CASTRO-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CASTRO-DIS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "7a20ddd02a41408383f4a9040709724d",
+    "nome": "RGE_SUL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "RGE_SUL",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "68777561d09644bf97647c924eafa2e9",
+    "nome": "LIGHT",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "LIGHT",
+      "2021-09-30"
+    ]
+  },
+  {
+    "id": "ac466538e4b24e7485c244a2de3d7351",
+    "nome": "IENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "IENERGIA",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "569e344a77204f028f6362e1aef64144",
+    "nome": "ESE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ESE",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "2bfbb63ba28647089d937bec8179b85f",
+    "nome": "ENEL_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENEL_SP",
+      "2019-01-31"
+    ]
+  },
+  {
+    "id": "b10d8015150442bf8fdb634a00246020",
+    "nome": "ENEL_RJ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENEL_RJ",
+      "2022-09-30"
+    ]
+  },
+  {
+    "id": "f36c62021ccc4e49aabc08ec006324e3",
+    "nome": "ENEL_CE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENEL_CE",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "c3585ae516f340b596617827d60da5ef",
+    "nome": "EMS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EMS",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "47426082275b40b286c823dd28fc5cc8",
+    "nome": "ELETROCAR",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELETROCAR",
+      "2022-01-31"
+    ]
+  },
+  {
+    "id": "48b333bd6b9b45ea9af3aceddd00fc48",
+    "nome": "EFLJC",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EFLJC",
+      "2021-02-28"
+    ]
+  },
+  {
+    "id": "13d6a153a4f245619d3b0590abf9f58e",
+    "nome": "DEMEI",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "DEMEI",
+      "2022-01-31"
+    ]
+  },
+  {
+    "id": "dc52d5df2dd34a318f58c1b525f61c76",
+    "nome": "COCEL",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "COCEL",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "2d1880870e7940558bf4a04d2acea47b",
+    "nome": "BOA_VISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "BOA_VISTA",
+      "2023-07-31"
+    ]
+  },
+  {
+    "id": "2e1b506d25af427ab909332f35b89a6b",
+    "nome": "BOA_VISTA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "BOA_VISTA",
+      "2020-05-31"
+    ]
+  },
+  {
+    "id": "53a975191b9a48b79bded929f2a0769a",
+    "nome": "AME",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "AME",
+      "2020-05-31"
+    ]
+  },
+  {
+    "id": "09d64ced756f4784b3e57a4be529a63f",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "a3262a3065634900b337e41305809c1b",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2016-12-31"
+    ]
+  },
+  {
+    "id": "875d55b3af274329aaa1d62ded40fd18",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "b40bf479dc2a4164a0401b3bc770d2e2",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "7501267c56e546d3b5c560900585cb4c",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "d6a88698574445f8804c6eaacc50b55e",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "4bcf86704de34b0e9c0f7b80953b5bc8",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "ea109ae086764f2797e7d143d59ca747",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "6d3aedbf86414006a7b8a8e08794fcac",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2019-12-31"
+    ]
+  },
+  {
+    "id": "842a7c57f3d44c3595e10fedb05f1040",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "bb5dae135d79429bb9a09e6506fd9e2a",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "eab173195d5c4476922438cef05ba686",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "fb0f5cdead7b4b70a21fb5e1a12211ef",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "abecf5a74dfa47bca0410add284b96e3",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "a86135a1bc804f9b81bc591fedf056ec",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "c1d71ba88c514fe0b1f974d8c7c60aec",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "7a0916b7025a4b32bb96fb890312e0d7",
+    "nome": "CASTRO-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CASTRO-DIS",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "38ea3efaee63433e81e5d9d14ad01469",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "bdbcd6d12aee4a4fb9d86dca8aca1323",
+    "nome": "CELESC-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CELESC-DIS",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "fd1548c8d18f4f11b1cdfcaf017eea47",
+    "nome": "MUXENERGIA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "MUXENERGIA",
+      "2022-01-31"
+    ]
+  },
+  {
+    "id": "5de0ff5f7357439eb52ffca6fe51a1aa",
+    "nome": "ENF",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ENF",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "7e2c89a4f96d44c38af6d21898bebf7a",
+    "nome": "ELETROACRE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "ELETROACRE",
+      "2020-06-30"
+    ]
+  },
+  {
+    "id": "f2b72ca31b164e5bafd0cb5a83563bff",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EDP_SP",
+      "2023-04-30"
+    ]
+  },
+  {
+    "id": "96fc60c8790f48b1bbb84fc4eecb972e",
+    "nome": "EDP_SP",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "EDP_SP",
+      "2019-04-30"
+    ]
+  },
+  {
+    "id": "85f0a631a8f24ca09cc99d70c7ea0a9c",
+    "nome": "CPFL_STA_CRUZ",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CPFL_STA_CRUZ",
+      "2020-09-30"
+    ]
+  },
+  {
+    "id": "94a5db07e58246d9a2bdb444d523c9bc",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CPFL_PIRATININGA",
+      "2023-04-30"
+    ]
+  },
+  {
+    "id": "1e77d4c83da14f76a0541ee6787f67cf",
+    "nome": "CPFL_PIRATININGA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CPFL_PIRATININGA",
+      "2019-04-30"
+    ]
+  },
+  {
+    "id": "2b9e579022e84830bb104a228bd5625f",
+    "nome": "COSERN",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "COSERN",
+      "2022-10-31"
+    ]
+  },
+  {
+    "id": "405737eabc9c45ef93c687408a83ecdc",
+    "nome": "CERON",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CERON",
+      "2020-06-30"
+    ]
+  },
+  {
+    "id": "484a5d501e7146b2a2e0e0b4600d6a8e",
+    "nome": "CEPISA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEPISA",
+      "2023-06-30"
+    ]
+  },
+  {
+    "id": "5d15416dad604082b06a53589e3c8512",
+    "nome": "CEPISA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CEPISA",
+      "2020-06-30"
+    ]
+  },
+  {
+    "id": "c41bd6618c9d44cd8c5d2cb6ccad0d54",
+    "nome": "CELPE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CELPE",
+      "2020-10-31"
+    ]
+  },
+  {
+    "id": "9082dc98c35c4738a579de94cab7787d",
+    "nome": "CELPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CELPA",
+      "2023-02-28"
+    ]
+  },
+  {
+    "id": "c73a6e0bf35d44a69400db698701a5c0",
+    "nome": "CELPA",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "Extra",
+      "CELPA",
+      "2019-02-28"
+    ]
+  },
+  {
+    "id": "cdfe3f874feb4066a25a3b47b5fc8b95",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "fe36282e7cbb4c23921bcffd7bb6cca3",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2017-12-31"
+    ]
+  },
+  {
+    "id": "52a36f67670e4a3ca578bebce2597f23",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2018-12-31"
+    ]
+  },
+  {
+    "id": "62bf9f20f30049f3b6f7715b9db6bcef",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2020-12-31"
+    ]
+  },
+  {
+    "id": "fd91f8a465274197af2793a2b54c30af",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2021-12-31"
+    ]
+  },
+  {
+    "id": "e0aa9b272d8442b692bda4c8f0602e5b",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "6704ec96a7584ce3ac6396b776223cb3",
+    "nome": "COPEL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "COPEL-DIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "9bc02e304b28446b8035e741d4a14187",
+    "nome": "CERAL-DIS",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CERAL-DIS",
+      "2022-12-31"
+    ]
+  },
+  {
+    "id": "34bb46026ab04fd9ba50eed6b59a7e34",
+    "nome": "CRELUZ-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CRELUZ-D",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "ff6510e6302d49769800e849e2f5ba14",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2023-12-31"
+    ]
+  },
+  {
+    "id": "9ad0d5bfc98648f880c488dfbfff1646",
+    "nome": "RGE-396",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "RGE-396",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "00eedc147efc4020993a6c9cf9c6d3cc",
+    "nome": "ENERGISA_SUL-SUDESTE",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "ENERGISA_SUL-SUDESTE",
+      "2024-12-31"
+    ]
+  },
+  {
+    "id": "7dcfe1549a4c4df29b02f164b0c362c5",
+    "nome": "CEMIG-D",
+    "tags_originais": [
+      "BDGD",
+      "SIG-R",
+      "Distribuicao",
+      "CEMIG-D",
+      "2024-12-31"
+    ]
+  }
+]

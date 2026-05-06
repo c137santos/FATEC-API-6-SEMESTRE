@@ -1,0 +1,101 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - REPORTS_DIR=/app/output/reports
+    depends_on:
+      - db
+      - mongodb
+      - redis
+    volumes:
+      - gdb_data:/data
+      - ./output:/app/output
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  worker:
+    build: .
+    command: >
+      uv run celery -A backend.tasks.celery_app worker
+      --loglevel=info
+      --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
+      --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
+      --max-tasks-per-child=${CELERY_MAX_TASKS_PER_CHILD:-20}
+      -O fair
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CELERY_PREFETCH_MULTIPLIER=${CELERY_PREFETCH_MULTIPLIER:-1}
+      - CELERY_TASK_ACKS_LATE=${CELERY_TASK_ACKS_LATE:-true}
+      - CELERY_TASK_REJECT_ON_WORKER_LOST=${CELERY_TASK_REJECT_ON_WORKER_LOST:-true}
+      - SSDMT_BATCH_SIZE=${SSDMT_BATCH_SIZE:-10000}
+      - SSDMT_PROGRESS_LOG_INTERVAL_BATCHES=${SSDMT_PROGRESS_LOG_INTERVAL_BATCHES:-25}
+      - SSDMT_PARALLEL_CHUNK_SIZE=${SSDMT_PARALLEL_CHUNK_SIZE:-0}
+      - REPORTS_DIR=/app/output/reports
+    depends_on:
+      - redis
+    volumes:
+      - gdb_data:/data
+      - ./output:/app/output
+    cpus: ${WORKER_CPUS:-4.0}
+    mem_limit: ${WORKER_MEMORY:-8g}
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+  mongo-express:
+      image: mongo-express
+      restart: always
+      ports:
+        - "8081:8081"
+      environment:
+        ME_CONFIG_MONGODB_URL: ${MONGO_URI}
+        ME_CONFIG_BASICAUTH: "false"
+      env_file:
+        - .env
+      depends_on:
+        - mongodb
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongodb:
+    image: mongo:6.0
+    command: mongod --wiredTigerCacheSizeGB 1.0 --bind_ip_all
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+
+volumes:
+  mongo_data:
+  postgres_data:
+  gdb_data:

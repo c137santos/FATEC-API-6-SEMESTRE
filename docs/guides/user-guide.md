@@ -7,7 +7,7 @@ This document provides a step-by-step guide to using the Raichu secure access sy
 
 ## 1. Account Creation (Sign Up)
 
-![alt text](../../frontend/assets/account-creation.png)
+![alt text](../img/account-creation.png)
 
 Before accessing the system, a corporate account must be created.
 
@@ -27,7 +27,7 @@ Before accessing the system, a corporate account must be created.
 
 ## 2. System Access (Login)
 
-![alt text](image.png)
+![alt text](../img/system-access.png)
 
 After account creation, access the system through the login page.
 
@@ -43,7 +43,7 @@ After account creation, access the system through the login page.
 
 ## 3. Documentation Generation (Home / Documents)
 
-![alt text](../../frontend/assets/home-page.png)
+![alt text](../img/home-page.png)
 
 This is the main functionality of the system.
 
@@ -64,7 +64,7 @@ This is the main functionality of the system.
 
 ## 4. Profile Management
 
-![alt text](../../frontend/assets/profile.png)
+![alt text](../img/profile.png)
 
 User data and credentials can be managed in the Profile section.
 
@@ -103,7 +103,7 @@ User data and credentials can be managed in the Profile section.
 
 ## 5. Logout
 
-![alt text](../../frontend/assets/logout.png)
+![alt text](../img/logout.png)
 
 To securely end your session:
 

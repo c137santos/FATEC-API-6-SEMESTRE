@@ -135,9 +135,14 @@
         return
       }
       try {
+        const token = localStorage.getItem('access_token')
         const res = await fetch('http://localhost:8000/pipeline/trigger', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify(payload)
         })
         let data = null

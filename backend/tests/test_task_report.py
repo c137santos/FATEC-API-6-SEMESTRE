@@ -1,8 +1,8 @@
 import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 from celery.exceptions import Retry
 
-from backend.tasks.task_report import task_gerar_report
+from backend.tasks.task_report import task_gerar_report, task_send_report_email
 
 TASK_MODULE = 'backend.tasks.task_report'
 SERVICE_MODULE = 'backend.services.report'
@@ -127,6 +127,82 @@ def test_task_report_dispara_retry_quando_render_paths_incompleto():
     with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
         with pytest.raises(Retry):
             task_gerar_report.run(JOB_ID)
+
+
+# ---------------------------------------------------------------------------
+# task_send_report_email
+# ---------------------------------------------------------------------------
+
+SEND_EMAIL_MODULE = 'backend.tasks.task_report'
+JOB_ID_EMAIL = 'job-email-abc'
+RECIPIENT = 'user@example.com'
+PDF = '/output/reports/job-email-abc/report.pdf'
+
+
+def _make_email_db():
+    jobs_col = MagicMock()
+    db = MagicMock()
+    db.__getitem__.side_effect = lambda name: {'jobs': jobs_col}.get(name, MagicMock())
+    return db
+
+
+def test_send_report_email_persiste_sent_quando_sucesso():
+    db = _make_email_db()
+
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync') as mock_send,
+    ):
+        result = task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+
+    assert result == {'job_id': JOB_ID_EMAIL, 'email_status': 'sent'}
+    mock_send.assert_called_once_with(recipient_email=RECIPIENT, pdf_path=PDF)
+    update_call = db['jobs'].update_one.call_args
+    _, update_doc = update_call.args
+    assert update_doc['$set']['email_status'] == 'sent'
+
+
+def test_send_report_email_dispara_retry_quando_smtp_falha():
+    """Falha de SMTP em tentativa intermediária chama retry sem persistir email_status."""
+    db = _make_email_db()
+
+    # patch.object on self.retry prevents eager re-execution so we can assert
+    # the retry branch in isolation (retries=0, below max_retries=3).
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync', side_effect=Exception('timeout')),
+        patch.object(task_send_report_email, 'retry', side_effect=Retry()) as mock_retry,
+    ):
+        task_send_report_email.push_request(retries=0)
+        try:
+            with pytest.raises(Retry):
+                task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+        finally:
+            task_send_report_email.pop_request()
+
+    mock_retry.assert_called_once()
+    db['jobs'].update_one.assert_not_called()
+
+
+def test_send_report_email_persiste_failed_apos_max_retries():
+    db = _make_email_db()
+
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync', side_effect=Exception('conexão recusada')),
+    ):
+        # Simulate the task already having exhausted its retries
+        task_send_report_email.push_request(retries=task_send_report_email.max_retries)
+        try:
+            result = task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+        finally:
+            task_send_report_email.pop_request()
+
+    assert result == {'job_id': JOB_ID_EMAIL, 'email_status': 'failed'}
+    update_call = db['jobs'].update_one.call_args
+    _, update_doc = update_call.args
+    assert update_doc['$set']['email_status'] == 'failed'
+    assert 'conexão recusada' in update_doc['$set']['email_error']
 
 
 # ---------------------------------------------------------------------------

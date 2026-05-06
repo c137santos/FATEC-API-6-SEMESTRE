@@ -1,12 +1,31 @@
 import pytest
-from celery import chain as celery_chain
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
-from types import SimpleNamespace
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
-from backend.core.models import Distribuidora
+from backend.app import app
+from backend.core.models import Distribuidora, User
+from backend.database import get_mongo_async_database, get_session
+from backend.security import get_current_user
 
 _CHAIN_PATH = 'backend.services.pipeline_trigger.chain'
+
+_FAKE_USER = User(username='testuser', email='test@test.com', password='hashed')
+
+
+@pytest_asyncio.fixture
+async def client(session, mongo_db):
+    app.dependency_overrides[get_session] = lambda: session
+    app.dependency_overrides[get_current_user] = lambda: _FAKE_USER
+
+    async def _mongo():
+        yield mongo_db
+    app.dependency_overrides[get_mongo_async_database] = _mongo
+
+    async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
+        yield ac
+    app.dependency_overrides.clear()
 
 
 def _mock_pipeline(monkeypatch, chain_result_id='task-1'):

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Integer, Text, func
+from sqlalchemy import DateTime, Float, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
 
 table_registry = registry()
@@ -33,6 +33,16 @@ class Distribuidora:
         DateTime(timezone=False),
         nullable=True,
         default=None,
+    )
+    cnpj: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
+    cnpj_match: Mapped[float | None] = mapped_column(
+        Float, nullable=True, default=None
+    )
+    cnpj_source: Mapped[str | None] = mapped_column(
+        Text, nullable=True, default=None
+    )
+    cnpj_enrichment_status: Mapped[str | None] = mapped_column(
+        Text, nullable=True, default=None
     )
     updated_at: Mapped[datetime] = mapped_column(
         init=False,

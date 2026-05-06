@@ -9,7 +9,6 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import cm
-from reportlab.lib.utils import ImageReader
 from reportlab.platypus import (
     HRFlowable,
     Image,
@@ -76,15 +75,18 @@ def _image_flowables(img_path: Path, max_width: float, first_chunk_height: float
     chunk fits within the available page height. The first chunk is shorter
     because the section title already consumed some space.
     """
-    import numpy as np
-
     pil_img = PilImage.open(str(img_path)).convert('RGB')
 
-    # Crop trailing white rows to avoid blank pages
-    arr = np.array(pil_img)
-    non_white_rows = np.where(np.any(arr < 245, axis=(1, 2)))[0]
-    if non_white_rows.size:
-        pil_img = pil_img.crop((0, 0, pil_img.width, int(non_white_rows[-1]) + 5))
+    # Scan from the bottom one row at a time to avoid a full NumPy copy of the
+    # image (charts can be thousands of pixels tall).
+    w, h = pil_img.size
+    last_content_row = h - 1
+    for y in range(h - 1, -1, -1):
+        if min(pil_img.crop((0, y, w, y + 1)).tobytes()) < 245:
+            last_content_row = y
+            break
+    if last_content_row < h - 1:
+        pil_img = pil_img.crop((0, 0, w, last_content_row + 5))
 
     iw, ih = pil_img.size
 

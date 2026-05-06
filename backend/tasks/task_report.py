@@ -14,10 +14,45 @@ MAX_WAIT_RETRIES = 120
 _REQUIRED_RENDER_KEYS = {'grafico_tam', 'pt_pnt', 'tabela_score', 'mapa_calor', 'grafico_sam'}
 
 
+EMAIL_RETRY_DELAY = 60
+MAX_EMAIL_RETRIES = 3
+
+
+@celery_app.task(
+    bind=True,
+    max_retries=MAX_EMAIL_RETRIES,
+    default_retry_delay=EMAIL_RETRY_DELAY,
+    name='etl.send_report_email',
+)
+def task_send_report_email(self, job_id: str, recipient_email: str, pdf_path: str) -> dict:
+    logger.info('[task_send_report_email] Inicio. job_id=%s email=%s', job_id, recipient_email)
+    db = get_mongo_sync_db()
+    try:
+        send_email_sync(recipient_email=recipient_email, pdf_path=pdf_path)
+        db['jobs'].update_one(
+            {'job_id': job_id},
+            {'$set': {'email_status': 'sent'}},
+        )
+        logger.info('[task_send_report_email] E-mail enviado. job_id=%s', job_id)
+        return {'job_id': job_id, 'email_status': 'sent'}
+    except Exception as exc:
+        if self.request.retries >= self.max_retries:
+            logger.error(
+                '[task_send_report_email] Falha definitiva após %d tentativas. job_id=%s erro=%s',
+                self.max_retries, job_id, exc,
+            )
+            db['jobs'].update_one(
+                {'job_id': job_id},
+                {'$set': {'email_status': 'failed', 'email_error': str(exc)}},
+            )
+            return {'job_id': job_id, 'email_status': 'failed'}
+        raise self.retry(exc=exc)
+
+
 @celery_app.task(bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.gerar_report')
 def task_gerar_report(self, job_id: str) -> dict:
     logger.info('[task_gerar_report] Inicio. job_id=%s', job_id)
-    
+
     db = get_mongo_sync_db()
 
     job_doc = db['jobs'].find_one({'job_id': job_id}, {'_id': 0})
@@ -49,10 +84,7 @@ def task_gerar_report(self, job_id: str) -> dict:
 
         user_email = job_doc.get('user_email')
         if user_email:
-            try:
-                send_email_sync(recipient_email=user_email, pdf_path=pdf_path)
-            except Exception:
-                logger.exception('[task_gerar_report] Falha ao enviar e-mail. job_id=%s email=%s', job_id, user_email)
+            task_send_report_email.delay(job_id, user_email, pdf_path)
 
         return {'job_id': job_id, 'status': 'completed', 'path': pdf_path}
 

@@ -121,6 +121,11 @@ async def trigger_pipeline_flow(
     user_email: str,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
+    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
+        raise ValueError(
+            'Pipeline já foi acionada para a distribuidora no ano informado'
+        )
+
     dist_name = await _get_distribuidora_name(
         session,
         distribuidora_id,

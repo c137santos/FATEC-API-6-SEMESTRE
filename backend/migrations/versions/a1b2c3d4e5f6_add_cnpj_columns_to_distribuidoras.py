@@ -1,7 +1,7 @@
 """Add CNPJ columns to distribuidoras
 
 Revision ID: a1b2c3d4e5f6
-Revises: f66112ab2525
+Revises: 9b2d8e3f5a11
 Create Date: 2026-05-06 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = 'a1b2c3d4e5f6'
-down_revision: Union[str, Sequence[str], None] = 'f66112ab2525'
+down_revision: Union[str, Sequence[str], None] = '9b2d8e3f5a11'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

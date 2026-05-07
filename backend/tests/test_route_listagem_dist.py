@@ -7,7 +7,7 @@ from backend.core.schemas import DistribuidoraPayload
 async def test_sync_distribuidoras_endpoint_retorna_totais(
     client, monkeypatch
 ):
-    async def fake_fetch(_initial_url):
+    async def fake_fetch(_initial_url, **kwargs):
         return [
             DistribuidoraPayload(
                 id='dist-1',
@@ -21,9 +21,16 @@ async def test_sync_distribuidoras_endpoint_retorna_totais(
             ),
         ]
 
+    async def fake_aneel_map():
+        return {}
+
     monkeypatch.setattr(
         'backend.services.distribuidoras.fetch_paginated_resources',
         fake_fetch,
+    )
+    monkeypatch.setattr(
+        'backend.services.distribuidoras.fetch_aneel_cnpj_map',
+        fake_aneel_map,
     )
 
     response = await client.post('/dist/sync', json={})
@@ -37,7 +44,7 @@ async def test_sync_distribuidoras_endpoint_erro_externo_retorna_502(
     client,
     monkeypatch,
 ):
-    async def fake_fetch(_initial_url):
+    async def fake_fetch(_initial_url, **kwargs):
         raise RuntimeError('Falha ao consumir API ArcGIS Hub')
 
     monkeypatch.setattr(

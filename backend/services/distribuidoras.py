@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 
 import httpx
@@ -5,11 +6,15 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.clients.aneel import fetch_aneel_cnpj_map
 from backend.core.models import Distribuidora
 from backend.core.schemas import (
     DistribuidoraPayload,
     SyncDistribuidorasResponse,
 )
+from backend.services.cnpj_enrichment import enrich_distribuidoras
+
+logger = logging.getLogger(__name__)
 
 INITIAL_URL = (
     'https://hub.arcgis.com/api/search/v1/collections/all/'
@@ -115,9 +120,17 @@ async def upsert_distribuidoras(
 async def sync_distribuidoras(
     session: AsyncSession,
     initial_url: str = INITIAL_URL,
+    client: httpx.AsyncClient | None = None,
 ) -> SyncDistribuidorasResponse:
-    resources = await fetch_paginated_resources(initial_url)
+    resources = await fetch_paginated_resources(initial_url, client=client)
     total_persistidas = await upsert_distribuidoras(session, resources)
+
+    try:
+        aneel_map = await fetch_aneel_cnpj_map()
+        await enrich_distribuidoras(session, aneel_map)
+    except Exception as exc:
+        logger.error('Enriquecimento CNPJ falhou, sync continua: %s', exc)
+
     return SyncDistribuidorasResponse(
         total_recebidas=len(resources),
         total_persistidas=total_persistidas,

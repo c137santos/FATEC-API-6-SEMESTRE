@@ -45,6 +45,7 @@ class DistribuidoraPayload(BaseModel):
 class SyncDistribuidorasResponse(BaseModel):
     total_recebidas: int
     total_persistidas: int
+    enrichment_task_id: str
 
 
 class DownloadRequest(BaseModel):

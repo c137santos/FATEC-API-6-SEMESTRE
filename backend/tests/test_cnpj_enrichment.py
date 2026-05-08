@@ -1,13 +1,14 @@
 """Tests for ANEEL client and CNPJ enrichment service."""
 
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from backend.clients.aneel import fetch_aneel_cnpj_map
-from backend.core.models import Distribuidora
+from backend.core.models import Distribuidora, DistribuidoraCnpj
 from backend.core.schemas import DistribuidoraPayload
 from backend.services.cnpj_enrichment import enrich_distribuidoras
 from backend.services.distribuidoras import upsert_distribuidoras
@@ -83,6 +84,22 @@ async def test_fetch_aneel_cnpj_map_normaliza_cnpj():
 
 
 @pytest.mark.asyncio
+async def test_fetch_aneel_strip_espacos_sig_agente():
+    """SigAgente com espaços no retorno da API deve ser normalizado via strip."""
+    records = [{'SigAgente': 'AME                 ', 'NumCNPJ': '12345678000195'}]
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=_aneel_response(records))
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await fetch_aneel_cnpj_map(client=client)
+
+    assert 'AME' in result
+    assert 'AME                 ' not in result
+    assert result['AME'] == '12345678000195'
+
+
+@pytest.mark.asyncio
 async def test_fetch_aneel_cnpj_map_levanta_em_falha_http():
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(500)
@@ -106,16 +123,16 @@ async def test_enrich_match_aceito(session):
     counts = await enrich_distribuidoras(session, aneel_map)
 
     assert counts['matched'] == 1
-    row = (
+    cnpj_row = (
         await session.execute(
-            select(Distribuidora).where(Distribuidora.id == 'e-1')
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-1')
         )
     ).scalars().one()
 
-    assert row.cnpj == '76535764000143'
-    assert row.cnpj_match == 1.0
-    assert row.cnpj_source == 'aneel_api'
-    assert row.cnpj_enrichment_status == 'matched'
+    assert cnpj_row.cnpj == '76535764000143'
+    assert cnpj_row.cnpj_match == 1.0
+    assert cnpj_row.cnpj_source == 'aneel_api'
+    assert cnpj_row.cnpj_enrichment_status == 'matched'
 
 
 @pytest.mark.asyncio
@@ -129,12 +146,12 @@ async def test_enrich_match_case_insensitive(session):
     counts = await enrich_distribuidoras(session, aneel_map)
 
     assert counts['matched'] == 1
-    row = (
+    cnpj_row = (
         await session.execute(
-            select(Distribuidora).where(Distribuidora.id == 'e-2')
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-2')
         )
     ).scalars().one()
-    assert row.cnpj_enrichment_status == 'matched'
+    assert cnpj_row.cnpj_enrichment_status == 'matched'
 
 
 @pytest.mark.asyncio
@@ -148,14 +165,16 @@ async def test_enrich_sem_match_marca_no_match(session):
     counts = await enrich_distribuidoras(session, aneel_map)
 
     assert counts['no_match'] == 1
-    row = (
+    cnpj_row = (
         await session.execute(
-            select(Distribuidora).where(Distribuidora.id == 'e-3')
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-3')
         )
     ).scalars().one()
 
-    assert row.cnpj is None
-    assert row.cnpj_enrichment_status == 'no_match'
+    assert cnpj_row.cnpj is None
+    assert cnpj_row.cnpj_enrichment_status == 'no_match'
+    assert cnpj_row.cnpj_match is not None
+    assert 0.0 <= cnpj_row.cnpj_match <= 1.0
 
 
 @pytest.mark.asyncio
@@ -193,7 +212,7 @@ async def test_enrich_idempotente_nao_reprocessa_no_match(session):
 
 
 @pytest.mark.asyncio
-async def test_sync_chama_enrichment_apos_upsert(session):
+async def test_sync_retorna_totais_corretos(session):
     from backend.services.distribuidoras import sync_distribuidoras
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -212,61 +231,185 @@ async def test_sync_chama_enrichment_apos_upsert(session):
             },
         )
 
-    aneel_map = {'COPEL-DIS': '76535764000143'}
-
-    with patch(
-        'backend.services.distribuidoras.fetch_aneel_cnpj_map',
-        new=AsyncMock(return_value=aneel_map),
-    ):
-        async with httpx.AsyncClient(
-            transport=httpx.MockTransport(handler)
-        ) as client:
-            await sync_distribuidoras(
-                session=session,
-                initial_url='https://example.test/search',
-                client=client,
-            )
-
-    row = (
-        await session.execute(
-            select(Distribuidora).where(Distribuidora.id == 'dist-sync-1')
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await sync_distribuidoras(
+            session=session,
+            initial_url='https://example.test/search',
+            client=client,
         )
-    ).scalars().one()
-    assert row.cnpj == '76535764000143'
-    assert row.cnpj_enrichment_status == 'matched'
+
+    assert result.total_recebidas == 1
+    assert result.total_persistidas == 1
+
+
+# ── fuzzy match ───────────────────────────────────────────────────────────────
+
+
+async def _drain_pending(session):
+    """Insert a no_match row in distribuidora_cnpj for every distribuidora not yet enriched."""
+    already_enriched = select(DistribuidoraCnpj.dist_id)
+    pending_ids = (
+        await session.execute(
+            select(Distribuidora.id)
+            .where(Distribuidora.id.not_in(already_enriched))
+            .distinct()
+        )
+    ).all()
+    for (dist_id,) in pending_ids:
+        await session.execute(
+            pg_insert(DistribuidoraCnpj)
+            .values(dist_id=dist_id, cnpj_enrichment_status='no_match')
+            .on_conflict_do_nothing()
+        )
+    await session.commit()
 
 
 @pytest.mark.asyncio
-async def test_sync_continua_quando_aneel_falha(session):
-    from backend.services.distribuidoras import sync_distribuidoras
+async def test_fuzzy_match_aceito(session):
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-1', dist_name='COPEL DISTRIBUICAO', date_gdb=2024)],
+    )
+    aneel_map = {'COPEL-DIS': '76535764000143'}
 
-    def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
-            200,
-            json={
-                'features': [
-                    {
-                        'id': 'dist-sync-2',
-                        'properties': {
-                            'tags': ['BDGD', 'DIST-Y', '2024-01-01']
-                        },
-                    }
-                ],
-                'links': [],
-            },
+    with patch('backend.services.cnpj_enrichment.process') as mock_process:
+        mock_process.extractOne.return_value = ('COPEL-DIS', 97, 0)
+        counts = await enrich_distribuidoras(session, aneel_map)
+
+    assert counts['matched'] == 1
+    cnpj_row = (
+        await session.execute(
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-1')
         )
+    ).scalars().one()
 
-    with patch(
-        'backend.services.distribuidoras.fetch_aneel_cnpj_map',
-        new=AsyncMock(side_effect=httpx.HTTPError('timeout')),
-    ):
-        async with httpx.AsyncClient(
-            transport=httpx.MockTransport(handler)
-        ) as client:
-            result = await sync_distribuidoras(
-                session=session,
-                initial_url='https://example.test/search',
-                client=client,
-            )
+    assert cnpj_row.cnpj == '76535764000143'
+    assert cnpj_row.cnpj_match == pytest.approx(0.97)
+    assert cnpj_row.cnpj_source == 'aneel_api'
+    assert cnpj_row.cnpj_enrichment_status == 'matched'
 
-    assert result.total_persistidas == 1
+
+@pytest.mark.asyncio
+async def test_fuzzy_match_rejeitado(session):
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-2', dist_name='DIST-TOTALMENTE-DIFERENTE', date_gdb=2024)],
+    )
+    aneel_map = {'COPEL-DIS': '76535764000143'}
+
+    with patch('backend.services.cnpj_enrichment.process') as mock_process:
+        mock_process.extractOne.return_value = ('COPEL-DIS', 60, 0)
+        counts = await enrich_distribuidoras(session, aneel_map)
+
+    assert counts['no_match'] == 1
+    cnpj_row = (
+        await session.execute(
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-2')
+        )
+    ).scalars().one()
+
+    assert cnpj_row.cnpj is None
+    assert cnpj_row.cnpj_enrichment_status == 'no_match'
+    assert cnpj_row.cnpj_match == pytest.approx(0.60)
+
+
+@pytest.mark.asyncio
+async def test_fuzzy_rejeitado_grava_log_mongo(session):
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-3', dist_name='DIST-DIFERENTE', date_gdb=2024)],
+    )
+    aneel_map = {'COPEL-DIS': '76535764000143'}
+
+    mock_collection = MagicMock()
+    mock_collection.insert_one = AsyncMock()
+    mock_mongo = MagicMock()
+    mock_mongo.__getitem__ = MagicMock(return_value=mock_collection)
+
+    with patch('backend.services.cnpj_enrichment.process') as mock_process:
+        mock_process.extractOne.return_value = ('COPEL-DIS', 60, 0)
+        await enrich_distribuidoras(session, aneel_map, mongo_db=mock_mongo)
+
+    mock_collection.insert_one.assert_called_once()
+    doc = mock_collection.insert_one.call_args[0][0]
+    assert doc['dist_id'] == 'fz-3'
+    assert doc['dist_name'] == 'DIST-DIFERENTE'
+    assert doc['aneel_sig_agente'] == 'COPEL-DIS'
+    assert doc['aneel_cnpj'] == '76535764000143'
+    assert doc['match_score'] == pytest.approx(0.60)
+    assert 'attempted_at' in doc
+
+
+@pytest.mark.asyncio
+async def test_no_match_sem_candidato_grava_zero_no_postgres(session):
+    """Quando aneel_map está vazio (nenhum candidato fuzzy), cnpj_match deve ser 0.0."""
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-5', dist_name='DIST-SEM-CANDIDATO', date_gdb=2024)],
+    )
+
+    counts = await enrich_distribuidoras(session, aneel_map={})
+
+    assert counts['no_match'] == 1
+    cnpj_row = (
+        await session.execute(
+            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-5')
+        )
+    ).scalars().one()
+
+    assert cnpj_row.cnpj is None
+    assert cnpj_row.cnpj_enrichment_status == 'no_match'
+    assert cnpj_row.cnpj_match == pytest.approx(0.0)
+
+
+@pytest.mark.asyncio
+async def test_no_match_sem_candidato_grava_log_mongo_com_zero(session):
+    """Quando não há candidato fuzzy, o log Mongo deve ter match_score=0.0 e campos nulos."""
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-6', dist_name='DIST-SEM-CANDIDATO-MONGO', date_gdb=2024)],
+    )
+
+    mock_collection = MagicMock()
+    mock_collection.insert_one = AsyncMock()
+    mock_mongo = MagicMock()
+    mock_mongo.__getitem__ = MagicMock(return_value=mock_collection)
+
+    await enrich_distribuidoras(session, aneel_map={}, mongo_db=mock_mongo)
+
+    mock_collection.insert_one.assert_called_once()
+    doc = mock_collection.insert_one.call_args[0][0]
+    assert doc['dist_id'] == 'fz-6'
+    assert doc['aneel_sig_agente'] is None
+    assert doc['aneel_cnpj'] is None
+    assert doc['match_score'] == pytest.approx(0.0)
+    assert 'attempted_at' in doc
+
+
+@pytest.mark.asyncio
+async def test_no_match_nao_retentado_em_novo_sync(session):
+    await _drain_pending(session)
+    await upsert_distribuidoras(
+        session,
+        [DistribuidoraPayload(id='fz-4', dist_name='DIST-SEM-MATCH', date_gdb=2024)],
+    )
+    aneel_map = {'COPEL-DIS': '76535764000143'}
+
+    with patch('backend.services.cnpj_enrichment.process') as mock_process:
+        mock_process.extractOne.return_value = ('COPEL-DIS', 50, 0)
+        counts1 = await enrich_distribuidoras(session, aneel_map)
+
+    assert counts1['no_match'] == 1
+
+    with patch('backend.services.cnpj_enrichment.process') as mock_process:
+        mock_process.extractOne.return_value = ('COPEL-DIS', 50, 0)
+        counts2 = await enrich_distribuidoras(session, aneel_map)
+
+    assert counts2['matched'] == 0
+    assert counts2['no_match'] == 0
+    assert counts2['pending'] == 0

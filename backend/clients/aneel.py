@@ -9,7 +9,8 @@ logger = logging.getLogger(__name__)
 ANEEL_DATASTORE_URL = (
     'https://dadosabertos.aneel.gov.br/api/3/action/datastore_search'
 )
-ANEEL_RESOURCE_ID = 'b1bd71e7-d0ad-4214-9053-cbd58e9564a7'
+ANEEL_RESOURCE_ID = '4493985c-baea-429c-9df5-3030422c71d7'
+_ANEEL_FIELDS = 'DatGeracaoConjuntoDados,SigAgente,NumCNPJ'
 _PAGE_SIZE = 100
 
 
@@ -33,6 +34,8 @@ async def fetch_aneel_cnpj_map(
                     'resource_id': ANEEL_RESOURCE_ID,
                     'limit': _PAGE_SIZE,
                     'offset': offset,
+                    'fields': _ANEEL_FIELDS,
+                    'distinct': 'true',
                 },
                 timeout=30.0,
             )
@@ -49,7 +52,7 @@ async def fetch_aneel_cnpj_map(
                 cnpj_raw = record.get('NumCNPJ')
                 if sig and cnpj_raw:
                     try:
-                        result[sig] = normalize_cnpj(str(cnpj_raw))
+                        result[sig.strip()] = normalize_cnpj(str(cnpj_raw))
                     except ValueError:
                         logger.warning(
                             'CNPJ inválido para %s: %r', sig, cnpj_raw

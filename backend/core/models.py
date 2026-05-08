@@ -34,6 +34,19 @@ class Distribuidora:
         nullable=True,
         default=None,
     )
+    updated_at: Mapped[datetime] = mapped_column(
+        init=False,
+        server_default=func.now(),
+        onupdate=func.now(),
+        type_=DateTime(timezone=False),
+    )
+
+
+@table_registry.mapped_as_dataclass
+class DistribuidoraCnpj:
+    __tablename__ = 'distribuidora_cnpj'
+
+    dist_id: Mapped[str] = mapped_column(Text, primary_key=True)
     cnpj: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
     cnpj_match: Mapped[float | None] = mapped_column(
         Float, nullable=True, default=None

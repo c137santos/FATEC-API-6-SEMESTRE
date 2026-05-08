@@ -4,7 +4,7 @@ from sqlalchemy import select
 from types import SimpleNamespace
 from unittest.mock import MagicMock, call, patch
 
-from backend.core.models import Distribuidora
+from backend.core.models import Distribuidora, DistribuidoraCnpj
 
 _CHAIN_PATH = 'backend.services.pipeline_trigger.chain'
 
@@ -102,7 +102,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[1].args[2] == 'item-chain'
 
     assert sigs[2].task == 'etl.score_criticidade'
-    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026)
+    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026, None)
 
     assert sigs[3].task == 'etl.calculate_pt_pnt'
     assert sigs[3].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
@@ -114,7 +114,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[5].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
     assert sigs[6].task == 'etl.mapa_criticidade'
-    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
+    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026, None)
 
     assert sigs[7].task == 'etl.calcular_tam'
     assert sigs[7].args == (job_id, {
@@ -185,6 +185,40 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
         response.json()['detail']
         == 'Pipeline já foi acionada para a distribuidora no ano informado'
     )
+
+
+@pytest.mark.asyncio
+async def test_pipeline_trigger_passa_cnpj_quando_distribuidora_tem_match(
+    client,
+    session,
+    monkeypatch,
+):
+    """Quando distribuidora tem CNPJ matched, cnpj é passado para score e mapa."""
+    session.add(Distribuidora(id='item-cnpj', date_gdb=2026, dist_name='DIST CNPJ'))
+    await session.flush()
+    session.add(
+        DistribuidoraCnpj(
+            dist_id='item-cnpj',
+            cnpj='76535764000143',
+            cnpj_enrichment_status='matched',
+        )
+    )
+    await session.commit()
+
+    with patch(_CHAIN_PATH) as mock_chain:
+        mock_chain.return_value.delay.return_value = MagicMock(id='chain-cnpj')
+        response = await client.post(
+            '/pipeline/trigger',
+            json={'distribuidora_id': 'item-cnpj', 'ano': 2026},
+        )
+
+    assert response.status_code == 202
+    job_id = response.json()['job_id']
+    sigs = mock_chain.call_args.args
+    assert sigs[2].task == 'etl.score_criticidade'
+    assert sigs[2].args == (job_id, 'DIST CNPJ', 2026, '76535764000143')
+    assert sigs[6].task == 'etl.mapa_criticidade'
+    assert sigs[6].args == (job_id, 'item-cnpj', 'DIST CNPJ', 2026, '76535764000143')
 
 
 @pytest.mark.asyncio

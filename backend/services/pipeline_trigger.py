@@ -7,7 +7,7 @@ from celery import chain
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.core.models import Distribuidora
+from backend.core.models import Distribuidora, DistribuidoraCnpj
 from backend.tasks.task_calculate_pt_pnt import task_calculate_pt_pnt
 from backend.tasks.task_calculate_sam import task_calculate_sam
 from backend.tasks.task_criticidade import (
@@ -48,6 +48,18 @@ async def _get_distribuidora_name(
     if not dist_name:
         raise LookupError('Distribuidora não encontrada para o ano informado')
     return dist_name
+
+
+async def _get_distribuidora_cnpj(
+    session: AsyncSession,
+    distribuidora_id: str,
+) -> str | None:
+    stmt = select(DistribuidoraCnpj.cnpj).where(
+        DistribuidoraCnpj.dist_id == distribuidora_id,
+        DistribuidoraCnpj.cnpj_enrichment_status == 'matched',
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
 
 
 async def distribuidora_job_already_triggered(
@@ -130,6 +142,7 @@ async def trigger_pipeline_flow(
         distribuidora_id,
         ano,
     )
+    cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
 
     download_url = ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id)
     job_id = str(uuid.uuid4())
@@ -138,11 +151,11 @@ async def trigger_pipeline_flow(
     result = chain(
         task_download_gdb.si(job_id, download_url, distribuidora_id),
         task_descompact_gdb.si(job_id, zip_path, distribuidora_id),
-        task_score_criticidade.si(job_id, dist_name, ano),
+        task_score_criticidade.si(job_id, dist_name, ano, cnpj),
         task_calculate_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
         task_render_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
         task_calculate_sam.si(job_id, distribuidora_id, dist_name, ano),
-        task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano),
+        task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano, cnpj),
         task_calcular_tam.si(job_id, {
             "id": distribuidora_id, 
             "dist_name": dist_name, 

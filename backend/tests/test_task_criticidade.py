@@ -10,6 +10,7 @@ from backend.tasks.task_criticidade import (
 )
 
 PATCH_DB = 'backend.tasks.task_criticidade.get_mongo_sync_db'
+CNPJ = '76535764000143'
 
 _REALIZADOS = [
     {
@@ -287,6 +288,66 @@ def test_task_mapa_criticidade_categoria_vermelho_quando_score_alto():
 
     _, update_arg = db['mapa_criticidade'].update_one.call_args[0]
     assert update_arg['$set']['conjuntos'][0]['categoria'] == 'Vermelho'
+
+
+# ---------------------------------------------------------------------------
+# query: num_cnpj vs sig_agente
+# ---------------------------------------------------------------------------
+
+
+def test_score_query_usa_num_cnpj_quando_cnpj_fornecido():
+    db = _make_db(job={'status': 'completed'}, realizados=_REALIZADOS, limites=_LIMITES)
+    with patch(PATCH_DB, return_value=db):
+        task_score_criticidade.run('job-q1', 'ENEL RJ', 2024, CNPJ)
+
+    pipeline = db['dec_fec_realizado'].aggregate.call_args[0][0]
+    match = pipeline[0]['$match']
+    assert match.get('num_cnpj') == CNPJ
+    assert 'sig_agente' not in match
+
+
+def test_score_query_usa_sig_agente_sem_cnpj():
+    db = _make_db(job={'status': 'completed'}, realizados=_REALIZADOS, limites=_LIMITES)
+    with patch(PATCH_DB, return_value=db):
+        task_score_criticidade.run('job-q2', 'ENEL RJ', 2024)
+
+    pipeline = db['dec_fec_realizado'].aggregate.call_args[0][0]
+    match = pipeline[0]['$match']
+    assert match.get('sig_agente') == 'ENEL RJ'
+    assert 'num_cnpj' not in match
+
+
+def test_mapa_query_usa_num_cnpj_quando_cnpj_fornecido():
+    db = _make_db(job={'status': 'completed'}, realizados=_REALIZADOS, limites=_LIMITES)
+    with patch(PATCH_DB, return_value=db):
+        task_mapa_criticidade.run('job-q3', 'dist-001', 'ENEL RJ', 2024, CNPJ)
+
+    pipeline = db['dec_fec_realizado'].aggregate.call_args[0][0]
+    match = pipeline[0]['$match']
+    assert match.get('num_cnpj') == CNPJ
+    assert 'sig_agente' not in match
+
+
+def test_mapa_query_usa_sig_agente_sem_cnpj():
+    db = _make_db(job={'status': 'completed'}, realizados=_REALIZADOS, limites=_LIMITES)
+    with patch(PATCH_DB, return_value=db):
+        task_mapa_criticidade.run('job-q4', 'dist-001', 'ENEL RJ', 2024)
+
+    pipeline = db['dec_fec_realizado'].aggregate.call_args[0][0]
+    match = pipeline[0]['$match']
+    assert match.get('sig_agente') == 'ENEL RJ'
+    assert 'num_cnpj' not in match
+
+
+def test_score_cnpj_invalido_cai_no_fallback_sig_agente():
+    db = _make_db(job={'status': 'completed'}, realizados=_REALIZADOS, limites=_LIMITES)
+    with patch(PATCH_DB, return_value=db):
+        task_score_criticidade.run('job-q5', 'ENEL RJ', 2024, 'INVALIDO')
+
+    pipeline = db['dec_fec_realizado'].aggregate.call_args[0][0]
+    match = pipeline[0]['$match']
+    assert match.get('sig_agente') == 'ENEL RJ'
+    assert 'num_cnpj' not in match
 
 
 def test_task_mapa_criticidade_sem_limite_usa_zero():

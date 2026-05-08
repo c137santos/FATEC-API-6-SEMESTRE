@@ -50,10 +50,22 @@ def task_calcular_tam(self, job_id: str, metadados_dist: dict):
     try:
         metadata = DistributorMetadata(**metadados_dist, job_id=job_id)
 
+        map_circuitos: dict[str, str] = {}
+        ctmt_doc = db.circuitos_mt.find_one(
+            {'job_id': job_id},
+            {'_id': 0, 'records.COD_ID': 1, 'records.NOME': 1},
+        )
+        if ctmt_doc and ctmt_doc.get('records'):
+            for rec in ctmt_doc['records']:
+                cod_id = rec.get('COD_ID')
+                nome = rec.get('NOME')
+                if cod_id and nome and cod_id not in map_circuitos:
+                    map_circuitos[cod_id] = nome
+
         resultados = calcular_extensao_tam(
             metadata=metadata,
             segmentos=segmentos,
-            map_circuitos={}, 
+            map_circuitos=map_circuitos,
             map_conjuntos={}
         )
         

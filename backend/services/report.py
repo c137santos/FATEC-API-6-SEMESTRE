@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -55,11 +55,11 @@ def _placeholder_png(path: Path, title: str) -> None:
     plt.close(fig)
 
 
-def _scaled_image(img_path: Path, max_width: float) -> Image:
+def _scaled_image(img_path: Path, max_width: float, max_height: float) -> Image:
     reader = ImageReader(str(img_path))
     iw, ih = reader.getSize()
-    aspect = ih / iw
-    return Image(str(img_path), width=max_width, height=max_width * aspect)
+    scale = min(max_width / iw, max_height / ih)
+    return Image(str(img_path), width=iw * scale, height=ih * scale)
 
 
 def _safe_filename(name: str) -> str:
@@ -97,6 +97,7 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
     dist_name = job_meta.get('dist_name', 'Distribuidora')
     ano = job_meta.get('ano_gdb', '')
     page_width = A4[0] - 3 * cm
+    page_height = A4[1] - 6 * cm  # margens + folga para título da seção
 
     doc = SimpleDocTemplate(
         str(pdf_path),
@@ -109,7 +110,7 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
         Paragraph(f'Relatório de Análise — {dist_name}', title_style),
         Paragraph(f'Ano: {ano} | Job ID: {job_id}', meta_style),
         Paragraph(
-            f'Gerado em: {datetime.utcnow().strftime("%d/%m/%Y %H:%M UTC")}',
+            f'Gerado em: {datetime.now(timezone(timedelta(hours=-3))).strftime("%d/%m/%Y %H:%M")}',
             meta_style,
         ),
         HRFlowable(width='100%', thickness=1, color=colors.lightgrey, spaceAfter=20),
@@ -129,7 +130,7 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
             _placeholder_png(img_path, section_title)
 
         try:
-            story.append(_scaled_image(img_path, page_width))
+            story.append(_scaled_image(img_path, page_width, page_height))
         except Exception:
             logger.warning(
                 '[gerar_pdf_report] Falha ao incluir imagem %s, gerando placeholder. job_id=%s',
@@ -137,7 +138,7 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
             )
             img_path = placeholder_dir / f'placeholder_{key}_err.png'
             _placeholder_png(img_path, section_title)
-            story.append(_scaled_image(img_path, page_width))
+            story.append(_scaled_image(img_path, page_width, page_height))
 
         story.append(Spacer(1, 12))
 

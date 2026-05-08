@@ -7,6 +7,7 @@ from pathlib import Path
 import httpx
 from pymongo import ASCENDING, UpdateOne
 
+from backend.core.utils import normalize_cnpj
 from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
@@ -16,8 +17,8 @@ TMP_DIR = Path(os.getenv('TMP_DIR', '/data/tmp/'))
 
 CHUNK_SIZE = int(os.getenv('SSDMT_BATCH_SIZE', '10000'))
 
-_REALIZADO_KEYS = ['sig_agente', 'ide_conj', 'sig_indicador', 'ano_indice', 'num_periodo']
-_LIMITE_KEYS = ['sig_agente', 'ide_conj', 'sig_indicador', 'ano_limite']
+_REALIZADO_KEYS = ['num_cnpj', 'ide_conj', 'sig_indicador', 'ano_indice', 'num_periodo']
+_LIMITE_KEYS = ['num_cnpj', 'ide_conj', 'sig_indicador', 'ano_limite']
 
 
 def _get_collection(name: str):
@@ -33,6 +34,22 @@ def _ensure_index(collection, fields: list[str]) -> None:
         collection.create_index(
             index_keys, unique=True, name=index_name, sparse=True
         )
+
+
+def _ensure_secondary_index(collection, field: str) -> None:
+    index_name = field + '_1'
+    existing = {idx['name'] for idx in collection.list_indexes()}
+    if index_name not in existing:
+        collection.create_index([(field, ASCENDING)], name=index_name)
+
+
+def _safe_normalize_cnpj(value: str | None) -> str | None:
+    if not value:
+        return None
+    try:
+        return normalize_cnpj(value)
+    except ValueError:
+        return None
 
 
 def _download_csv(url: str, dest: Path) -> None:
@@ -121,6 +138,7 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
 
         collection = _get_collection('dec_fec_realizado')
         _ensure_index(collection, _REALIZADO_KEYS)
+        _ensure_secondary_index(collection, 'sig_agente')
         total = 0
         skipped = 0
 
@@ -130,7 +148,7 @@ def task_load_dec_fec_realizado(self, job_id: str, url: str) -> dict:
                 doc = {
                     'dat_geracao': _to_date(row['DatGeracaoConjuntoDados']),
                     'sig_agente': _to_str(row['SigAgente']),
-                    'num_cnpj': _to_str(row['NumCNPJ']),
+                    'num_cnpj': _safe_normalize_cnpj(_to_str(row['NumCNPJ'])),
                     'ide_conj': _to_str(row['IdeConjUndConsumidoras']),
                     'dsc_conj': _to_str(row['DscConjUndConsumidoras']),
                     'sig_indicador': _to_str(row['SigIndicador']),
@@ -209,6 +227,7 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
 
         collection = _get_collection('dec_fec_limite')
         _ensure_index(collection, _LIMITE_KEYS)
+        _ensure_secondary_index(collection, 'sig_agente')
         total = 0
         skipped = 0
 
@@ -218,7 +237,7 @@ def task_load_dec_fec_limite(self, job_id: str, url: str) -> dict:
                 doc = {
                     'dat_geracao': _to_date(row['DatGeracaoConjuntoDados']),
                     'sig_agente': _to_str(row['SigAgente']),
-                    'num_cnpj': _to_str(row['NumCNPJ']),
+                    'num_cnpj': _safe_normalize_cnpj(_to_str(row['NumCNPJ'])),
                     'ide_conj': _to_str(row['IdeConjUndConsumidoras']),
                     'dsc_conj': _to_str(row['DscConjUndConsumidoras']),
                     'sig_indicador': _to_str(row['SigIndicador']),

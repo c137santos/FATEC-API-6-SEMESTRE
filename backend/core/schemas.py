@@ -106,3 +106,10 @@ class TamResponse(BaseModel):
     NOME: str | None
     COMP_KM: float
     model_config = ConfigDict(from_attributes=True)
+
+
+class CnpjLookupResponse(BaseModel):
+    dist_id: str
+    dist_name: str
+    cnpj_enrichment_status: str | None
+    message: str

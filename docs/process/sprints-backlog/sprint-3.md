@@ -5,7 +5,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 10 | Low | As a registered consultant, I want to have clarity and assurance that my personal information is fully protected and will be used solely and exclusively for the platform’s operation, so that I feel confident that my privacy is being fully respected. | [`RNF3-SEC-LGPD`](../requirements.md#rnf3-sec-lgpd---privacidade-e-anonimização) | 12 | 3  |
 | 11 | Low | As a Tecsys manager, I want to have a clear history of who accessed, generated, changed, or deleted information within the platform, so that I can understand exactly what happened in case of errors, audits, or suspicious behavior, ensuring protection of our business. | [`RNF3-SEC-AUDIT`](../requirements.md#rnf3-sec-audit---rastreabilidade-logs)  | 5 | 3 |  
-| 12 | Low | As a Tecsys technical consultant, I want the platform to identify trends and predict which sections are most likely to face higher risk of outages and fines in the future, so that I can sell sensors as a preventive solution, helping the client act before problems and financial losses occur. | [`RF3-PREDICT-API`](../requirements.md#rf3-predict-api---api-de-aconselhamento-machine-learning) |  | 3 | 
+| 12 | Low | As a Tecsys technical consultant, I want the platform to identify trends and predict which sections are most likely to face higher risk of outages and fines in the future, so that I can sell sensors as a preventive solution, helping the client act before problems and financial losses occur. | [`RF3-PREDICT-API`](../requirements.md#rf3-predict-api---api-de-aconselhamento-machine-learning) | 10  | 3 | 
 
 
 ## Sprint Goals

@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from datetime import datetime
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -12,6 +13,12 @@ from backend.core.models import Distribuidora, DistribuidoraCnpj
 logger = logging.getLogger(__name__)
 
 _FUZZY_THRESHOLD = 95.0  # score is 0–100
+
+
+def _norm(s: str) -> str:
+    s = unicodedata.normalize('NFD', s)
+    s = ''.join(c for c in s if unicodedata.category(c) != 'Mn')
+    return s.lower().replace('_', ' ').replace('-', ' ')
 
 
 async def enrich_distribuidoras(
@@ -38,14 +45,14 @@ async def enrich_distribuidoras(
     )
     rows = (await session.execute(stmt)).all()
 
-    lower_map = {k.lower(): (k, v) for k, v in aneel_map.items()}
-    aneel_keys = list(aneel_map.keys())
+    lower_map = {_norm(k): (k, v) for k, v in aneel_map.items()}
+    norm_aneel_keys = list(lower_map.keys())
 
     matched = 0
     no_match = 0
 
     for dist_id, dist_name in rows:
-        key = dist_name.lower()
+        key = _norm(dist_name)
 
         if key in lower_map:
             _, cnpj = lower_map[key]
@@ -64,14 +71,14 @@ async def enrich_distribuidoras(
             continue
 
         best = (
-            process.extractOne(dist_name, aneel_keys, scorer=fuzz.WRatio)
-            if aneel_keys
+            process.extractOne(key, norm_aneel_keys, scorer=fuzz.WRatio)
+            if norm_aneel_keys
             else None
         )
 
         if best is not None and best[1] >= _FUZZY_THRESHOLD:
-            best_key, score, _ = best
-            cnpj = aneel_map[best_key]
+            best_norm_key, score, _ = best
+            orig_key, cnpj = lower_map[best_norm_key]
             await session.execute(
                 insert(DistribuidoraCnpj)
                 .values(
@@ -85,14 +92,15 @@ async def enrich_distribuidoras(
             )
             matched += 1
         else:
-            best_key, score = (best[0], best[1]) if best is not None else (None, 0)
+            best_norm_key, score = (best[0], best[1]) if best is not None else (None, 0)
+            orig_key, orig_cnpj = lower_map[best_norm_key] if best_norm_key else (None, None)
             if mongo_db is not None:
                 await mongo_db['cnpj_enrichment_log'].insert_one(
                     {
                         'dist_id': dist_id,
                         'dist_name': dist_name,
-                        'aneel_sig_agente': best_key,
-                        'aneel_cnpj': aneel_map[best_key] if best_key else None,
+                        'aneel_sig_agente': orig_key,
+                        'aneel_cnpj': orig_cnpj,
                         'match_score': round(score / 100.0, 4),
                         'attempted_at': datetime.utcnow(),
                     }

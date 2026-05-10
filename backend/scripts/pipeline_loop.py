@@ -357,8 +357,8 @@ def _parse_args() -> argparse.Namespace:
         help='Rodadas extras de re-polling para distribuidoras com timeout (padrão: 1).',
     )
     parser.add_argument(
-        '--min-wait', type=int, default=60,
-        help='Segundos de espera após o trigger antes de iniciar o polling (padrão: 60).'
+        '--min-wait', type=int, default=1200,
+        help='Segundos de espera após o trigger antes de iniciar o polling (padrão: 1200).'
              ' Cobre o tempo de download + descompactação do GDB.',
     )
     return parser.parse_args()

@@ -125,7 +125,7 @@ def task_render_tabela_score(
     ax.set_axis_off()
 
     table = ax.table(
-        cellText=linhas, colLabels=colunas, loc='center', cellLoc='center'
+        cellText=linhas, colLabels=colunas, loc='upper center', cellLoc='center'
     )
     table.auto_set_font_size(False)
     table.set_fontsize(8)
@@ -144,13 +144,6 @@ def task_render_tabela_score(
         )
 
     sig = score_doc.get('distribuidora', distribuidora.upper())
-    ax.set_title(
-        f'Score de Criticidade — {sig} ({ano})\n'
-        f'Score médio: {score_doc.get("score_criticidade", 0):.2f} | '
-        f'Total conjuntos: {score_doc.get("quantidade_conjuntos", n_rows)}',
-        fontsize=11,
-        pad=12,
-    )
 
     out_path = _output_dir() / f'tabela_score_{sig}_{ano}.png'
     plt.savefig(out_path, dpi=150, bbox_inches='tight')

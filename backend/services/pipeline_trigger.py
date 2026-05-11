@@ -101,9 +101,10 @@ async def init_tam_metadata(
     distribuidora_id: str,
     ano: int,
     job_id: str,
+    user_email: str,
 ) -> None:
     """Inicializa os dados do Job no MongoDB para que as tasks futuras tenham acesso."""
-    
+
     stmt = select(Distribuidora.dist_name).where(
         Distribuidora.id == distribuidora_id,
         Distribuidora.date_gdb == ano,
@@ -113,13 +114,14 @@ async def init_tam_metadata(
     dist_name = result.scalar_one_or_none()
 
     db = get_mongo_async_db()
-    
+
     await db.jobs.insert_one({
         "job_id": job_id,
         "distribuidora_id": distribuidora_id,
-        "dist_name": dist_name,  
-        "ano_gdb": ano,          
+        "dist_name": dist_name,
+        "ano_gdb": ano,
         "status": "started",
+        "user_email": user_email,
         "created_at": datetime.utcnow()
     })
 
@@ -128,11 +130,10 @@ async def trigger_pipeline_flow(
     session: AsyncSession,
     distribuidora_id: str,
     ano: int,
+    user_email: str,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
-    if await distribuidora_job_already_triggered(
-        session, distribuidora_id, ano
-    ):
+    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
         raise ValueError(
             'Pipeline já foi acionada para a distribuidora no ano informado'
         )
@@ -143,6 +144,7 @@ async def trigger_pipeline_flow(
         ano,
     )
     cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
+    sig_agente = dist_name.replace('_', ' ')
 
     download_url = ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id)
     job_id = str(uuid.uuid4())
@@ -151,20 +153,20 @@ async def trigger_pipeline_flow(
     result = chain(
         task_download_gdb.si(job_id, download_url, distribuidora_id),
         task_descompact_gdb.si(job_id, zip_path, distribuidora_id),
-        task_score_criticidade.si(job_id, dist_name, ano, cnpj),
-        task_calculate_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
-        task_render_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
-        task_calculate_sam.si(job_id, distribuidora_id, dist_name, ano),
-        task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano, cnpj),
+        task_score_criticidade.si(job_id, sig_agente, ano, cnpj),
+        task_calculate_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_calculate_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_mapa_criticidade.si(job_id, distribuidora_id, sig_agente, ano, cnpj),
         task_calcular_tam.si(job_id, {
-            "id": distribuidora_id, 
-            "dist_name": dist_name, 
+            "id": distribuidora_id,
+            "dist_name": sig_agente,
             "date_gdb": ano
-        }),       
+        }),
         task_render_grafico_tam.si(job_id),
-        task_render_tabela_score.si(job_id, dist_name, ano),
-        task_render_mapa_calor.si(job_id, dist_name, ano),
-        task_render_sam.si(job_id, distribuidora_id, dist_name, ano),
+        task_render_tabela_score.si(job_id, sig_agente, ano),
+        task_render_mapa_calor.si(job_id, sig_agente, ano),
+        task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
     ).delay()
@@ -177,10 +179,11 @@ async def trigger_pipeline_flow(
     )
 
     await init_tam_metadata(
-        session=session, 
-        distribuidora_id=distribuidora_id, 
-        ano=ano, 
-        job_id=job_id
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=job_id,
+        user_email=user_email,
     )
 
     return {

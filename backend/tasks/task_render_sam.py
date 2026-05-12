@@ -1,5 +1,4 @@
 import logging
-from functools import lru_cache
 from pathlib import Path
 
 import matplotlib
@@ -22,7 +21,6 @@ MAX_WAIT_RETRIES = 60
 _COR_SAM = '#1565C0'
 
 
-@lru_cache(maxsize=None)
 def _output_dir() -> Path:
     path = Path(__file__).resolve().parent.parent.parent / 'output' / 'images'
     path.mkdir(parents=True, exist_ok=True)

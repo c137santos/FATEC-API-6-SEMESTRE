@@ -1,6 +1,5 @@
 import logging
 import time
-from functools import lru_cache
 from pathlib import Path
 
 import matplotlib
@@ -24,7 +23,6 @@ _PCT_MIN_LABEL = 8
 _MILHARES = 1000
 
 
-@lru_cache(maxsize=None)
 def _output_dir() -> Path:
     path = Path(__file__).resolve().parent.parent.parent / 'output' / 'images'
     path.mkdir(parents=True, exist_ok=True)

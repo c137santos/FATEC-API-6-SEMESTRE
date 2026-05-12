@@ -195,7 +195,7 @@ async def trigger_pipeline_flow(
     if existing_job_id is not None:
         db = get_mongo_async_db()
         job_doc = await db.jobs.find_one({'job_id': existing_job_id}, {'_id': 0})
-        if job_doc and job_doc.get('report_status') == 'completed':
+        if job_doc and job_doc.get('report_status') in ('completed', 'failed'):
             return await _trigger_replot_flow(
                 session, distribuidora_id, ano, user_email, existing_job_id, job_doc
             )

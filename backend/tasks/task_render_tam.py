@@ -1,6 +1,5 @@
 import logging
 import time
-from functools import lru_cache
 from pathlib import Path
 
 import matplotlib
@@ -18,7 +17,6 @@ MAX_WAIT_RETRIES = 60
 BAR_COLOR = '#2196F3'
 TEXT_COLOR = '#263238'
 
-@lru_cache(maxsize=None)
 def _output_dir() -> Path:
     path = Path(__file__).resolve().parent.parent.parent / 'output' / 'images'
     path.mkdir(parents=True, exist_ok=True)

@@ -41,7 +41,22 @@ def task_cleanup_files(self, job_id: str) -> dict:
             logger.warning('[task_cleanup_files] Falha ao remover diretorio temporario. job_id=%s path=%s erro=%s', job_id, tmp_dir, exc)
 
     try:
-        get_mongo_sync_db()['jobs'].update_one(
+        db = get_mongo_sync_db()
+        job_doc = db['jobs'].find_one({'job_id': job_id}, {'render_paths': 1, '_id': 0})
+        for img_path_str in ((job_doc or {}).get('render_paths') or {}).values():
+            if not img_path_str:
+                continue
+            img_path = Path(img_path_str)
+            if img_path.exists():
+                try:
+                    img_path.unlink()
+                    removed.append(str(img_path))
+                    logger.info('[task_cleanup_files] Imagem removida. job_id=%s path=%s', job_id, img_path)
+                except Exception as exc:
+                    errors.append(str(img_path))
+                    logger.warning('[task_cleanup_files] Falha ao remover imagem. job_id=%s path=%s erro=%s', job_id, img_path, exc)
+
+        db['jobs'].update_one(
             {'job_id': job_id},
             {'$set': {
                 'cleanup_status': 'failed' if errors else 'completed',
@@ -51,7 +66,7 @@ def task_cleanup_files(self, job_id: str) -> dict:
             }},
         )
     except Exception as exc:
-        logger.warning('[task_cleanup_files] Falha ao atualizar status no MongoDB. job_id=%s erro=%s', job_id, exc)
+        logger.warning('[task_cleanup_files] Falha ao acessar MongoDB. job_id=%s erro=%s', job_id, exc)
 
     logger.info(
         '[task_cleanup_files] Concluido. job_id=%s removidos=%s erros=%s',

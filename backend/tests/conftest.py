@@ -175,6 +175,8 @@ async def mongo_db():
 def mock_mongo_db():
     mock_db = MagicMock()
     mock_db.jobs.insert_one = AsyncMock()
+    mock_db.jobs.find_one = AsyncMock(return_value=None)
+    mock_db.jobs.update_one = AsyncMock()
     with patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db:
         mocked_get_db.return_value = mock_db
         yield mocked_get_db

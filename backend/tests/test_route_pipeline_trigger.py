@@ -2,7 +2,7 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 from backend.app import app
 from backend.core.models import Distribuidora, DistribuidoraCnpj, User
@@ -179,6 +179,7 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
     session,
     monkeypatch,
 ):
+    """409 quando há job anterior sem report_status == 'completed' (em andamento ou falhou)."""
     session.add(
         Distribuidora(
             id='item-duplicado',
@@ -189,6 +190,7 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
     )
     await session.commit()
 
+    # find_one retorna None por padrão no conftest → report não completo → 409
     monkeypatch.setattr(
         'backend.services.pipeline_trigger.task_download_gdb.delay',
         lambda *a, **kw: pytest.fail('Não deveria enfileirar pipeline já acionada'),
@@ -204,6 +206,61 @@ async def test_pipeline_trigger_ja_acionada_retorna_409(
         response.json()['detail']
         == 'Pipeline já foi acionada para a distribuidora no ano informado'
     )
+
+
+@pytest.mark.asyncio
+async def test_pipeline_trigger_replot_quando_report_ja_completo(
+    client,
+    session,
+    monkeypatch,
+    mock_mongo_db,
+):
+    """Retorna 202 e redespacha apenas os renders quando o report anterior está completo."""
+    session.add(
+        Distribuidora(
+            id='item-replot',
+            date_gdb=2026,
+            dist_name='DIST REPLOT',
+            job_id='job-replot-antigo',
+        )
+    )
+    await session.commit()
+
+    mock_db = mock_mongo_db.return_value
+    mock_db.jobs.find_one = AsyncMock(return_value={
+        'job_id': 'job-replot-antigo',
+        'dist_name': 'DIST REPLOT',
+        'ano_gdb': 2026,
+        'report_status': 'completed',
+    })
+
+    with patch(_CHAIN_PATH) as mock_chain:
+        mock_chain.return_value.delay.return_value = MagicMock(id='task-replot')
+        response = await client.post(
+            '/pipeline/trigger',
+            json={'distribuidora_id': 'item-replot', 'ano': 2026},
+        )
+
+    assert response.status_code == 202
+    body = response.json()
+    assert body['job_id'] == 'job-replot-antigo'
+    assert body['status'] == 'queued'
+
+    mock_chain.assert_called_once()
+    sigs = mock_chain.call_args.args
+    assert len(sigs) == 7
+
+    assert sigs[0].task == 'etl.render_pt_pnt'
+    assert sigs[1].task == 'etl.render_grafico_tam'
+    assert sigs[2].task == 'etl.render_tabela_score'
+    assert sigs[3].task == 'etl.render_mapa_calor'
+    assert sigs[4].task == 'etl.render_sam'
+    assert sigs[5].task == 'etl.gerar_report'
+    assert sigs[6].task == 'etl.cleanup_files'
+
+    mock_db.jobs.update_one.assert_called_once()
+    call_filter = mock_db.jobs.update_one.call_args.args[0]
+    assert call_filter == {'job_id': 'job-replot-antigo'}
 
 
 @pytest.mark.asyncio

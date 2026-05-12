@@ -2,7 +2,6 @@ import uuid
 from datetime import datetime, timezone
 
 from backend.tasks.task_render_sam import task_render_sam
-import httpx
 from celery import chain
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -75,6 +74,64 @@ async def distribuidora_job_already_triggered(
     return result.scalar_one_or_none() is not None
 
 
+async def _get_existing_job_id(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+) -> str | None:
+    stmt = select(Distribuidora.job_id).where(
+        Distribuidora.id == distribuidora_id,
+        Distribuidora.date_gdb == ano,
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+async def _trigger_replot_flow(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+    user_email: str,
+    job_id: str,
+    job_doc: dict,
+) -> dict:
+    """Regera imagens a partir dos dados já calculados e remonta o relatório."""
+    dist_name = job_doc.get('dist_name', '')
+    sig_agente = dist_name.replace('_', ' ')
+
+    db = get_mongo_async_db()
+    await db.jobs.update_one(
+        {'job_id': job_id},
+        {'$set': {'report_status': 'pending', 'user_email': user_email}},
+    )
+
+    result = chain(
+        task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_grafico_tam.si(job_id),
+        task_render_tabela_score.si(job_id, sig_agente, ano),
+        task_render_mapa_calor.si(job_id, sig_agente, ano),
+        task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_gerar_report.si(job_id),
+        task_cleanup_files.si(job_id),
+    ).delay()
+
+    await save_distribuidora_job_tracking(
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=job_id,
+    )
+
+    return {
+        'job_id': job_id,
+        'task_id': result.id,
+        'status': 'queued',
+        'distribuidora_id': distribuidora_id,
+        'ano': ano,
+        'download_url': ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id),
+    }
+
+
 async def save_distribuidora_job_tracking(
     session: AsyncSession,
     distribuidora_id: str,
@@ -133,7 +190,15 @@ async def trigger_pipeline_flow(
     user_email: str,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
-    if await distribuidora_job_already_triggered(session, distribuidora_id, ano):
+    existing_job_id = await _get_existing_job_id(session, distribuidora_id, ano)
+
+    if existing_job_id is not None:
+        db = get_mongo_async_db()
+        job_doc = await db.jobs.find_one({'job_id': existing_job_id}, {'_id': 0})
+        if job_doc and job_doc.get('report_status') == 'completed':
+            return await _trigger_replot_flow(
+                session, distribuidora_id, ano, user_email, existing_job_id, job_doc
+            )
         raise ValueError(
             'Pipeline já foi acionada para a distribuidora no ano informado'
         )

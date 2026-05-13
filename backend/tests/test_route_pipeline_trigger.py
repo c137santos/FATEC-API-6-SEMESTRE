@@ -319,3 +319,61 @@ async def test_pipeline_trigger_aneel_indisponivel_retorna_502(
 
     assert response.status_code == 502
     assert response.json()['detail'] == 'ANEEL indisponível no momento'
+
+
+@pytest.mark.asyncio
+async def test_trigger_pipeline_flow_force_full_executa_chain_completo(
+    session,
+    mock_mongo_db,
+):
+    """force_full=True com report_status='failed' executa chain de 14 tasks (não replot de 7)."""
+    from backend.services.pipeline_trigger import trigger_pipeline_flow
+
+    session.add(
+        Distribuidora(
+            id='item-force-full',
+            date_gdb=2026,
+            dist_name='DIST FORCE FULL',
+            job_id='job-falhou',
+        )
+    )
+    await session.commit()
+
+    mock_db = mock_mongo_db.return_value
+    mock_db.jobs.find_one = AsyncMock(return_value={
+        'job_id': 'job-falhou',
+        'dist_name': 'DIST FORCE FULL',
+        'ano_gdb': 2026,
+        'report_status': 'failed',
+    })
+
+    with patch(_CHAIN_PATH) as mock_chain:
+        mock_chain.return_value.delay.return_value = MagicMock(id='chain-force-full')
+        result = await trigger_pipeline_flow(
+            session=session,
+            distribuidora_id='item-force-full',
+            ano=2026,
+            user_email='test@test.com',
+            force_full=True,
+        )
+
+    assert result['status'] == 'queued'
+    assert result['job_id'] != 'job-falhou'
+
+    mock_chain.assert_called_once()
+    sigs = mock_chain.call_args.args
+    assert len(sigs) == 14
+
+    persisted = (
+        (
+            await session.execute(
+                select(Distribuidora).where(
+                    Distribuidora.id == 'item-force-full',
+                    Distribuidora.date_gdb == 2026,
+                )
+            )
+        )
+        .scalars()
+        .one()
+    )
+    assert persisted.job_id == result['job_id']

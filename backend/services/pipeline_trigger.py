@@ -188,6 +188,7 @@ async def trigger_pipeline_flow(
     distribuidora_id: str,
     ano: int,
     user_email: str,
+    force_full: bool = False,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
     existing_job_id = await _get_existing_job_id(session, distribuidora_id, ano)
@@ -196,12 +197,15 @@ async def trigger_pipeline_flow(
         db = get_mongo_async_db()
         job_doc = await db.jobs.find_one({'job_id': existing_job_id}, {'_id': 0})
         if job_doc and job_doc.get('report_status') in ('completed', 'failed'):
-            return await _trigger_replot_flow(
-                session, distribuidora_id, ano, user_email, existing_job_id, job_doc
+            if not (force_full and job_doc.get('report_status') == 'failed'):
+                return await _trigger_replot_flow(
+                    session, distribuidora_id, ano, user_email, existing_job_id, job_doc
+                )
+            # force_full=True with status=failed: fall through to full pipeline with new job_id
+        else:
+            raise ValueError(
+                'Pipeline já foi acionada para a distribuidora no ano informado'
             )
-        raise ValueError(
-            'Pipeline já foi acionada para a distribuidora no ano informado'
-        )
 
     dist_name = await _get_distribuidora_name(
         session,

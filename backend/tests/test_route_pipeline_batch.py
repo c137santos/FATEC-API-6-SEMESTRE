@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
@@ -192,3 +194,88 @@ async def test_classify_job_ativo_ignora(session):
 
     assert len(to_process) == 0
     assert len(to_skip) == 1
+
+
+# --- GET /pipeline/batch/status tests ---
+
+_PARAMS_DEFAULT = {
+    'year': None,
+    'concurrency': 1,
+    'poll_interval': 30,
+    'max_attempts': 30,
+    'max_retries': 1,
+    'min_wait': 1200,
+}
+
+_DIST_ITEM = {'id': 'dist-1', 'nome': 'DIST 1', 'ano': 2026, 'status': 'completed', 'error': None}
+
+_COUNTS = {
+    'total': 1, 'pending': 0, 'processing': 0,
+    'completed': 1, 'failed': 0, 'skipped': 0,
+}
+
+
+@pytest.mark.asyncio
+async def test_get_batch_status_retorna_404_sem_lote(client, mock_batch_db):
+    """Retorna 404 quando não existe nenhum documento em batch_runs."""
+    mock_batch_db.batch_runs.find_one = AsyncMock(return_value=None)
+
+    response = await client.get('/pipeline/batch/status')
+
+    assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_get_batch_status_retorna_200_lote_encerrado(client, mock_batch_db):
+    """Retorna 200 com is_running: False e todos os campos quando lote encerrado."""
+    mock_batch_db.batch_runs.find_one = AsyncMock(return_value={
+        'batch_id': 'lote-encerrado',
+        'is_running': False,
+        'started_at': datetime(2026, 5, 1, 12, 0, 0),
+        'finished_at': datetime(2026, 5, 1, 14, 0, 0),
+        'params': _PARAMS_DEFAULT,
+        'user_email': 'test@test.com',
+        'counts': _COUNTS,
+        'distribuidoras': [_DIST_ITEM],
+    })
+
+    response = await client.get('/pipeline/batch/status')
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body['batch_id'] == 'lote-encerrado'
+    assert body['is_running'] is False
+    assert body['finished_at'] is not None
+    assert body['counts']['completed'] == 1
+    assert len(body['distribuidoras']) == 1
+    assert body['distribuidoras'][0]['id'] == 'dist-1'
+    assert body['distribuidoras'][0]['status'] == 'completed'
+
+
+@pytest.mark.asyncio
+async def test_get_batch_status_retorna_200_lote_em_execucao(client, mock_batch_db):
+    """Retorna 200 com is_running: True quando lote ainda está rodando."""
+    mock_batch_db.batch_runs.find_one = AsyncMock(return_value={
+        'batch_id': 'lote-ativo',
+        'is_running': True,
+        'started_at': datetime(2026, 5, 1, 12, 0, 0),
+        'finished_at': None,
+        'params': _PARAMS_DEFAULT,
+        'user_email': 'test@test.com',
+        'counts': {
+            'total': 3, 'pending': 1, 'processing': 1,
+            'completed': 1, 'failed': 0, 'skipped': 0,
+        },
+        'distribuidoras': [
+            {'id': 'dist-2', 'nome': 'DIST 2', 'ano': 2026, 'status': 'processing', 'error': None},
+        ],
+    })
+
+    response = await client.get('/pipeline/batch/status')
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body['batch_id'] == 'lote-ativo'
+    assert body['is_running'] is True
+    assert body['finished_at'] is None
+    assert body['distribuidoras'][0]['status'] == 'processing'

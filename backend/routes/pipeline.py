@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.models import Distribuidora, User
 from backend.core.schemas import (
+    BatchStatusResponse,
     BatchTriggerRequest,
     BatchTriggerResponse,
     PipelineTriggerRequest,
@@ -16,7 +17,7 @@ from backend.core.schemas import (
 )
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_current_user
-from backend.services.pipeline_batch import start_batch
+from backend.services.pipeline_batch import get_last_batch, start_batch
 from backend.services.pipeline_trigger import trigger_pipeline_flow
 
 router = APIRouter(tags=['pipeline'])
@@ -62,6 +63,16 @@ async def trigger_batch(
         return BatchTriggerResponse(batch_id=batch_id)
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+
+@router.get('/batch/status', response_model=BatchStatusResponse)
+async def get_batch_status(
+    mongo_db: AsyncIOMotorDatabase = Depends(get_mongo_async_database),
+):
+    last_batch = await get_last_batch(mongo_db)
+    if last_batch is None:
+        raise HTTPException(status_code=404, detail='Nenhum lote encontrado')
+    return last_batch
 
 
 @router.get(

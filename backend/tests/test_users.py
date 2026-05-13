@@ -38,7 +38,7 @@ async def test_create_user(client):
 
 async def test_read_users(client, user):
     user_schema = UserPublic.model_validate(user).model_dump()
-    response = await client.get('/users/')
+    response = await client.get(f'/users/?skip=0&limit=1000')
 
     assert response.status_code == HTTPStatus.OK
     assert user_schema in response.json()['users']

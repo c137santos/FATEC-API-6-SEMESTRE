@@ -8,12 +8,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.core.models import Distribuidora, User
 from backend.core.schemas import (
+    BatchTriggerRequest,
+    BatchTriggerResponse,
     PipelineTriggerRequest,
     PipelineTriggerResponse,
     ReportStatusResponse,
 )
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_current_user
+from backend.services.pipeline_batch import start_batch
 from backend.services.pipeline_trigger import trigger_pipeline_flow
 
 router = APIRouter(tags=['pipeline'])
@@ -40,6 +43,25 @@ async def trigger_pipeline(
         raise HTTPException(status_code=404, detail=str(exc)) from exc
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.post('/batch', status_code=202, response_model=BatchTriggerResponse)
+async def trigger_batch(
+    request: BatchTriggerRequest,
+    session: AsyncSession = Depends(get_session),
+    mongo_db: AsyncIOMotorDatabase = Depends(get_mongo_async_database),
+    current_user: User = Depends(get_current_user),
+):
+    try:
+        batch_id = await start_batch(
+            params=request,
+            user_email=current_user.email,
+            session=session,
+            mongo_db=mongo_db,
+        )
+        return BatchTriggerResponse(batch_id=batch_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
 
 
 @router.get(

@@ -113,3 +113,16 @@ class CnpjLookupResponse(BaseModel):
     dist_name: str
     cnpj_enrichment_status: str | None
     message: str
+
+
+class BatchTriggerRequest(BaseModel):
+    year: int | None = None
+    concurrency: int = 1
+    poll_interval: int = 30
+    max_attempts: int = 30
+    max_retries: int = 1
+    min_wait: int = 1200
+
+
+class BatchTriggerResponse(BaseModel):
+    batch_id: str

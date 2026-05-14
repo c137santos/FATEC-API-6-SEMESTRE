@@ -6,7 +6,7 @@ from typing import Annotated
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from jwt import decode as jwt_decode
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -129,7 +129,7 @@ async def authorize_get(
 
     if not access_token:
         next_url = str(request.url)
-        login_url = f'/frontend/login.html?next={next_url}'
+        login_url = f'http://localhost:3000/login.html?next={next_url}'
         return RedirectResponse(login_url, status_code=HTTPStatus.FOUND)
 
     params = urlencode({
@@ -143,7 +143,7 @@ async def authorize_get(
         'client_name': client.client_name or client_id,
     })
     return RedirectResponse(
-        f'/frontend/consent.html?{params}',
+        f'http://localhost:3000/consent.html?{params}',
         status_code=HTTPStatus.FOUND,
     )
 

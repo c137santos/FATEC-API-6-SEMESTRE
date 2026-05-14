@@ -1,14 +1,15 @@
+from datetime import datetime, UTC
 from http import HTTPStatus
 from typing import Annotated
 
 from backend.database import get_session
 from backend.security import get_current_user, get_password_hash
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import Select
+from sqlalchemy import Select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.models import User
-from ..core.schemas import Message, UserList, UserPublic, UserSchema
+from ..core.models import ConsentPolicy, User
+from ..core.schemas import Message, UserCreateSchema, UserList, UserPublic, UserSchema
 
 router = APIRouter(prefix='/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
@@ -16,7 +17,13 @@ T_Current_user = Annotated[User, Depends(get_current_user)]
 
 
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-async def create_user(user: UserSchema, session: T_Session):
+async def create_user(user: UserCreateSchema, session: T_Session):
+
+    if not user.consented:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Consent is required',
+        )
 
     db_user = await session.scalar(
         Select(User).where(
@@ -36,10 +43,16 @@ async def create_user(user: UserSchema, session: T_Session):
                 detail='Email already exists',
             )
 
+    policy = await session.scalar(
+        Select(ConsentPolicy).order_by(desc(ConsentPolicy.id)).limit(1)
+    )
+
     db_user = User(
         username=user.username,
         email=user.email,
         password=get_password_hash(user.password),
+        consented_at=datetime.now(UTC).replace(tzinfo=None),
+        consent_policy_id=policy.id if policy else None,
     )
 
     session.add(db_user)

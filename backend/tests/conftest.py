@@ -15,7 +15,7 @@ from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from backend.core import models as _models  # noqa: F401
-from backend.core.models import User, table_registry
+from backend.core.models import ConsentPolicy, User, table_registry
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_password_hash
 from backend.services.pipeline_trigger import trigger_pipeline_flow
@@ -124,6 +124,18 @@ async def client(session, mongo_db):
     async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture()
+async def consent_policy(session):
+    policy = ConsentPolicy(
+        version='1.0',
+        content='Esta plataforma coleta seus dados pessoais conforme a LGPD.',
+    )
+    session.add(policy)
+    await session.flush()
+    await session.refresh(policy)
+    return policy
 
 
 @pytest_asyncio.fixture()

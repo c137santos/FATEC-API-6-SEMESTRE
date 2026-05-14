@@ -3,13 +3,29 @@ from http import HTTPStatus
 from backend.core.schemas import UserPublic
 
 
-async def test_create_user(client):
+async def test_registration_without_consent_returns_400(client):
     response = await client.post(
         '/users/',
         json={
             'username': 'testeusername',
             'email': 'teste@teste.com',
             'password': 'password',
+            'consented': False,
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Consent is required'}
+
+
+async def test_create_user(client, consent_policy):
+    response = await client.post(
+        '/users/',
+        json={
+            'username': 'testeusername',
+            'email': 'teste@teste.com',
+            'password': 'password',
+            'consented': True,
         },
     )
 
@@ -18,6 +34,8 @@ async def test_create_user(client):
     assert data['username'] == 'testeusername'
     assert data['email'] == 'teste@teste.com'
     assert 'id' in data
+    assert data['consented_at'] is not None
+    assert data['consent_policy_id'] == consent_policy.id
 
 
 async def test_read_users(client, user):

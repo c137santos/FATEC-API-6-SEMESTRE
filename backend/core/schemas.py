@@ -1,8 +1,17 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl
 
 
 class Message(BaseModel):
     message: str
+
+
+class ConsentPolicyPublic(BaseModel):
+    id: int
+    version: str
+    content: str
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserSchema(BaseModel):
@@ -11,10 +20,16 @@ class UserSchema(BaseModel):
     password: str
 
 
+class UserCreateSchema(UserSchema):
+    consented: bool
+
+
 class UserPublic(BaseModel):
     id: int
     username: str
     email: EmailStr
+    consented_at: datetime | None = None
+    consent_policy_id: int | None = None
     model_config = ConfigDict(from_attributes=True)
 
 

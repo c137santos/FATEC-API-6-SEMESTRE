@@ -31,6 +31,7 @@ celery_app = Celery(
         'backend.tasks.task_pipeline_error',
         'backend.tasks.task_cleanup_files',
         'backend.tasks.task_enrich_cnpj',
+        'backend.tasks.task_render_temporal_analysis',
     ],
 )
 

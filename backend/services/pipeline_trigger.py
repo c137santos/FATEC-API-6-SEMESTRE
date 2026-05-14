@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 
+from backend.tasks.task_render_temporal_analysis import task_render_prophet_forecast
 from backend.tasks.task_render_sam import task_render_sam
 from celery import chain
 from sqlalchemy import select, update
@@ -232,6 +233,7 @@ async def trigger_pipeline_flow(
         task_render_tabela_score.si(job_id, sig_agente, ano),
         task_render_mapa_calor.si(job_id, sig_agente, ano),
         task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_prophet_forecast.si(job_id, cnpj),
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
     ).delay()

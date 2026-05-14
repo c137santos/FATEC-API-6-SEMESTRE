@@ -5,8 +5,6 @@ services:
       - "8000:8000"
     env_file:
       - .env
-    entrypoint: ["/bin/bash", "/app/setup.sh"]
-    command: ["uv", "run", "uvicorn", "backend.app:app", "--host", "0.0.0.0", "--port", "8000"]
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -20,13 +18,9 @@ services:
       - gdb_data:/data
       - ./output:/app/output
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./setup.sh:/app/setup.sh
       - ./setup_data:/app/setup_flag
-    deploy:
-      resources:
-        limits:
-          cpus: '2.0'
-          memory: 4G
+    cpus: '2.0'
+    mem_limit: 4G
 
 
   worker:
@@ -97,10 +91,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-    deploy:
-      resources:
-        limits:
-          memory: 2G
+    mem_limit: 2G
 
   frontend:
     image: nginx:alpine

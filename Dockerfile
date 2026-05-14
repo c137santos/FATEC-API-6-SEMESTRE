@@ -16,8 +16,14 @@ RUN uv sync --frozen --no-dev --no-cache
 
 COPY backend/ ./backend/
 
+COPY setup.sh /app/setup.sh
+
+RUN chmod +x /app/setup.sh
+
 EXPOSE 8000
 
 ENV PYTHONPATH=/app:/app/backend
+
+ENTRYPOINT ["/app/setup.sh"]
 
 CMD ["sh", "-c", "uv run alembic -c backend/alembic.ini upgrade head && uv run uvicorn --host 0.0.0.0 backend.app:app"]

@@ -130,7 +130,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[1].args[2] == 'item-chain'
 
     assert sigs[2].task == 'etl.score_criticidade'
-    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026, None)
+    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026, '76535764000143')
 
     assert sigs[3].task == 'etl.calculate_pt_pnt'
     assert sigs[3].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
@@ -142,7 +142,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[5].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
     assert sigs[6].task == 'etl.mapa_criticidade'
-    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026, None)
+    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026, '76535764000143')
 
     assert sigs[7].task == 'etl.calcular_tam'
     assert sigs[7].args == (job_id, {

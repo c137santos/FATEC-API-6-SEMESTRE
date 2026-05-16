@@ -50,9 +50,13 @@ async def send_email(recipient_email: str, pdf_path: str) -> None:
     )
 
     fm = FastMail(conf)
-    await fm.send_message(message)
-    logger.info('[send_email] E-mail enviado para %s', recipient_email)
-
+    
+    try:
+        await fm.send_message(message)
+        logger.info('[send_email] E-mail enviado para %s', recipient_email)
+    except Exception:
+        logger.exception('[send_email] Falha ao enviar e-mail para %s', recipient_email)
+        raise
 
 def send_email_sync(recipient_email: str, pdf_path: str) -> None:
     asyncio.run(send_email(recipient_email, pdf_path))

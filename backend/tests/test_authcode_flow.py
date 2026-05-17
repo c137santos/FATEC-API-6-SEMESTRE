@@ -51,7 +51,7 @@ async def test_authorize_unauthenticated_redirects_to_login(
     )
     assert response.status_code == HTTPStatus.FOUND
     location = response.headers['location']
-    assert '/frontend/login.html' in location
+    assert '/login.html' in location
     assert 'next=' in location
 
 
@@ -74,7 +74,7 @@ async def test_authorize_authenticated_redirects_to_consent(
     )
     assert response.status_code == HTTPStatus.FOUND
     location = response.headers['location']
-    assert '/frontend/consent.html' in location
+    assert '/consent.html' in location
     assert 'client_id=' in location
     assert 'code_challenge=' in location
     assert 'state=xyz' in location

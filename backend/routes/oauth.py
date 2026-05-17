@@ -3,7 +3,7 @@ import asyncio
 import secrets
 from http import HTTPStatus
 from typing import Annotated
-from urllib.parse import urlencode
+from urllib.parse import quote, urlencode
 
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -128,7 +128,7 @@ async def authorize_get(
         )
 
     if not access_token:
-        next_url = str(request.url)
+        next_url = quote(str(request.url), safe='')
         login_url = f'http://localhost:3000/login.html?next={next_url}'
         return RedirectResponse(login_url, status_code=HTTPStatus.FOUND)
 

@@ -176,35 +176,17 @@
         }
       },
 
-      parseJwt(token) {
-        try {
-          return JSON.parse(atob(token.split('.')[1]))
-        } catch (e) {
-          return null
-        }
-      },
-
       async loadUser() {
-        const token = localStorage.getItem('access_token')
-        if (!token) return
-        const payload = this.parseJwt(token)
-        if (!payload || !payload.sub) return
-
         try {
-          const res = await fetch('http://localhost:8000/users/', {
-            headers: { 'Authorization': `Bearer ${token}` }
+          const res = await fetch('http://localhost:8000/users/me', {
+            credentials: 'include'
           })
           if (!res.ok) return
-          const data = await res.json()
-
-          const users = Array.isArray(data) ? data : (data.users || []);
-          const user = users.find(u => u.email === payload.sub || u.username === payload.sub)
-          if (user) {
-            this.currentUser.username = user.username
-            this.currentUser.email = user.email
-            this.currentUser.id = user.id
-            this.resetEditForm()
-          }
+          const user = await res.json()
+          this.currentUser.username = user.username
+          this.currentUser.email = user.email
+          this.currentUser.id = user.id
+          this.resetEditForm()
         } catch(e) {
           console.error('Erro ao carregar usuário:', e)
         }
@@ -220,8 +202,7 @@
       },
 
       async updateUser() {
-        const token = localStorage.getItem('access_token')
-        if (!token || !this.currentUser.id) return
+        if (!this.currentUser.id) return
 
         if (!this.editUser.currentPassword) {
           this.showAlert('Atenção', 'Por favor, informe a senha atual para salvar alterações.', 'error')
@@ -233,10 +214,8 @@
         try {
           const res = await fetch(`http://localhost:8000/users/${this.currentUser.id}`, {
             method: 'PUT',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               username: this.editUser.username,
               email: this.editUser.email,
@@ -246,8 +225,8 @@
 
           if (res.ok) {
             this.showAlert('Sucesso!', 'Perfil atualizado com sucesso! Por segurança, faça login novamente com os novos dados.', 'success', () => {
-              localStorage.removeItem('access_token')
-              window.location.href = 'login.html'
+              fetch('http://localhost:8000/auth/logout', { method: 'POST', credentials: 'include' })
+                .finally(() => { window.location.href = 'login.html' })
             })
           } else {
             const data = await res.json()
@@ -260,21 +239,19 @@
       },
 
       async deleteUser() {
-
-        const token = localStorage.getItem('access_token')
-        if (!token || !this.currentUser.id) return
+        if (!this.currentUser.id) return
 
         try {
           const res = await fetch(`http://localhost:8000/users/${this.currentUser.id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
+            credentials: 'include'
           })
 
           if (res.ok) {
             this.showDeleteUserModal = false;
             this.showAlert('Conta Excluída', 'Sua conta foi deletada com sucesso.', 'success', () => {
-              localStorage.removeItem('access_token')
-              window.location.href = 'login.html'
+              fetch('http://localhost:8000/auth/logout', { method: 'POST', credentials: 'include' })
+                .finally(() => { window.location.href = 'login.html' })
             })
           } else {
             const data = await res.json()
@@ -290,8 +267,8 @@
 
       go(tela) {
         if (tela === 'login') {
-          localStorage.removeItem('access_token')
-          window.location.href = 'login.html'
+          fetch('http://localhost:8000/auth/logout', { method: 'POST', credentials: 'include' })
+            .finally(() => { window.location.href = 'login.html' })
         } else if (tela === 'documents') {
           window.location.href = 'hello.html'
         }

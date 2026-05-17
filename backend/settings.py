@@ -1,6 +1,6 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = ROOT_DIR / '.env'
@@ -16,12 +16,18 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
 
+    @property
+    def DATABASE_URL_SYNC(self) -> str:
+        return self.DATABASE_URL.replace('+asyncpg', '+psycopg2')
+
     MONGO_URI: str
     MONGO_DB: str = 'fatec_api'
 
     SECRET_KEY: str
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
+
+    BASE_URL: str = 'http://localhost:8000'
 
     mail_username: str
     mail_password: str

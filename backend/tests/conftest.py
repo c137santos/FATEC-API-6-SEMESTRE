@@ -8,13 +8,15 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from backend.core import models as _models  # noqa: F401
+from backend.core import oauth_models as _oauth_models  # noqa: F401
 from backend.core.models import ConsentPolicy, User, table_registry
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_password_hash
@@ -84,6 +86,16 @@ def postgres_container():
         os.environ["POSTGRES_PORT"] = str(port)
         
         yield postgres
+
+
+@pytest.fixture(scope='session', autouse=True)
+def configure_sync_session(postgres_container):
+    import backend.database as db_module
+    sync_url = postgres_container.get_connection_url()
+    sync_engine = create_engine(sync_url, poolclass=NullPool)
+    db_module.SyncSession = sessionmaker(
+        sync_engine, expire_on_commit=False
+    )
 
 
 @pytest_asyncio.fixture(scope='session', loop_scope='session')
@@ -163,12 +175,25 @@ async def other_user(session):
 
 
 @pytest_asyncio.fixture()
-async def token(client, user):
+async def oauth_client(client):
     response = await client.post(
+        '/oauth/clients',
+        json={
+            'client_name': 'Test Client',
+            'redirect_uris': ['http://localhost/callback'],
+            'allowed_scopes': ['openid', 'email', 'profile'],
+        },
+    )
+    return response.json()
+
+
+@pytest_asyncio.fixture()
+async def token(client, user):
+    await client.post(
         '/auth/token',
         data={'username': user.email, 'password': user.clean_password},
     )
-    return response.json()['access_token']
+    return client.cookies['access_token']
 
 
 @pytest_asyncio.fixture
@@ -268,6 +293,7 @@ def pytest_sessionstart(session):
     Executa antes da coleta dos testes.
     Define variáveis de ambiente mínimas para evitar erros de validação do Pydantic.
     """
+    os.environ.setdefault('AUTHLIB_INSECURE_TRANSPORT', '1')
     os.environ.setdefault('MAIL_USERNAME', 'test_user')
     os.environ.setdefault('MAIL_PASSWORD', 'test_password')
     os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')

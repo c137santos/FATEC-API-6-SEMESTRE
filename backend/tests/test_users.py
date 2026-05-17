@@ -3,6 +3,22 @@ from http import HTTPStatus
 from backend.core.schemas import UserPublic
 
 
+async def test_get_me_returns_current_user(client, user, token):
+    response = await client.get(
+        '/users/me',
+        cookies={'access_token': token},
+    )
+    assert response.status_code == HTTPStatus.OK
+    data = response.json()
+    assert data['email'] == user.email
+    assert data['username'] == user.username
+
+
+async def test_get_me_without_cookie_returns_401(client):
+    response = await client.get('/users/me')
+    assert response.status_code == HTTPStatus.UNAUTHORIZED
+
+
 async def test_registration_without_consent_returns_400(client):
     response = await client.post(
         '/users/',
@@ -40,7 +56,7 @@ async def test_create_user(client, consent_policy):
 
 async def test_read_users(client, user):
     user_schema = UserPublic.model_validate(user).model_dump()
-    response = await client.get('/users/')
+    response = await client.get(f'/users/?skip=0&limit=1000')
 
     assert response.status_code == HTTPStatus.OK
     assert user_schema in response.json()['users']
@@ -49,7 +65,7 @@ async def test_read_users(client, user):
 async def test_update_user(client, user, token):
     response = await client.put(
         f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
+        cookies={'access_token': token},
         json={
             'username': 'testeusername2',
             'email': 'test@test.com',
@@ -67,7 +83,7 @@ async def test_update_user(client, user, token):
 async def test_delete_user(client, user, token):
     response = await client.delete(
         f'/users/{user.id}',
-        headers={'Authorization': f'Bearer {token}'},
+        cookies={'access_token': token},
     )
     assert response.status_code == HTTPStatus.OK
     assert response.json() == {'message': 'User deleted'}
@@ -76,7 +92,7 @@ async def test_delete_user(client, user, token):
 async def test_delete_wrong_user(client, other_user, token):
     response = await client.delete(
         f'/users/{other_user.id}',
-        headers={'Authorization': f'Bearer {token}'},
+        cookies={'access_token': token},
     )
     assert response.status_code == HTTPStatus.FORBIDDEN
     assert response.json() == {'detail': 'Not enough permission'}
@@ -85,7 +101,7 @@ async def test_delete_wrong_user(client, other_user, token):
 async def test_update_user_with_wrong_user(client, other_user, token):
     response = await client.put(
         f'/users/{other_user.id}',
-        headers={'Authorization': f'Bearer {token}'},
+        cookies={'access_token': token},
         json={
             'username': 'bob',
             'email': 'bob@example.com',

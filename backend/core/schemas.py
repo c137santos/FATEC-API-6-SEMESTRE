@@ -128,3 +128,14 @@ class CnpjLookupResponse(BaseModel):
     dist_name: str
     cnpj_enrichment_status: str | None
     message: str
+
+
+class OAuthClientCreate(BaseModel):
+    client_name: str
+    redirect_uris: list[str]
+    allowed_scopes: list[str]
+
+
+class OAuthClientCreatedResponse(BaseModel):
+    client_id: str
+    client_secret: str

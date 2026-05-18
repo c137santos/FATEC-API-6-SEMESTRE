@@ -49,8 +49,8 @@ services:
     volumes:
       - gdb_data:/data
       - ./output:/app/output
-    cpus: ${WORKER_CPUS:-4.0}
-    mem_limit: ${WORKER_MEMORY:-8g}
+    cpus: '4.0'
+    mem_limit: 12g
 
   redis:
     image: redis:7-alpine

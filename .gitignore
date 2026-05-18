@@ -173,3 +173,4 @@ pyrightconfig.json
 
 /output
 .claude 
+setup_data/

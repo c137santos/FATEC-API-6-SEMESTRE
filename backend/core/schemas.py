@@ -42,6 +42,10 @@ class Token(BaseModel):
     token_type: str
 
 
+class ResendVerificationSchema(BaseModel):
+    email: EmailStr
+
+
 class CriticidadeResponse(BaseModel):
     ano: int
     distribuidora: str

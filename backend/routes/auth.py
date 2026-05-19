@@ -33,6 +33,12 @@ async def login_for_access_token(session: T_Session, form_data: T_OAuth2Form):
             detail='Incorrect email or password',
         )
 
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail='Email não confirmado',
+        )
+
     access_token = create_access_token(data={'sub': user.email})
 
     return {'access_token': access_token, 'token_type': 'Bearer'}

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, Text, func
+from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, registry
 
 table_registry = registry()
@@ -34,6 +34,11 @@ class User:
     )
     consent_policy_id: Mapped[int | None] = mapped_column(
         ForeignKey('consent_policies.id'), nullable=True, default=None
+    )
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    email_token: Mapped[str | None] = mapped_column(Text, nullable=True, default=None)
+    email_token_expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime, nullable=True, default=None
     )
 
 

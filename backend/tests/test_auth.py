@@ -1,5 +1,4 @@
 from http import HTTPStatus
-
 from freezegun import freeze_time
 
 
@@ -70,6 +69,15 @@ async def test_refresh_token(client, token):
     assert 'access_token' in data
     assert 'token_type' in data
     assert data['token_type'] == 'bearer'
+
+
+async def test_login_blocked_for_unverified_user(client, unverified_user):
+    response = await client.post(
+        '/auth/token',
+        data={'username': unverified_user.email, 'password': unverified_user.clean_password},
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Email não confirmado'}
 
 
 async def test_token_expired_dont_refresh(client, user):

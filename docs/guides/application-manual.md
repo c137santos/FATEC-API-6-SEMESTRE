@@ -38,6 +38,8 @@ To stop the Docker containers, press `Ctrl+C` (if not detached) or run:
 docker-compose down
 ```
 
+>Obs: When you create docker, it synchronizes the distributors and the dec and fec data. But for Windows users there may be line break issue, so in your text editor's 'Select End of Line Sequence' option change CRLF to LF. Linux users do not have this problem.
+
 ---
 
 ## 💻 Running the Project Locally (Development)

@@ -119,11 +119,6 @@ class CnpjLookupResponse(BaseModel):
 
 class BatchTriggerRequest(BaseModel):
     year: int | None = None
-    concurrency: int = 1
-    poll_interval: int = 30
-    max_attempts: int = 30
-    max_retries: int = 1
-    min_wait: int = 1200
 
 
 class BatchTriggerResponse(BaseModel):

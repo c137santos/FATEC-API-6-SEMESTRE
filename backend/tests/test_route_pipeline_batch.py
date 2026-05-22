@@ -3,11 +3,10 @@ from datetime import datetime
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy import select
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from backend.app import app
-from backend.core.models import Distribuidora, User
+from backend.core.models import User
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_current_user
 from backend.services.pipeline_batch import _classify_distribuidoras
@@ -26,13 +25,22 @@ def mock_batch_db():
 
 
 @pytest_asyncio.fixture
-async def client(session, mock_batch_db):
-    app.dependency_overrides[get_session] = lambda: session
+async def client(mock_batch_db):
     app.dependency_overrides[get_current_user] = lambda: _FAKE_USER
 
     async def _mongo():
         yield mock_batch_db
+
+    mock_session = AsyncMock()
+    mock_result = MagicMock()
+    mock_result.scalars.return_value.all.return_value = []
+    mock_session.execute = AsyncMock(return_value=mock_result)
+
+    async def _session():
+        yield mock_session
+
     app.dependency_overrides[get_mongo_async_database] = _mongo
+    app.dependency_overrides[get_session] = _session
 
     async with AsyncClient(transport=ASGITransport(app=app), base_url='http://test') as ac:
         yield ac
@@ -44,7 +52,7 @@ async def client(session, mock_batch_db):
 @pytest.mark.asyncio
 async def test_post_batch_retorna_202_com_batch_id(client, mock_batch_db):
     """Retorna 202 com batch_id quando nenhum lote está em execução."""
-    with patch('asyncio.create_task'):
+    with patch('backend.tasks.task_pipeline_batch.task_run_batch.delay'):
         response = await client.post('/pipeline/batch', json={})
 
     assert response.status_code == 202
@@ -67,10 +75,8 @@ async def test_post_batch_retorna_409_quando_lote_em_execucao(client, mock_batch
 
 
 @pytest.mark.asyncio
-async def test_post_batch_retorna_401_sem_autenticacao(session, mock_batch_db):
+async def test_post_batch_retorna_401_sem_autenticacao(mock_batch_db):
     """Retorna 401 quando requisição não está autenticada."""
-    app.dependency_overrides[get_session] = lambda: session
-
     async def _mongo():
         yield mock_batch_db
     app.dependency_overrides[get_mongo_async_database] = _mongo
@@ -86,111 +92,63 @@ async def test_post_batch_retorna_401_sem_autenticacao(session, mock_batch_db):
 @pytest.mark.asyncio
 async def test_post_batch_documento_criado_com_is_running_e_params(client, mock_batch_db):
     """Documento criado em batch_runs tem is_running: True e parâmetros corretos."""
-    with patch('asyncio.create_task'):
+    with patch('backend.tasks.task_pipeline_batch.task_run_batch.delay'):
         response = await client.post(
             '/pipeline/batch',
-            json={'year': 2026, 'concurrency': 2},
+            json={'year': 2026},
         )
 
     assert response.status_code == 202
     doc = mock_batch_db.batch_runs.insert_one.call_args.args[0]
     assert doc['is_running'] is True
     assert doc['params']['year'] == 2026
-    assert doc['params']['concurrency'] == 2
-    assert doc['params']['poll_interval'] == 30
-    assert doc['params']['min_wait'] == 1200
 
 
 # --- _classify_distribuidoras tests ---
 
-@pytest.mark.asyncio
-async def test_classify_sem_job_id_processa(session):
-    """Sem job_id → to_process com force_full=False."""
-    session.add(Distribuidora(id='cls-nojob', date_gdb=2026, dist_name='DIST SEM JOB'))
-    await session.commit()
-
-    result = await session.execute(
-        select(Distribuidora).where(Distribuidora.id == 'cls-nojob')
-    )
-    distribuidoras = result.scalars().all()
-
+def test_classify_sem_job_id_processa():
+    """Sem job_id → to_process."""
+    distribuidoras = [{'id': 'cls-nojob', 'job_id': None, 'dist_name': 'DIST SEM JOB', 'date_gdb': 2026}]
     mock_db = MagicMock()
-    mock_db.jobs.find_one = AsyncMock(return_value=None)
 
-    to_process, to_skip = await _classify_distribuidoras(distribuidoras, session, mock_db)
+    to_process, to_skip = _classify_distribuidoras(distribuidoras, mock_db)
 
     assert len(to_process) == 1
-    assert to_process[0]['distribuidora'].id == 'cls-nojob'
-    assert to_process[0]['force_full'] is False
+    assert to_process[0]['distribuidora']['id'] == 'cls-nojob'
     assert len(to_skip) == 0
 
 
-@pytest.mark.asyncio
-async def test_classify_report_completed_ignora(session):
+def test_classify_report_completed_ignora():
     """report_status == 'completed' → to_skip."""
-    session.add(
-        Distribuidora(id='cls-done', date_gdb=2026, dist_name='DIST DONE', job_id='job-done')
-    )
-    await session.commit()
-
-    result = await session.execute(
-        select(Distribuidora).where(Distribuidora.id == 'cls-done')
-    )
-    distribuidoras = result.scalars().all()
-
+    distribuidoras = [{'id': 'cls-done', 'job_id': 'job-done', 'dist_name': 'DIST DONE', 'date_gdb': 2026}]
     mock_db = MagicMock()
-    mock_db.jobs.find_one = AsyncMock(
-        return_value={'job_id': 'job-done', 'report_status': 'completed'}
-    )
+    mock_db.jobs.find_one.return_value = {'job_id': 'job-done', 'report_status': 'completed'}
 
-    to_process, to_skip = await _classify_distribuidoras(distribuidoras, session, mock_db)
+    to_process, to_skip = _classify_distribuidoras(distribuidoras, mock_db)
 
     assert len(to_process) == 0
     assert len(to_skip) == 1
 
 
-@pytest.mark.asyncio
-async def test_classify_report_failed_processa_com_force_full(session):
-    """report_status == 'failed' → to_process com force_full=True."""
-    session.add(
-        Distribuidora(id='cls-fail', date_gdb=2026, dist_name='DIST FAIL', job_id='job-fail')
-    )
-    await session.commit()
-
-    result = await session.execute(
-        select(Distribuidora).where(Distribuidora.id == 'cls-fail')
-    )
-    distribuidoras = result.scalars().all()
-
+def test_classify_report_failed_processa():
+    """report_status == 'failed' → to_process."""
+    distribuidoras = [{'id': 'cls-fail', 'job_id': 'job-fail', 'dist_name': 'DIST FAIL', 'date_gdb': 2026}]
     mock_db = MagicMock()
-    mock_db.jobs.find_one = AsyncMock(
-        return_value={'job_id': 'job-fail', 'report_status': 'failed'}
-    )
+    mock_db.jobs.find_one.return_value = {'job_id': 'job-fail', 'report_status': 'failed'}
 
-    to_process, to_skip = await _classify_distribuidoras(distribuidoras, session, mock_db)
+    to_process, to_skip = _classify_distribuidoras(distribuidoras, mock_db)
 
     assert len(to_process) == 1
-    assert to_process[0]['force_full'] is True
     assert len(to_skip) == 0
 
 
-@pytest.mark.asyncio
-async def test_classify_job_ativo_ignora(session):
+def test_classify_job_ativo_ignora():
     """job_id existe mas sem doc no MongoDB (job em andamento) → to_skip."""
-    session.add(
-        Distribuidora(id='cls-active', date_gdb=2026, dist_name='DIST ACTIVE', job_id='job-running')
-    )
-    await session.commit()
-
-    result = await session.execute(
-        select(Distribuidora).where(Distribuidora.id == 'cls-active')
-    )
-    distribuidoras = result.scalars().all()
-
+    distribuidoras = [{'id': 'cls-active', 'job_id': 'job-running', 'dist_name': 'DIST ACTIVE', 'date_gdb': 2026}]
     mock_db = MagicMock()
-    mock_db.jobs.find_one = AsyncMock(return_value=None)
+    mock_db.jobs.find_one.return_value = None
 
-    to_process, to_skip = await _classify_distribuidoras(distribuidoras, session, mock_db)
+    to_process, to_skip = _classify_distribuidoras(distribuidoras, mock_db)
 
     assert len(to_process) == 0
     assert len(to_skip) == 1
@@ -200,11 +158,6 @@ async def test_classify_job_ativo_ignora(session):
 
 _PARAMS_DEFAULT = {
     'year': None,
-    'concurrency': 1,
-    'poll_interval': 30,
-    'max_attempts': 30,
-    'max_retries': 1,
-    'min_wait': 1200,
 }
 
 _DIST_ITEM = {'id': 'dist-1', 'nome': 'DIST 1', 'ano': 2026, 'status': 'completed', 'error': None}

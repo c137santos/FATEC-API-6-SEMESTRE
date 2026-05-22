@@ -1,5 +1,8 @@
 import logging
+import ssl
+from pathlib import Path
 
+import certifi
 import httpx
 
 from backend.core.utils import normalize_cnpj
@@ -12,6 +15,16 @@ ANEEL_DATASTORE_URL = (
 ANEEL_RESOURCE_ID = '4493985c-baea-429c-9df5-3030422c71d7'
 _ANEEL_FIELDS = 'DatGeracaoConjuntoDados,SigAgente,NumCNPJ'
 _PAGE_SIZE = 100
+
+_CERTS_DIR = Path(__file__).parent.parent / 'certs'
+
+
+def _ssl_context() -> ssl.SSLContext:
+    # ANEEL's server omits the intermediate cert in the TLS handshake;
+    # load it explicitly so the chain can be verified.
+    ctx = ssl.create_default_context(cafile=certifi.where())
+    ctx.load_verify_locations(_CERTS_DIR / 'sectigo_intermediate.pem')
+    return ctx
 
 
 async def fetch_aneel_cnpj_map(
@@ -28,17 +41,17 @@ async def fetch_aneel_cnpj_map(
     async def _get(c: httpx.AsyncClient) -> None:
         nonlocal offset
         while True:
-            resp = await c.get(
-                ANEEL_DATASTORE_URL,
-                params={
-                    'resource_id': ANEEL_RESOURCE_ID,
-                    'limit': _PAGE_SIZE,
-                    'offset': offset,
-                    'fields': _ANEEL_FIELDS,
-                    'distinct': 'true',
-                },
-                timeout=30.0,
+            # httpx encodes commas in params as %2C; ANEEL rejects that form,
+            # so the fields list is embedded directly in the URL string.
+            url = (
+                f'{ANEEL_DATASTORE_URL}'
+                f'?resource_id={ANEEL_RESOURCE_ID}'
+                f'&limit={_PAGE_SIZE}'
+                f'&offset={offset}'
+                f'&fields={_ANEEL_FIELDS}'
+                f'&distinct=true'
             )
+            resp = await c.get(url, timeout=30.0)
             resp.raise_for_status()
             payload = resp.json()
             api_result = payload.get('result', {})
@@ -67,7 +80,7 @@ async def fetch_aneel_cnpj_map(
         if client is not None:
             await _get(client)
         else:
-            async with httpx.AsyncClient() as managed:
+            async with httpx.AsyncClient(verify=_ssl_context()) as managed:
                 await _get(managed)
     except httpx.HTTPError as exc:
         logger.error('Falha ao consultar API ANEEL: %s', exc)

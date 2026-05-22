@@ -53,16 +53,26 @@ async def trigger_batch(
     mongo_db: AsyncIOMotorDatabase = Depends(get_mongo_async_database),
     current_user: User = Depends(get_current_user),
 ):
-    try:
-        batch_id = await start_batch(
-            params=request,
-            user_email=current_user.email,
-            session=session,
-            mongo_db=mongo_db,
-        )
-        return BatchTriggerResponse(batch_id=batch_id)
-    except ValueError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    existing = await mongo_db.batch_runs.find_one({'is_running': True}, {'_id': 0})
+    if existing:
+        raise HTTPException(status_code=409, detail='Já existe um lote em execução')
+
+    stmt = select(Distribuidora)
+    if request.year is not None:
+        stmt = stmt.where(Distribuidora.date_gdb == request.year)
+    result = await session.execute(stmt)
+    distribuidoras = [
+        {'id': d.id, 'job_id': d.job_id, 'dist_name': d.dist_name, 'date_gdb': d.date_gdb}
+        for d in result.scalars().all()
+    ]
+
+    batch_id = await start_batch(
+        params=request,
+        user_email=current_user.email,
+        mongo_db=mongo_db,
+        distribuidoras=distribuidoras,
+    )
+    return BatchTriggerResponse(batch_id=batch_id)
 
 
 @router.get('/batch/status', response_model=BatchStatusResponse)

@@ -213,6 +213,8 @@ async def trigger_pipeline_flow(
         ano,
     )
     cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
+    if cnpj is None:
+        raise LookupError('Distribuidora sem CNPJ associado — processamento não iniciado')
     sig_agente = dist_name.replace('_', ' ')
 
     download_url = ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id)

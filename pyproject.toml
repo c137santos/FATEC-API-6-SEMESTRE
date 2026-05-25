@@ -28,6 +28,7 @@ dependencies = [
     "requests>=2.33.1",
     "reportlab>=4.4.10",
     "fastapi-mail>=1.6.2",
+    "authlib>=1.7.2",
     "rapidfuzz>=3.14.5",
 ]
 

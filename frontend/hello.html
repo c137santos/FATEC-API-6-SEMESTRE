@@ -135,14 +135,10 @@
         return
       }
       try {
-        const token = localStorage.getItem('access_token')
         const res = await fetch('http://localhost:8000/pipeline/trigger', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json', accept: 'application/json' },
           body: JSON.stringify(payload)
         })
         let data = null
@@ -157,8 +153,8 @@
 
     go(tela) {
       if (tela === 'login') {
-        localStorage.removeItem('access_token')
-        window.location.href = 'login.html'
+        fetch('http://localhost:8000/auth/logout', { method: 'POST', credentials: 'include' })
+          .finally(() => { window.location.href = 'login.html' })
       } else if (tela === 'perfil') {
         window.location.href = 'profile.html'
       } else {
@@ -171,10 +167,12 @@
 
     fetch('http://localhost:8000/dist/sync', {
       method: 'POST',
+      credentials: 'include',
       headers: {accept: 'application/json'}
     })
     .then(() => {
       return fetch('http://localhost:8000/dist/distributors', {
+        credentials: 'include',
         headers: { accept: 'application/json' }
       })
     })

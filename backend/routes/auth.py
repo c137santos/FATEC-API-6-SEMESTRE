@@ -40,7 +40,7 @@ async def login_for_access_token(
         key='access_token',
         value=access_token,
         httponly=True,
-        samesite='strict',
+        samesite='lax',
     )
 
     return {'token_type': 'bearer'}
@@ -63,7 +63,7 @@ async def refresh_access_token(
         key='access_token',
         value=new_access_token,
         httponly=True,
-        samesite='strict',
+        samesite='lax',
     )
 
     return {'token_type': 'bearer'}

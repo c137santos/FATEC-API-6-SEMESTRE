@@ -90,7 +90,7 @@ async def register_client(body: OAuthClientCreate, session: T_Session):
         'scope': ' '.join(body.allowed_scopes),
         'response_types': ['code'],
         'grant_types': ['authorization_code', 'refresh_token'],
-        'token_endpoint_auth_method': 'none',
+        'token_endpoint_auth_method': 'client_secret_post',
     })
 
     session.add(client)
@@ -166,8 +166,15 @@ async def authorize_post(
     action = form_data.get('action', 'allow')
     redirect_uri = form_data.get('redirect_uri', '')
     state = form_data.get('state', '')
+    client_id_form = form_data.get('client_id', '')
 
     if action == 'deny':
+        client = await _get_client_or_400(client_id_form, session)
+        if redirect_uri not in client.redirect_uris:
+            raise HTTPException(
+                status_code=HTTPStatus.BAD_REQUEST,
+                detail='Invalid redirect_uri',
+            )
         params = urlencode({'error': 'access_denied', 'state': state})
         return RedirectResponse(
             f'{redirect_uri}?{params}',
@@ -218,7 +225,8 @@ async def token_endpoint(request: Request):
         wrapper,
     )
 
-    return JSONResponse(content=body, status_code=status)
+    response_headers = dict(headers) if headers else {}
+    return JSONResponse(content=body, status_code=status, headers=response_headers)
 
 
 # ---------------------------------------------------------------------------
@@ -241,7 +249,8 @@ async def userinfo(
     if not token or token.is_expired() or token.is_revoked():
         raise HTTPException(status_code=HTTPStatus.UNAUTHORIZED)
 
-    if 'openid' not in token.scope:
+    granted_scopes = set(token.scope.split())
+    if 'openid' not in granted_scopes:
         raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
 
     user = await session.scalar(
@@ -249,9 +258,9 @@ async def userinfo(
     )
 
     claims: dict = {'sub': str(user.id)}
-    if 'email' in token.scope:
+    if 'email' in granted_scopes:
         claims['email'] = user.email
-    if 'profile' in token.scope:
+    if 'profile' in granted_scopes:
         claims['username'] = user.username
 
     return claims

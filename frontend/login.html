@@ -92,7 +92,16 @@
           }
 
           const next = new URLSearchParams(window.location.search).get('next');
-          window.location.href = next || 'hello.html';
+          let safeNext = 'hello.html';
+          if (next) {
+            try {
+              const resolved = new URL(next, window.location.origin);
+              if (resolved.origin === window.location.origin) {
+                safeNext = resolved.href;
+              }
+            } catch (_) {}
+          }
+          window.location.href = safeNext;
         } catch (error) {
           console.error(error);
           this.errorMessage = 'Erro de conexão. O servidor está rodando?';

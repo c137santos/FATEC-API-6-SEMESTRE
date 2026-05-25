@@ -20,12 +20,13 @@ def upgrade() -> None:
     op.create_table(
         'oauth2_clients',
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-        sa.Column('client_id', sa.String(length=48), nullable=True),
+        sa.Column('client_id', sa.String(length=48), nullable=False),
         sa.Column('client_secret', sa.String(length=120), nullable=True),
         sa.Column('client_id_issued_at', sa.Integer(), nullable=False),
         sa.Column('client_secret_expires_at', sa.Integer(), nullable=False),
         sa.Column('client_metadata', sa.Text(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
+        sa.UniqueConstraint('client_id'),
     )
     op.create_index('ix_oauth2_clients_client_id', 'oauth2_clients', ['client_id'])
 
@@ -34,7 +35,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('code', sa.String(length=120), nullable=False),
-        sa.Column('client_id', sa.String(length=48), nullable=True),
+        sa.Column('client_id', sa.String(length=48), nullable=False),
         sa.Column('redirect_uri', sa.Text(), nullable=True),
         sa.Column('response_type', sa.Text(), nullable=True),
         sa.Column('scope', sa.Text(), nullable=True),

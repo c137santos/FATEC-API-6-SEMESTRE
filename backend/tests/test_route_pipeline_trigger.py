@@ -96,6 +96,15 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     session.add(
         Distribuidora(id='item-chain', date_gdb=2026, dist_name='DIST CHAIN')
     )
+    
+    session.add(
+    DistribuidoraCnpj(
+        dist_id='item-chain',
+        cnpj='76535764000143',
+        cnpj_enrichment_status='matched',
+    )
+    )
+    
     await session.commit()
 
     with patch(_CHAIN_PATH) as mock_chain:
@@ -110,7 +119,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
 
     mock_chain.assert_called_once()
     sigs = mock_chain.call_args.args
-    assert len(sigs) == 14
+    assert len(sigs) == 15
 
     assert sigs[0].task == 'etl.download_gdb'
     assert sigs[0].args == (job_id, 'https://www.arcgis.com/sharing/rest/content/items/item-chain/data', 'item-chain')
@@ -121,7 +130,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[1].args[2] == 'item-chain'
 
     assert sigs[2].task == 'etl.score_criticidade'
-    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026, None)
+    assert sigs[2].args == (job_id, 'DIST CHAIN', 2026, '76535764000143')
 
     assert sigs[3].task == 'etl.calculate_pt_pnt'
     assert sigs[3].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
@@ -133,7 +142,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[5].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
     assert sigs[6].task == 'etl.mapa_criticidade'
-    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026, None)
+    assert sigs[6].args == (job_id, 'item-chain', 'DIST CHAIN', 2026, '76535764000143')
 
     assert sigs[7].task == 'etl.calcular_tam'
     assert sigs[7].args == (job_id, {
@@ -153,16 +162,18 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
 
     assert sigs[11].task == 'etl.render_sam'
     assert sigs[11].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
+    
+    assert sigs[12].task == 'etl.render_prophet_forecast'
+    assert sigs[12].args == (job_id, '76535764000143')
 
-    assert sigs[12].task == 'etl.gerar_report'
-    assert sigs[12].args == (job_id,)
-
-    assert sigs[13].task == 'etl.cleanup_files'
+    assert sigs[13].task == 'etl.gerar_report'
     assert sigs[13].args == (job_id,)
 
+    assert sigs[14].task == 'etl.cleanup_files'
+    assert sigs[14].args == (job_id,)
+
     mock_chain.return_value.delay.assert_called_once()
-
-
+    
 @pytest.mark.asyncio
 async def test_pipeline_trigger_payload_invalido_retorna_422(client):
     response = await client.post(

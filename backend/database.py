@@ -4,7 +4,9 @@ from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo import MongoClient
 from pymongo.database import Database as MongoSyncDatabase
 from sqlalchemy import create_engine
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
 
 from backend.settings import Settings
@@ -15,6 +17,10 @@ engine = create_async_engine(settings.DATABASE_URL)
 
 # Synchronous engine for use in Celery tasks (avoids asyncio.run() event-loop conflicts)
 sync_engine = create_engine(settings.DATABASE_URL.replace('+asyncpg', '+psycopg2', 1))
+
+# PostgreSQL sync (authlib integration)
+sync_engine = create_engine(settings.DATABASE_URL_SYNC)
+SyncSession = sessionmaker(sync_engine, expire_on_commit=False)
 
 
 async def get_session():

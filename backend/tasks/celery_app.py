@@ -35,6 +35,7 @@ celery_app = Celery(
         'backend.tasks.task_finalize_batch',
         'backend.tasks.task_trigger_calculations',
         'backend.tasks.task_on_calculation_failure',
+        'backend.tasks.task_render_temporal_analysis',
     ],
 )
 

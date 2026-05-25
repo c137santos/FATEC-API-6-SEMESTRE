@@ -1,10 +1,19 @@
 from datetime import datetime
 
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl
 
 
 class Message(BaseModel):
     message: str
+
+
+class ConsentPolicyPublic(BaseModel):
+    id: int
+    version: str
+    content: str
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserSchema(BaseModel):
@@ -13,10 +22,16 @@ class UserSchema(BaseModel):
     password: str
 
 
+class UserCreateSchema(UserSchema):
+    consented: bool
+
+
 class UserPublic(BaseModel):
     id: int
     username: str
     email: EmailStr
+    consented_at: datetime | None = None
+    consent_policy_id: int | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -27,6 +42,10 @@ class UserList(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ResendVerificationSchema(BaseModel):
+    email: EmailStr
 
 
 class CriticidadeResponse(BaseModel):
@@ -115,6 +134,16 @@ class CnpjLookupResponse(BaseModel):
     dist_name: str
     cnpj_enrichment_status: str | None
     message: str
+
+
+class OAuthClientCreate(BaseModel):
+    client_name: str
+    redirect_uris: list[str]
+    allowed_scopes: list[str]
+
+
+class OAuthClientCreatedResponse(BaseModel):
+    client_id: str
 
 
 class BatchTriggerRequest(BaseModel):

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thunderstone — Confirmação de E-mail</title>
+  <link rel="stylesheet" href="./style.css?v=6" />
+</head>
+<body>
+  <div class="app">
+    <main class="main" style="padding: 0;">
+      <div class="login-container">
+        <div class="login-header">
+          <img src="./assets/raichu-logo.svg" alt="Raichu Logo" class="login-logo" style="width: 60px; height: auto; margin-bottom: 8px;">
+          <h1 class="login-title">Raichu</h1>
+          <p class="login-subtitle">Confirmação de e-mail</p>
+        </div>
+
+        <div style="text-align: center; padding: 24px 0;">
+          <div id="msg-loading" style="color: #888; font-size: 14px;">
+            Verificando seu e-mail...
+          </div>
+          <div id="msg-success" style="display: none; color: #4caf50; font-size: 15px; margin-bottom: 16px;">
+            E-mail confirmado com sucesso! Redirecionando para o login...
+          </div>
+          <div id="msg-error" style="display: none; color: #ff4a4a; font-size: 14px; margin-bottom: 16px;"></div>
+          <div id="btn-login" style="display: none; margin-top: 16px;">
+            <a href="login.html" class="login-btn" style="display: inline-block; text-decoration: none; padding: 10px 24px;">
+              Ir para o login
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (async function () {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+
+      function showError(msg) {
+        document.getElementById('msg-loading').style.display = 'none';
+        document.getElementById('msg-error').textContent = msg;
+        document.getElementById('msg-error').style.display = 'block';
+        document.getElementById('btn-login').style.display = 'block';
+      }
+
+      if (!token) {
+        showError('Token de confirmação não encontrado.');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          'http://localhost:8000/users/verify-email?token=' + encodeURIComponent(token)
+        );
+
+        if (response.ok) {
+          document.getElementById('msg-loading').style.display = 'none';
+          document.getElementById('msg-success').style.display = 'block';
+          setTimeout(function () {
+            window.location.href = 'login.html';
+          }, 2500);
+        } else {
+          const data = await response.json();
+          showError(data.detail || 'Falha ao confirmar e-mail. Tente novamente.');
+        }
+      } catch {
+        showError('Erro de conexão. O servidor está rodando?');
+      }
+    })();
+  </script>
+</body>
+</html>

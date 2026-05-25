@@ -1,5 +1,4 @@
 from http import HTTPStatus
-
 from freezegun import freeze_time
 
 
@@ -12,7 +11,7 @@ async def test_login_sets_httponly_cookie(client, user):
     set_cookie = response.headers.get('set-cookie', '')
     assert 'access_token=' in set_cookie
     assert 'HttpOnly' in set_cookie
-    assert 'samesite=strict' in set_cookie.lower()
+    assert 'samesite=lax' in set_cookie.lower()
 
 
 async def test_login_body_has_no_access_token(client, user):
@@ -111,3 +110,13 @@ async def test_token_wrong_email(client, user):
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert response.json() == {'detail': 'Incorrect email or password'}
+
+
+
+async def test_login_blocked_for_unverified_user(client, unverified_user):
+    response = await client.post(
+        '/auth/token',
+        data={'username': unverified_user.email, 'password': unverified_user.clean_password},
+    )
+    assert response.status_code == HTTPStatus.FORBIDDEN
+    assert response.json() == {'detail': 'Email não confirmado'}

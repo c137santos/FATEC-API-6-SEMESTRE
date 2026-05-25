@@ -34,6 +34,12 @@ async def login_for_access_token(
             detail='Incorrect email or password',
         )
 
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=HTTPStatus.FORBIDDEN,
+            detail='Email não confirmado',
+        )
+
     access_token = create_access_token(data={'sub': user.email})
 
     response.set_cookie(

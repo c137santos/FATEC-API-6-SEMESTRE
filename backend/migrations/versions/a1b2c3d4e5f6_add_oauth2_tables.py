@@ -1,7 +1,7 @@
 """Add OAuth2 tables
 
 Revision ID: a1b2c3d4e5f6
-Revises: c1d2e3f4a5b6
+Revises: 898805b8eb89
 Create Date: 2026-05-13 00:00:00.000000
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 revision: str = 'a1b2c3d4e5f6'
-down_revision: Union[str, Sequence[str], None] = 'c1d2e3f4a5b6'
+down_revision: Union[str, Sequence[str], None] = '898805b8eb89'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -6,7 +6,7 @@ from typing import Annotated
 from urllib.parse import quote, urlencode
 
 from fastapi import APIRouter, Cookie, Depends, Header, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from jwt import decode as jwt_decode
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,7 +15,6 @@ from backend.core.models import User
 from backend.core.oauth_models import OAuth2Client, OAuth2Token
 from backend.core.schemas import OAuthClientCreate, OAuthClientCreatedResponse
 from backend.database import get_session
-from backend.security import get_password_hash
 from backend.services.oauth_server import oauth_server
 from backend.settings import Settings
 
@@ -80,26 +79,21 @@ async def _user_from_cookie(
 )
 async def register_client(body: OAuthClientCreate, session: T_Session):
     client_id = secrets.token_hex(24)
-    plaintext_secret = secrets.token_urlsafe(32)
 
     client = OAuth2Client(client_id=client_id)
-    client.client_secret = get_password_hash(plaintext_secret)
     client.set_client_metadata({
         'client_name': body.client_name,
         'redirect_uris': body.redirect_uris,
         'scope': ' '.join(body.allowed_scopes),
         'response_types': ['code'],
         'grant_types': ['authorization_code', 'refresh_token'],
-        'token_endpoint_auth_method': 'client_secret_post',
+        'token_endpoint_auth_method': 'none',
     })
 
     session.add(client)
     await session.commit()
 
-    return OAuthClientCreatedResponse(
-        client_id=client_id,
-        client_secret=plaintext_secret,
-    )
+    return OAuthClientCreatedResponse(client_id=client_id)
 
 
 # ---------------------------------------------------------------------------

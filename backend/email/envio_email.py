@@ -60,3 +60,32 @@ async def send_email(recipient_email: str, pdf_path: str) -> None:
 
 def send_email_sync(recipient_email: str, pdf_path: str) -> None:
     asyncio.run(send_email(recipient_email, pdf_path))
+
+
+async def send_confirmation_email(recipient_email: str, token: str, base_url: str) -> None:
+    conf = get_mail_config()
+
+    verification_link = f'{base_url}/verify-email.html?token={token}'
+
+    message = MessageSchema(
+        subject='Confirme seu e-mail — Thunderstone',
+        recipients=[recipient_email],
+        body=(
+            'Olá,\n\n'
+            'Obrigado por se cadastrar no sistema Thunderstone.\n'
+            'Clique no link abaixo para confirmar seu e-mail:\n\n'
+            f'{verification_link}\n\n'
+            'O link é válido por 24 horas.\n\n'
+            'Atenciosamente,\nEquipe Thunderstone'
+        ),
+        subtype=MessageType.plain,
+    )
+
+    fm = FastMail(conf)
+
+    try:
+        await fm.send_message(message)
+        logger.info('[send_confirmation_email] E-mail de confirmação enviado para %s', recipient_email)
+    except Exception:
+        logger.exception('[send_confirmation_email] Falha ao enviar e-mail para %s', recipient_email)
+        raise

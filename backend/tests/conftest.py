@@ -31,6 +31,7 @@ class UserFactory(factory.Factory):
     username = factory.Sequence(lambda n: f'test{n}')
     email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')
     password = factory.LazyAttribute(lambda obj: f'{obj.username}+senha')
+    is_verified = True
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -141,7 +142,7 @@ async def client(session, mongo_db):
 @pytest_asyncio.fixture()
 async def consent_policy(session):
     policy = ConsentPolicy(
-        version='1.0',
+        version=f'1.0-{uuid.uuid4().hex[:8]}',
         content='Esta plataforma coleta seus dados pessoais conforme a LGPD.',
     )
     session.add(policy)
@@ -159,6 +160,17 @@ async def user(session):
     await session.commit()
     await session.refresh(user_obj)
 
+    user_obj.clean_password = pwd
+    return user_obj
+
+
+@pytest_asyncio.fixture()
+async def unverified_user(session):
+    pwd = 'testeste'
+    user_obj = UserFactory(password=get_password_hash(pwd), is_verified=False)
+    session.add(user_obj)
+    await session.commit()
+    await session.refresh(user_obj)
     user_obj.clean_password = pwd
     return user_obj
 

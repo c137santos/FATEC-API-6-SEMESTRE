@@ -42,6 +42,10 @@ class Token(BaseModel):
     token_type: str
 
 
+class ResendVerificationSchema(BaseModel):
+    email: EmailStr
+
+
 class CriticidadeResponse(BaseModel):
     ano: int
     distribuidora: str
@@ -138,4 +142,3 @@ class OAuthClientCreate(BaseModel):
 
 class OAuthClientCreatedResponse(BaseModel):
     client_id: str
-    client_secret: str

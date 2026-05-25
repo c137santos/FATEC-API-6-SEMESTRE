@@ -17,28 +17,25 @@ async def test_register_client_returns_credentials(client):
     assert response.status_code == HTTPStatus.CREATED
     data = response.json()
     assert 'client_id' in data
-    assert 'client_secret' in data
     assert data['client_id']
-    assert data['client_secret']
 
 
-async def test_client_secret_stored_as_hash(client, session):
+async def test_public_client_has_no_stored_secret(client, session):
     response = await client.post(
         '/oauth/clients',
         json={
-            'client_name': 'Secret App',
+            'client_name': 'Public App',
             'redirect_uris': ['http://localhost/cb'],
             'allowed_scopes': ['openid'],
         },
     )
     assert response.status_code == HTTPStatus.CREATED
-    plaintext = response.json()['client_secret']
     client_id = response.json()['client_id']
 
     db_client = await session.scalar(
         select(OAuth2Client).where(OAuth2Client.client_id == client_id)
     )
-    assert db_client.client_secret != plaintext
+    assert db_client.client_secret is None
 
 
 async def test_same_name_creates_distinct_clients(client):

@@ -10,17 +10,19 @@ from .routes import (
     criticidade,
     dist,
     etl,
+    oauth,
     pipeline,
     pt_and_pnt,
     tam,
     users,
+    wellknown,
 )
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Em produção, substitua "*" pelo seu domínio
+    allow_origins=["http://localhost:3000", "http://localhost:9000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -29,6 +31,8 @@ app.add_middleware(
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(consent_policy.router)
+app.include_router(oauth.router)
+app.include_router(wellknown.router)
 app.include_router(criticidade.router, prefix='/etl')
 app.include_router(etl.router, prefix='/etl')
 app.include_router(pipeline.router, prefix='/pipeline')

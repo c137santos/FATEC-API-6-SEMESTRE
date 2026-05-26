@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autorizar Acesso - Raichu</title>
+  <link rel="stylesheet" href="./style.css?v=5" />
+</head>
+<body>
+  <div v-scope class="app">
+    <main class="main" style="padding: 0;">
+      <div class="login-container">
+        <div class="login-header">
+          <img src="./assets/raichu-logo.svg" alt="Raichu Logo" class="login-logo" style="width: 60px; height: auto; margin-bottom: 8px;">
+          <h1 class="login-title">Autorizar Acesso</h1>
+          <p class="login-subtitle">O aplicativo <strong>{{ clientName }}</strong> está solicitando acesso à sua conta.</p>
+        </div>
+
+        <div style="margin-bottom: 16px; text-align: left;">
+          <p style="font-size: 13px; color: #aaa; margin-bottom: 8px;">Permissões solicitadas:</p>
+          <ul style="list-style: none; padding: 0;">
+            <li v-for="s in scopeList" style="font-size: 13px; color: #fff; padding: 4px 0;">
+              ✓ {{ s }}
+            </li>
+          </ul>
+        </div>
+
+        <form method="POST" action="http://localhost:8000/oauth/authorize">
+          <input type="hidden" name="client_id" :value="params.client_id">
+          <input type="hidden" name="redirect_uri" :value="params.redirect_uri">
+          <input type="hidden" name="response_type" :value="params.response_type || 'code'">
+          <input type="hidden" name="scope" :value="params.scope">
+          <input type="hidden" name="state" :value="params.state">
+          <input type="hidden" name="code_challenge" :value="params.code_challenge">
+          <input type="hidden" name="code_challenge_method" :value="params.code_challenge_method">
+
+          <div style="display: flex; gap: 12px;">
+            <button type="submit" name="action" value="allow" class="login-btn" style="flex: 1;">
+              Permitir
+            </button>
+            <button type="submit" name="action" value="deny" class="login-btn"
+              style="flex: 1; background: transparent; border: 1px solid #353535; color: #fff;">
+              Negar
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
+
+    const urlParams = new URLSearchParams(window.location.search)
+    const params = Object.fromEntries(urlParams.entries())
+
+    const SCOPE_LABELS = {
+      openid: 'Identificação básica (sub)',
+      email: 'Endereço de e-mail',
+      profile: 'Nome de usuário',
+    }
+
+    const scopeList = (params.scope || '')
+      .split(' ')
+      .filter(Boolean)
+      .map(s => SCOPE_LABELS[s] || s)
+
+    createApp({
+      params,
+      clientName: params.client_name || params.client_id || 'Aplicativo',
+      scopeList,
+    }).mount()
+  </script>
+</body>
+</html>

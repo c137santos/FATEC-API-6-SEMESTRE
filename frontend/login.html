@@ -77,6 +77,7 @@
           // URL do endpoint de login baseado na estrutura FastAPI original
           const response = await fetch('http://localhost:8000/auth/token', {
             method: 'POST',
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -90,11 +91,17 @@
             return;
           }
 
-          const data = await response.json();
-          // Guarda o Token para as chamadas da API logado
-          localStorage.setItem('access_token', data.access_token);
-
-          window.location.href = 'hello.html';
+          const next = new URLSearchParams(window.location.search).get('next');
+          let safeNext = 'hello.html';
+          if (next) {
+            try {
+              const resolved = new URL(next, window.location.origin);
+              if (resolved.origin === window.location.origin) {
+                safeNext = resolved.href;
+              }
+            } catch (_) {}
+          }
+          window.location.href = safeNext;
         } catch (error) {
           console.error(error);
           this.errorMessage = 'Erro de conexão. O servidor está rodando?';

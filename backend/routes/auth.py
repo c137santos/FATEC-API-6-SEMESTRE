@@ -9,21 +9,22 @@ from backend.security import (
     verify_password,
 )
 from backend.services.audit_log_service import write_log
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.models import User
-from ..core.schemas import Token
 
 router = APIRouter(prefix='/auth', tags=['auth'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
 T_OAuth2Form = Annotated[OAuth2PasswordRequestForm, Depends()]
 
 
-@router.post('/token', response_model=Token)
-async def login_for_access_token(session: T_Session, form_data: T_OAuth2Form):
+@router.post('/token')
+async def login_for_access_token(
+    response: Response, session: T_Session, form_data: T_OAuth2Form
+):
     user = await session.scalar(
         Select(User).where(User.email == form_data.username)
     )
@@ -59,11 +60,25 @@ async def login_for_access_token(session: T_Session, form_data: T_OAuth2Form):
         entity_name='User',
     )
 
-    return {'access_token': access_token, 'token_type': 'Bearer'}
+    response.set_cookie(
+        key='access_token',
+        value=access_token,
+        httponly=True,
+        samesite='lax',
+    )
+
+    return {'token_type': 'bearer'}
 
 
-@router.post('/refresh_token', response_model=Token)
+@router.post('/logout')
+async def logout(response: Response):
+    response.delete_cookie(key='access_token')
+    return {'message': 'Logged out'}
+
+
+@router.post('/refresh_token')
 async def refresh_access_token(
+    response: Response,
     user: User = Depends(get_current_user),
 ):
     new_access_token = create_access_token(data={'sub': user.email})
@@ -75,4 +90,11 @@ async def refresh_access_token(
         to_value={'method': 'refresh_token'},
     )
 
-    return {'access_token': new_access_token, 'token_type': 'bearer'}
+    response.set_cookie(
+        key='access_token',
+        value=new_access_token,
+        httponly=True,
+        samesite='lax',
+    )
+
+    return {'token_type': 'bearer'}

@@ -3,14 +3,20 @@ from collections.abc import AsyncGenerator
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo import MongoClient
 from pymongo.database import Database as MongoSyncDatabase
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import sessionmaker
 
 from backend.settings import Settings
 
 settings = Settings()
 
-# PostgreSQL
+# PostgreSQL async (FastAPI)
 engine = create_async_engine(settings.DATABASE_URL)
+
+# PostgreSQL sync (authlib integration)
+sync_engine = create_engine(settings.DATABASE_URL_SYNC)
+SyncSession = sessionmaker(sync_engine, expire_on_commit=False)
 
 
 async def get_session():

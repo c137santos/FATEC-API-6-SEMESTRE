@@ -72,14 +72,6 @@ async def _fetch_pages(
     return all_resources
 
 
-def _make_ssl_context() -> ssl.SSLContext:
-    # TLS 1.3 times out in Docker bridge networks on some routers/ISPs
-    # due to DPI or firewall rules; TLS 1.2 is stable and sufficient here.
-    ctx = ssl.create_default_context()
-    ctx.maximum_version = ssl.TLSVersion.TLSv1_2
-    return ctx
-
-
 async def fetch_paginated_resources(
     initial_url: str = INITIAL_URL,
     client: httpx.AsyncClient | None = None,
@@ -88,7 +80,7 @@ async def fetch_paginated_resources(
         if client is not None:
             return await _fetch_pages(initial_url, client)
 
-        async with httpx.AsyncClient(timeout=30.0, verify=_make_ssl_context()) as managed_client:
+        async with httpx.AsyncClient(timeout=30.0, verify=False)as managed_client:
             return await _fetch_pages(initial_url, managed_client)
     except (httpx.HTTPError, ValueError) as exc:
         raise RuntimeError('Falha ao consumir API ArcGIS Hub') from exc

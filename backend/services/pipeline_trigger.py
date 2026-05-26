@@ -202,7 +202,6 @@ async def trigger_pipeline_flow(
                 return await _trigger_replot_flow(
                     session, distribuidora_id, ano, user_email, existing_job_id, job_doc
                 )
-            # force_full=True with status=failed: fall through to full pipeline with new job_id
         else:
             raise ValueError(
                 'Pipeline já foi acionada para a distribuidora no ano informado'

@@ -21,22 +21,39 @@ def _norm(s: str) -> str:
     return s.lower().replace('_', ' ').replace('-', ' ')
 
 
+async def _build_sig_agente_map_from_mongo(
+    mongo_db: AsyncIOMotorDatabase,
+) -> dict[str, str]:
+    """Build sig_agente -> cnpj map from dec_fec_realizado collection."""
+    result: dict[str, str] = {}
+    pipeline = [
+        {'$match': {'sig_agente': {'$ne': None}, 'num_cnpj': {'$ne': None}}},
+        {'$group': {'_id': '$sig_agente', 'cnpj': {'$first': '$num_cnpj'}}},
+    ]
+    async for doc in mongo_db['dec_fec_realizado'].aggregate(pipeline):
+        sig = doc.get('_id')
+        cnpj = doc.get('cnpj')
+        if sig and cnpj:
+            result[sig.strip()] = cnpj
+    return result
+
+
 async def enrich_distribuidoras(
     session: AsyncSession,
-    aneel_map: dict[str, str],
-    mongo_db: AsyncIOMotorDatabase | None = None,
+    mongo_db: AsyncIOMotorDatabase,
 ) -> dict[str, int]:
-    """Exact-match then fuzzy-match pending distribuidoras against the ANEEL map.
+    """Match sig_agente from MongoDB dec_fec_realizado against dist_name in PostgreSQL.
 
-    Distribuidoras without a row in distribuidora_cnpj are processed:
+    For each distribuidora pending CNPJ enrichment:
     - Exact match (case-insensitive): inserts 'matched', cnpj_match=1.0
-    - Fuzzy match ≥ 95%: inserts 'matched', cnpj_match=<score>
+    - Fuzzy match >= 95%: inserts 'matched', cnpj_match=<score>
     - Fuzzy match < 95%: logs to cnpj_enrichment_log (MongoDB), inserts 'no_match'
     One row is written per unique dist_id regardless of how many years it appears.
 
-    Returns {'matched': N, 'no_match': M, 'pending': P} where pending is the
-    count of distinct distribuidoras still without a cnpj row after the run.
+    Returns {'matched': N, 'no_match': M, 'pending': P}.
     """
+    sig_agente_map = await _build_sig_agente_map_from_mongo(mongo_db)
+
     already_enriched = select(DistribuidoraCnpj.dist_id)
     stmt = (
         select(Distribuidora.id, func.min(Distribuidora.dist_name).label('dist_name'))
@@ -45,8 +62,8 @@ async def enrich_distribuidoras(
     )
     rows = (await session.execute(stmt)).all()
 
-    lower_map = {_norm(k): (k, v) for k, v in aneel_map.items()}
-    norm_aneel_keys = list(lower_map.keys())
+    lower_map = {_norm(k): (k, v) for k, v in sig_agente_map.items()}
+    norm_keys = list(lower_map.keys())
 
     matched = 0
     no_match = 0
@@ -62,7 +79,7 @@ async def enrich_distribuidoras(
                     dist_id=dist_id,
                     cnpj=cnpj,
                     cnpj_match=1.0,
-                    cnpj_source='aneel_api',
+                    cnpj_source='dec_fec',
                     cnpj_enrichment_status='matched',
                 )
                 .on_conflict_do_nothing()
@@ -71,8 +88,8 @@ async def enrich_distribuidoras(
             continue
 
         best = (
-            process.extractOne(key, norm_aneel_keys, scorer=fuzz.WRatio)
-            if norm_aneel_keys
+            process.extractOne(key, norm_keys, scorer=fuzz.WRatio)
+            if norm_keys
             else None
         )
 
@@ -85,7 +102,7 @@ async def enrich_distribuidoras(
                     dist_id=dist_id,
                     cnpj=cnpj,
                     cnpj_match=round(score / 100.0, 4),
-                    cnpj_source='aneel_api',
+                    cnpj_source='dec_fec',
                     cnpj_enrichment_status='matched',
                 )
                 .on_conflict_do_nothing()
@@ -94,17 +111,16 @@ async def enrich_distribuidoras(
         else:
             best_norm_key, score = (best[0], best[1]) if best is not None else (None, 0)
             orig_key, orig_cnpj = lower_map[best_norm_key] if best_norm_key else (None, None)
-            if mongo_db is not None:
-                await mongo_db['cnpj_enrichment_log'].insert_one(
-                    {
-                        'dist_id': dist_id,
-                        'dist_name': dist_name,
-                        'aneel_sig_agente': orig_key,
-                        'aneel_cnpj': orig_cnpj,
-                        'match_score': round(score / 100.0, 4),
-                        'attempted_at': datetime.utcnow(),
-                    }
-                )
+            await mongo_db['cnpj_enrichment_log'].insert_one(
+                {
+                    'dist_id': dist_id,
+                    'dist_name': dist_name,
+                    'mongo_sig_agente': orig_key,
+                    'mongo_cnpj': orig_cnpj,
+                    'match_score': round(score / 100.0, 4),
+                    'attempted_at': datetime.utcnow(),
+                }
+            )
             await session.execute(
                 insert(DistribuidoraCnpj)
                 .values(

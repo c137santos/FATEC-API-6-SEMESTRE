@@ -6,6 +6,7 @@ from backend.database import get_session
 from backend.security import (
     create_access_token,
     get_current_user,
+    get_optional_current_user,
     verify_password,
 )
 from backend.services.audit_log_service import write_log
@@ -71,7 +72,15 @@ async def login_for_access_token(
 
 
 @router.post('/logout')
-async def logout(response: Response):
+async def logout(
+    response: Response,
+    user: User | None = Depends(get_optional_current_user),
+):
+    await write_log(
+        operation=Operation.AUTH_LOGOUT,
+        user_id=str(user.id) if user else '0',
+        entity_name='User',
+    )
     response.delete_cookie(key='access_token')
     return {'message': 'Logged out'}
 

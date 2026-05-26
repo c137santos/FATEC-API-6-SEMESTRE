@@ -85,3 +85,19 @@ async def get_current_user(
         raise credentials_exception
 
     return user_db
+
+
+async def get_optional_current_user(
+    session: AsyncSession = Depends(get_session),
+    token: str | None = Cookie(None, alias='access_token'),
+) -> User | None:
+    """Retorna o usuário autenticado ou None sem levantar exceção.
+
+    Usado em endpoints que devem funcionar com ou sem sessão ativa (ex: logout).
+    """
+    if not token:
+        return None
+    try:
+        return await get_current_user(session=session, token=token)
+    except HTTPException:
+        return None

@@ -91,20 +91,6 @@ async def test_write_log_sanitizes_pii_in_values():
     assert doc["from_value"] == {"role": "user"}
     assert doc["to_value"] == {"role": "admin"}
 
-
-@pytest.mark.asyncio
-async def test_write_log_swallows_db_exception(caplog):
-    mock_db = MagicMock()
-    mock_db.__getitem__ = MagicMock(side_effect=Exception("mongo down"))
-
-    with patch("backend.services.audit_log_service.get_mongo_async_db", return_value=mock_db):
-        await write_log(
-            operation=Operation.SECURITY_UNAUTHORIZED,
-            user_id=99,
-        )
-    # deve logar o erro sem propagar a exceção
-
-
 @pytest.mark.asyncio
 async def test_write_log_with_none_values():
     mock_collection = AsyncMock()

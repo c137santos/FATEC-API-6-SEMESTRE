@@ -6,6 +6,7 @@ from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.core.audit_log import Operation
 from backend.core.models import Distribuidora, User
 from backend.core.schemas import (
     PipelineTriggerRequest,
@@ -14,6 +15,7 @@ from backend.core.schemas import (
 )
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_current_user
+from backend.services.audit_log_service import write_log
 from backend.services.pipeline_trigger import trigger_pipeline_flow
 
 router = APIRouter(tags=['pipeline'])
@@ -28,12 +30,23 @@ async def trigger_pipeline(
     current_user: User = Depends(get_current_user),
 ):
     try:
-        return await trigger_pipeline_flow(
+        result = await trigger_pipeline_flow(
             session=session,
             distribuidora_id=request.distribuidora_id,
             ano=request.ano,
             user_email=current_user.email,
         )
+        await write_log(
+            operation=Operation.REPORT_REQUESTED,
+            user_id=current_user.id,
+            entity_name='Pipeline',
+            to_value={
+                'distribuidora_id': request.distribuidora_id,
+                'ano': request.ano,
+                'job_id': result.get('job_id'),
+            },
+        )
+        return result
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     except LookupError as exc:

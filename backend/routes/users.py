@@ -4,9 +4,11 @@ from datetime import datetime, UTC, timedelta
 from http import HTTPStatus
 from typing import Annotated
 
+from backend.core.audit_log import Operation
 from backend.database import get_session
 from backend.email.envio_email import send_confirmation_email
 from backend.security import get_current_user, get_password_hash
+from backend.services.audit_log_service import write_log
 from backend.settings import Settings
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Select, desc
@@ -77,6 +79,22 @@ async def create_user(user: UserCreateSchema, session: T_Session):
     except Exception:
         logger.exception('[create_user] Falha ao enviar email de confirmação para %s', db_user.email)
 
+    await write_log(
+        operation=Operation.ACCOUNT_CREATED,
+        user_id=db_user.id,
+        entity_name='User',
+        to_value={
+            'policy_version': policy.version if policy else None,
+            'acceptance_method': 'click-wrap',
+        },
+    )
+    await write_log(
+        operation=Operation.CONSENT_ACCEPTED,
+        user_id=db_user.id,
+        entity_name='ConsentPolicy',
+        to_value={'policy_version': policy.version if policy else None},
+    )
+
     return db_user
 
 
@@ -133,12 +151,26 @@ async def update_user(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission'
         )
 
+    fields_updated = []
+    if user.username != current_user.username:
+        fields_updated.append('username')
+    if user.email != current_user.email:
+        fields_updated.append('email')
+    fields_updated.append('password')
+
     current_user.email = user.email
     current_user.username = user.username
     current_user.password = get_password_hash(user.password)
 
     await session.commit()
     await session.refresh(current_user)
+
+    await write_log(
+        operation=Operation.ACCOUNT_UPDATED,
+        user_id=current_user.id,
+        entity_name='User',
+        to_value={'fields_updated': fields_updated},
+    )
 
     return current_user
 
@@ -153,7 +185,14 @@ async def delete_user(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission'
         )
 
+    deleted_id = str(current_user.id)
     await session.delete(current_user)
     await session.commit()
+
+    await write_log(
+        operation=Operation.ACCOUNT_DELETION,
+        user_id=deleted_id,
+        entity_name='User',
+    )
 
     return {'message': 'User deleted'}

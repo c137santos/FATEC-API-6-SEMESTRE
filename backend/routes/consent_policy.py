@@ -16,7 +16,10 @@ T_Session = Annotated[AsyncSession, Depends(get_session)]
 @router.get('/latest', response_model=ConsentPolicyPublic)
 async def get_latest_consent_policy(session: T_Session):
     policy = await session.scalar(
-        Select(ConsentPolicy).order_by(desc(ConsentPolicy.id)).limit(1)
+        Select(ConsentPolicy)
+        .where(ConsentPolicy.is_mandatory.is_(True))
+        .order_by(desc(ConsentPolicy.id))
+        .limit(1)
     )
 
     if not policy:
@@ -32,7 +35,7 @@ async def get_latest_consent_policy(session: T_Session):
 async def get_latest_all_consent_policies(session: T_Session):
     mandatory = await session.scalar(
         Select(ConsentPolicy)
-        .where(ConsentPolicy.is_mandatory == True)  # noqa: E712
+        .where(ConsentPolicy.is_mandatory.is_(True))
         .order_by(desc(ConsentPolicy.id))
         .limit(1)
     )
@@ -45,7 +48,7 @@ async def get_latest_all_consent_policies(session: T_Session):
 
     optional = await session.scalar(
         Select(ConsentPolicy)
-        .where(ConsentPolicy.is_mandatory == False)  # noqa: E712
+        .where(ConsentPolicy.is_mandatory.is_(False))
         .order_by(desc(ConsentPolicy.id))
         .limit(1)
     )

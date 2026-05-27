@@ -13,7 +13,7 @@ class ConsentPolicy:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     version: Mapped[str] = mapped_column(Text, unique=True)
     content: Mapped[str] = mapped_column(Text)
-    is_mandatory: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_mandatory: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )
@@ -25,12 +25,12 @@ class UserConsent:
 
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey('users.id', ondelete='CASCADE')
+        ForeignKey('users.id', ondelete='CASCADE'), nullable=False
     )
     consent_policy_id: Mapped[int] = mapped_column(
-        ForeignKey('consent_policies.id')
+        ForeignKey('consent_policies.id'), nullable=False
     )
-    accepted: Mapped[bool] = mapped_column(Boolean)
+    accepted: Mapped[bool] = mapped_column(Boolean, nullable=False)
     consented_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )

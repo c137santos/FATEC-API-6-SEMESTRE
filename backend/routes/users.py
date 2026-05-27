@@ -14,7 +14,15 @@ from backend.database import get_session
 from backend.security import get_current_user, get_password_hash
 
 from ..core.models import ConsentPolicy, User, UserConsent
-from ..core.schemas import Message, ResendVerificationSchema, UserConsentPublic, UserCreateSchema, UserList, UserPublic, UserSchema
+from ..core.schemas import (
+    Message,
+    ResendVerificationSchema,
+    UserConsentPublic,
+    UserCreateSchema,
+    UserList,
+    UserPublic,
+    UserSchema,
+)
 
 logger = logging.getLogger(__name__)
 settings = Settings()
@@ -79,13 +87,13 @@ async def create_user(user: UserCreateSchema, session: T_Session):
 
     mandatory_policy = await session.scalar(
         Select(ConsentPolicy)
-        .where(ConsentPolicy.is_mandatory == True)  # noqa: E712
+        .where(ConsentPolicy.is_mandatory.is_(True))
         .order_by(desc(ConsentPolicy.id))
         .limit(1)
     )
     optional_policy = await session.scalar(
         Select(ConsentPolicy)
-        .where(ConsentPolicy.is_mandatory == False)  # noqa: E712
+        .where(ConsentPolicy.is_mandatory.is_(False))
         .order_by(desc(ConsentPolicy.id))
         .limit(1)
     )

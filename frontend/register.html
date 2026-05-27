@@ -162,9 +162,11 @@
             const data = await res.json();
             this.mandatoryPolicy = data.mandatory;
             this.optionalPolicy = data.optional || null;
+          } else {
+            this.errorMessage = 'Não foi possível carregar as políticas de privacidade. Tente recarregar a página.';
           }
         } catch {
-          // falha silenciosa
+          this.errorMessage = 'Erro de conexão ao carregar as políticas. Tente recarregar a página.';
         }
       },
 

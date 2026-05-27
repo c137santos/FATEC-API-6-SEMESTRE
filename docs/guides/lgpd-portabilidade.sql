@@ -17,12 +17,7 @@
 --     psql -U <user> -d <database> \
 --          -v user_email=subject@example.com \
 --          -f lgpd-portabilidade.sql
---Steps
-1. Enter updated data in the form:
-   - Name, Email, and/or Password  
-2. Provide your **Current Password** (required for validation)  
-3. (Optional) Enter a **New Password**  
-4. Click **"Save Changes"**
+--
 --   Option B — inside the interactive psql shell:
 --     \set user_email subject@example.com
 --     \i lgpd-portabilidade.sql

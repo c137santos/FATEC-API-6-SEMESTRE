@@ -148,7 +148,7 @@ async def create_user(user: UserCreateSchema, session: T_Session):
         user_id=db_user.id,
         entity_name='User',
         to_value={
-            'policy_version': policy.version if policy else None,
+            'policy_version': mandatory_policy.version if mandatory_policy else None,
             'acceptance_method': 'click-wrap',
         },
     )
@@ -156,7 +156,7 @@ async def create_user(user: UserCreateSchema, session: T_Session):
         operation=Operation.CONSENT_ACCEPTED,
         user_id=db_user.id,
         entity_name='ConsentPolicy',
-        to_value={'policy_version': policy.version if policy else None},
+        to_value={'policy_version': mandatory_policy.version if mandatory_policy else None},
     )
 
     return db_user

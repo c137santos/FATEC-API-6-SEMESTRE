@@ -3,6 +3,9 @@ from datetime import UTC, datetime, timedelta
 from http import HTTPStatus
 from unittest.mock import AsyncMock, patch
 
+from sqlalchemy import Select as Sel
+
+from backend.core.models import UserConsent as UserConsentModel
 from backend.core.schemas import UserPublic
 
 
@@ -37,7 +40,7 @@ async def test_registration_without_consent_returns_400(client):
     assert response.json() == {'detail': 'Consent is required'}
 
 
-async def test_create_user(client, consent_policy):
+async def test_create_user(client, session, consent_policy, optional_consent_policy):
     with patch('backend.routes.users.send_confirmation_email', new_callable=AsyncMock):
         response = await client.post(
             '/users/',
@@ -46,6 +49,7 @@ async def test_create_user(client, consent_policy):
                 'email': 'teste@teste.com',
                 'password': 'password',
                 'consented': True,
+                'optional_consented': True,
             },
         )
 
@@ -56,6 +60,44 @@ async def test_create_user(client, consent_policy):
     assert 'id' in data
     assert data['consented_at'] is not None
     assert data['consent_policy_id'] == consent_policy.id
+
+    user_consents = (
+        await session.scalars(
+            Sel(UserConsentModel).where(UserConsentModel.user_id == data['id'])
+        )
+    ).all()
+    assert len(user_consents) == 2
+    mandatory = next(c for c in user_consents if c.consent_policy_id == consent_policy.id)
+    optional = next(c for c in user_consents if c.consent_policy_id == optional_consent_policy.id)
+    assert mandatory.accepted is True
+    assert optional.accepted is True
+
+
+async def test_create_user_with_optional_consent_declined(client, session, consent_policy, optional_consent_policy):
+    with patch('backend.routes.users.send_confirmation_email', new_callable=AsyncMock):
+        response = await client.post(
+            '/users/',
+            json={
+                'username': 'optionaluser',
+                'email': 'optionaluser@teste.com',
+                'password': 'password',
+                'consented': True,
+                'optional_consented': False,
+            },
+        )
+
+    assert response.status_code == HTTPStatus.CREATED
+    data = response.json()
+    assert data['consented_at'] is not None
+
+    user_consents = (
+        await session.scalars(
+            Sel(UserConsentModel).where(UserConsentModel.user_id == data['id'])
+        )
+    ).all()
+    optional = next((c for c in user_consents if c.consent_policy_id == optional_consent_policy.id), None)
+    assert optional is not None
+    assert optional.accepted is False
 
 
 async def test_read_users(client, user):
@@ -186,7 +228,6 @@ async def test_registered_user_is_unverified(client, session, consent_policy):
     assert response.status_code == HTTPStatus.CREATED
     user_id = response.json()['id']
 
-    from sqlalchemy import Select as Sel
     from backend.core.models import User as UserModel
     user = await session.scalar(Sel(UserModel).where(UserModel.id == user_id))
     assert user.is_verified is False

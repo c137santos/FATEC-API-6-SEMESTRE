@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="./style.css?v=7" />
 </head>
 <body>
-  <div v-scope class="app">
+  <div v-scope @vue:mounted="fetchPolicies()" class="app">
     <div v-if="showSuccessModal" class="modal-backdrop">
       <div class="modal">
         <div class="modal-content">
@@ -82,11 +82,39 @@
             </div>
           </div>
 
-          <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: 4px;">
-            <input type="checkbox" id="consent" v-model="consented" style="margin-top: 3px; accent-color: #DD7230; cursor: pointer;">
-            <label for="consent" style="font-size: 13px; color: #555; cursor: pointer;">
-              Li e aceito a <a href="politica-de-privacidade.html" target="_blank" style="color: #DD7230;">Política de Privacidade</a>
-            </label>
+          <!-- Consentimento obrigatório -->
+          <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-top: 8px;">
+            <div style="display: flex; align-items: flex-start; gap: 8px;">
+              <input type="checkbox" id="consent" v-model="consented" style="margin-top: 3px; accent-color: #DD7230; cursor: pointer;">
+              <label for="consent" style="font-size: 13px; color: #555; cursor: pointer; flex: 1;">
+                Li e aceito a <strong>Política de Privacidade</strong> <span style="color: #DD7230;">*</span>
+              </label>
+              <button type="button" @click="showMandatoryPolicy = !showMandatoryPolicy"
+                style="background: none; border: none; color: #DD7230; font-size: 12px; cursor: pointer; white-space: nowrap; padding: 0;">
+                {{ showMandatoryPolicy ? 'Ocultar' : 'Ler política' }}
+              </button>
+            </div>
+            <div v-show="showMandatoryPolicy" style="margin-top: 10px;">
+              <div v-if="!mandatoryPolicy" style="font-size: 12px; color: #888; text-align: center; padding: 8px;">Carregando...</div>
+              <pre v-else style="white-space: pre-wrap; font-size: 12px; line-height: 1.7; color: #333; background: #f9f9f9; border-radius: 6px; padding: 12px; border: 1px solid #eee; max-height: 180px; overflow-y: auto; margin: 0;">{{ mandatoryPolicy.content }}</pre>
+            </div>
+          </div>
+
+          <!-- Consentimento opcional (marketing) -->
+          <div style="border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-top: 8px;" v-if="optionalPolicy">
+            <div style="display: flex; align-items: flex-start; gap: 8px;">
+              <input type="checkbox" id="optional_consent" v-model="optional_consented" style="margin-top: 3px; accent-color: #DD7230; cursor: pointer;">
+              <label for="optional_consent" style="font-size: 13px; color: #555; cursor: pointer; flex: 1;">
+                Aceito receber comunicações de marketing <span style="font-size: 11px; color: #888;">(opcional)</span>
+              </label>
+              <button type="button" @click="showOptionalPolicy = !showOptionalPolicy"
+                style="background: none; border: none; color: #DD7230; font-size: 12px; cursor: pointer; white-space: nowrap; padding: 0;">
+                {{ showOptionalPolicy ? 'Ocultar' : 'Ler termos' }}
+              </button>
+            </div>
+            <div v-show="showOptionalPolicy" style="margin-top: 10px;">
+              <pre style="white-space: pre-wrap; font-size: 12px; line-height: 1.7; color: #333; background: #f9f9f9; border-radius: 6px; padding: 12px; border: 1px solid #eee; max-height: 180px; overflow-y: auto; margin: 0;">{{ optionalPolicy.content }}</pre>
+            </div>
           </div>
 
           <div v-if="errorMessage" style="color: #ff4a4a; font-size: 12px; text-align: center; margin-bottom: -4px;">
@@ -116,11 +144,29 @@
       password: '',
       confirmPassword: '',
       consented: false,
+      optional_consented: false,
+      showMandatoryPolicy: false,
+      showOptionalPolicy: false,
+      mandatoryPolicy: null,
+      optionalPolicy: null,
       errorMessage: '',
       isLoading: false,
       showPassword: false,
       showConfirmPassword: false,
       showSuccessModal: false,
+
+      async fetchPolicies() {
+        try {
+          const res = await fetch('http://localhost:8000/consent-policy/latest-all');
+          if (res.ok) {
+            const data = await res.json();
+            this.mandatoryPolicy = data.mandatory;
+            this.optionalPolicy = data.optional || null;
+          }
+        } catch {
+          // falha silenciosa
+        }
+      },
 
       togglePassword() {
         this.showPassword = !this.showPassword;
@@ -135,7 +181,6 @@
       async cadastrar() {
         this.errorMessage = '';
 
-        // Validações no frontend
         if (this.email !== this.confirmEmail) {
           this.errorMessage = 'Os endereços de e-mail não conferem.';
           return;
@@ -165,13 +210,13 @@
               username: this.username,
               email: this.email,
               password: this.password,
-              consented: this.consented
+              consented: this.consented,
+              optional_consented: this.optional_consented
             })
           });
 
           if (!res.ok) {
             const errorData = await res.json();
-            // Pega o detalhe da resposta, ex: "Email already exists"
             this.errorMessage = errorData.detail || 'Erro ao realizar cadastro. Verifique os dados.';
             this.isLoading = false;
             return;

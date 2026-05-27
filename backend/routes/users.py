@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database import get_session
 from backend.security import get_current_user, get_password_hash
 
-from ..core.models import ConsentPolicy, User
+from ..core.models import ConsentPolicy, User, UserConsent
 from ..core.schemas import Message, ResendVerificationSchema, UserCreateSchema, UserList, UserPublic, UserSchema
 
 logger = logging.getLogger(__name__)
@@ -56,8 +56,17 @@ async def create_user(user: UserCreateSchema, session: T_Session):
                 detail='Email already exists',
             )
 
-    policy = await session.scalar(
-        Select(ConsentPolicy).order_by(desc(ConsentPolicy.id)).limit(1)
+    mandatory_policy = await session.scalar(
+        Select(ConsentPolicy)
+        .where(ConsentPolicy.is_mandatory == True)  # noqa: E712
+        .order_by(desc(ConsentPolicy.id))
+        .limit(1)
+    )
+    optional_policy = await session.scalar(
+        Select(ConsentPolicy)
+        .where(ConsentPolicy.is_mandatory == False)  # noqa: E712
+        .order_by(desc(ConsentPolicy.id))
+        .limit(1)
     )
 
     email_token = secrets.token_urlsafe(32)
@@ -68,13 +77,33 @@ async def create_user(user: UserCreateSchema, session: T_Session):
         email=user.email,
         password=get_password_hash(user.password),
         consented_at=datetime.now(UTC).replace(tzinfo=None),
-        consent_policy_id=policy.id if policy else None,
+        consent_policy_id=mandatory_policy.id if mandatory_policy else None,
         is_verified=False,
         email_token=email_token,
         email_token_expires_at=email_token_expires_at,
     )
 
     session.add(db_user)
+    await session.flush()
+
+    if mandatory_policy:
+        session.add(
+            UserConsent(
+                user_id=db_user.id,
+                consent_policy_id=mandatory_policy.id,
+                accepted=True,
+            )
+        )
+
+    if optional_policy:
+        session.add(
+            UserConsent(
+                user_id=db_user.id,
+                consent_policy_id=optional_policy.id,
+                accepted=user.optional_consented,
+            )
+        )
+
     await session.commit()
     await session.refresh(db_user)
 

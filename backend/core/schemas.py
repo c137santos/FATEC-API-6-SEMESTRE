@@ -20,6 +20,15 @@ class ConsentPoliciesPublic(BaseModel):
     optional: ConsentPolicyPublic | None = None
 
 
+class UserConsentPublic(BaseModel):
+    consent_policy_id: int
+    policy_version: str
+    policy_content: str
+    is_mandatory: bool
+    accepted: bool
+    consented_at: datetime
+
+
 class UserSchema(BaseModel):
     username: str
     email: EmailStr

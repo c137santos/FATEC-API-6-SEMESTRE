@@ -14,7 +14,7 @@ from backend.database import get_session
 from backend.security import get_current_user, get_password_hash
 
 from ..core.models import ConsentPolicy, User, UserConsent
-from ..core.schemas import Message, ResendVerificationSchema, UserCreateSchema, UserList, UserPublic, UserSchema
+from ..core.schemas import Message, ResendVerificationSchema, UserConsentPublic, UserCreateSchema, UserList, UserPublic, UserSchema
 
 logger = logging.getLogger(__name__)
 settings = Settings()
@@ -27,6 +27,27 @@ T_Current_user = Annotated[User, Depends(get_current_user)]
 @router.get('/me', response_model=UserPublic)
 async def get_current_user_profile(current_user: T_Current_user):
     return current_user
+
+
+@router.get('/me/consents', response_model=list[UserConsentPublic])
+async def get_my_consents(current_user: T_Current_user, session: T_Session):
+    rows = await session.execute(
+        Select(UserConsent, ConsentPolicy)
+        .join(ConsentPolicy, UserConsent.consent_policy_id == ConsentPolicy.id)
+        .where(UserConsent.user_id == current_user.id)
+        .order_by(ConsentPolicy.is_mandatory.desc(), UserConsent.consented_at)
+    )
+    return [
+        UserConsentPublic(
+            consent_policy_id=uc.consent_policy_id,
+            policy_version=cp.version,
+            policy_content=cp.content,
+            is_mandatory=cp.is_mandatory,
+            accepted=uc.accepted,
+            consented_at=uc.consented_at,
+        )
+        for uc, cp in rows.all()
+    ]
 
 
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)

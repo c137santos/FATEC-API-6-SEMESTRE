@@ -1,17 +1,19 @@
 from http import HTTPStatus
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Response
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy import Select
-from sqlalchemy.ext.asyncio import AsyncSession
-
+from backend.core.audit_log import Operation
 from backend.database import get_session
 from backend.security import (
     create_access_token,
     get_current_user,
+    get_optional_current_user,
     verify_password,
 )
+from backend.services.audit_log_service import write_log
+from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy import Select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.models import User
 
@@ -29,18 +31,35 @@ async def login_for_access_token(
     )
 
     if not user or not verify_password(form_data.password, user.password):
+        await write_log(
+            operation=Operation.AUTH_LOGIN_FAILURE,
+            user_id='0',
+            entity_name='User',
+        )
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
             detail='Incorrect email or password',
         )
 
     if not user.is_verified:
+        await write_log(
+            operation=Operation.AUTH_LOGIN_BLOCKED,
+            user_id=user.id,
+            entity_name='User',
+            to_value={'reason': 'email_not_verified'},
+        )
         raise HTTPException(
             status_code=HTTPStatus.FORBIDDEN,
             detail='Email não confirmado',
         )
 
     access_token = create_access_token(data={'sub': user.email})
+
+    await write_log(
+        operation=Operation.AUTH_LOGIN_SUCCESS,
+        user_id=user.id,
+        entity_name='User',
+    )
 
     response.set_cookie(
         key='access_token',
@@ -53,7 +72,15 @@ async def login_for_access_token(
 
 
 @router.post('/logout')
-async def logout(response: Response):
+async def logout(
+    response: Response,
+    user: User | None = Depends(get_optional_current_user),
+):
+    await write_log(
+        operation=Operation.AUTH_LOGOUT,
+        user_id=str(user.id) if user else '0',
+        entity_name='User',
+    )
     response.delete_cookie(key='access_token')
     return {'message': 'Logged out'}
 
@@ -64,6 +91,13 @@ async def refresh_access_token(
     user: User = Depends(get_current_user),
 ):
     new_access_token = create_access_token(data={'sub': user.email})
+
+    await write_log(
+        operation=Operation.AUTH_LOGIN_SUCCESS,
+        user_id=user.id,
+        entity_name='User',
+        to_value={'method': 'refresh_token'},
+    )
 
     response.set_cookie(
         key='access_token',

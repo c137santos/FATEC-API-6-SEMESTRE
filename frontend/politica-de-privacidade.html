@@ -62,7 +62,7 @@
   </style>
 </head>
 <body>
-  <div v-scope @vue:mounted="fetchPolicy()" class="policy-container">
+  <div v-scope @vue:mounted="fetchPolicies()" class="policy-container">
     <a href="register.html" class="back-link">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       Voltar ao cadastro
@@ -71,32 +71,54 @@
     <div class="policy-header">
       <img src="./assets/raichu-logo.svg" alt="Raichu Logo" style="width: 40px; height: auto;">
       <div>
-        <div class="policy-title">Política de Privacidade</div>
-        <div v-if="policy" class="policy-version">Versão {{ policy.version }}</div>
+        <div class="policy-title">Termos e Políticas</div>
       </div>
     </div>
 
-    <div v-if="loading" class="policy-loading">Carregando política de privacidade...</div>
+    <div v-if="loading" class="policy-loading">Carregando políticas...</div>
     <div v-else-if="error" class="policy-error">{{ error }}</div>
-    <pre v-else-if="policy" class="policy-content">{{ policy.content }}</pre>
+    <div v-else>
+      <!-- Política obrigatória -->
+      <div v-if="mandatory" style="margin-bottom: 32px;">
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+          <h2 style="font-size: 18px; font-weight: bold; color: #DD7230; margin: 0;">Política de Privacidade</h2>
+          <span class="policy-version">Versão {{ mandatory.version }}</span>
+          <span style="font-size: 11px; background: #DD7230; color: #fff; border-radius: 4px; padding: 2px 7px;">Obrigatória</span>
+        </div>
+        <pre class="policy-content">{{ mandatory.content }}</pre>
+      </div>
+
+      <!-- Política opcional -->
+      <div v-if="optional">
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+          <h2 style="font-size: 18px; font-weight: bold; color: #555; margin: 0;">Comunicações de Marketing</h2>
+          <span class="policy-version">Versão {{ optional.version }}</span>
+          <span style="font-size: 11px; background: #888; color: #fff; border-radius: 4px; padding: 2px 7px;">Opcional</span>
+        </div>
+        <pre class="policy-content">{{ optional.content }}</pre>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { createApp } from 'https://unpkg.com/petite-vue?module'
 
     const app = {
-      policy: null,
+      mandatory: null,
+      optional: null,
       loading: true,
       error: null,
 
-      async fetchPolicy() {
+      async fetchPolicies() {
         try {
-          const res = await fetch('http://localhost:8000/consent-policy/latest')
+          const res = await fetch('http://localhost:8000/consent-policy/latest-all')
           if (!res.ok) {
-            this.error = 'Não foi possível carregar a política de privacidade.'
+            this.error = 'Não foi possível carregar as políticas.'
             return
           }
-          this.policy = await res.json()
+          const data = await res.json()
+          this.mandatory = data.mandatory
+          this.optional = data.optional || null
         } catch {
           this.error = 'Erro de conexão. Tente novamente mais tarde.'
         } finally {

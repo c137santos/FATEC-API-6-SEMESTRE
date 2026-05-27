@@ -136,6 +136,20 @@ async def consent_policy(session):
     policy = ConsentPolicy(
         version=f'1.0-{uuid.uuid4().hex[:8]}',
         content='Esta plataforma coleta seus dados pessoais conforme a LGPD.',
+        is_mandatory=True,
+    )
+    session.add(policy)
+    await session.flush()
+    await session.refresh(policy)
+    return policy
+
+
+@pytest_asyncio.fixture()
+async def optional_consent_policy(session):
+    policy = ConsentPolicy(
+        version=f'1.0-marketing-{uuid.uuid4().hex[:8]}',
+        content='Autorizo o envio de comunicações de marketing por e-mail.',
+        is_mandatory=False,
     )
     session.add(policy)
     await session.flush()

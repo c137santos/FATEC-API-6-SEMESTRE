@@ -31,7 +31,7 @@ Run the containment script **before any other action**. It revokes all OAuth2 to
 
 ```bash
 # Inside the container
-docker-compose exec api python docs/security/scripts/contain.py
+docker-compose exec api python backend/scripts/contain.py
 ```
 
 Then stop the API to prevent new access while the investigation takes place:
@@ -67,7 +67,7 @@ WHERE created_at BETWEEN '<incident_start_date>' AND '<incident_end_date>';
 SELECT COUNT(*) AS active_tokens
 FROM oauth2_tokens
 WHERE issued_at >= EXTRACT(EPOCH FROM '<incident_start_date>'::timestamp)
-  AND revoked = false;
+  AND access_token_revoked_at = 0;
 ```
 
 **Fill in the impact record:**
@@ -199,5 +199,5 @@ docker-compose exec mongo mongosh $MONGO_DB --eval \
 
 - [Law nº 13.709/2018 — LGPD, Art. 48](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)
 - [ANPD Portal — Incident communication](https://www.gov.br/anpd)
-- Containment script: `docs/security/scripts/contain.py`
+- Containment script: `backend/scripts/contain.py`
 - Audit log service: `backend/services/audit_log_service.py`

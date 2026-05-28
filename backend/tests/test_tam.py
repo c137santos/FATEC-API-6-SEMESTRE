@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch, AsyncMock, MagicMock
 from backend.services.render_tam import render_grafico_barras_tam
 
@@ -23,7 +24,7 @@ def mock_external_deps(mongo_db):
 
         
 @pytest.mark.asyncio
-async def test_render_grafico_barras_tam_sucesso(monkeypatch):
+async def test_render_grafico_barras_tam_sucesso(monkeypatch, tmp_path):
     mock_data = [{
         'NOME': 'LINHA_A',
         'CTMT': '123',
@@ -42,15 +43,16 @@ async def test_render_grafico_barras_tam_sucesso(monkeypatch):
         'backend.services.render_tam.get_mongo_collection',
         lambda name: mock_coll_obj
     )
+    monkeypatch.setattr(
+        'backend.services.render_tam._output_dir',
+        lambda: tmp_path,
+    )
 
     job_id = "job-123"
     caminho_gerado = await render_grafico_barras_tam(job_id)
 
     assert caminho_gerado.exists()
     assert f"grafico_tam_{job_id}" in caminho_gerado.name
-    
-    if caminho_gerado.exists():
-        caminho_gerado.unlink()
 
 @pytest.mark.asyncio
 async def test_render_grafico_tam_vazio(monkeypatch):

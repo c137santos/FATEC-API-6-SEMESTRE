@@ -213,15 +213,13 @@ async def trigger_pipeline_flow(
         ano,
     )
     cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
-    if cnpj is None:
-        raise LookupError('Distribuidora sem CNPJ associado — processamento não iniciado')
     sig_agente = dist_name.replace('_', ' ')
 
     download_url = ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id)
     job_id = str(uuid.uuid4())
     zip_path = str(DOWNLOAD_DIR / f'{job_id}.zip')
 
-    result = chain(
+    tasks = [
         task_download_gdb.si(job_id, download_url, distribuidora_id),
         task_descompact_gdb.si(job_id, zip_path, distribuidora_id),
         task_score_criticidade.si(job_id, sig_agente, ano, cnpj),
@@ -241,7 +239,9 @@ async def trigger_pipeline_flow(
         task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
-    ).delay()
+    ]
+
+    result = chain(*[t for t in tasks if t is not None]).delay()
 
     await save_distribuidora_job_tracking(
         session=session,

@@ -76,8 +76,11 @@ def _classify_distribuidoras(
             continue
 
         job_doc = db.jobs.find_one({'job_id': dist['job_id']}, {'_id': 0})
-        report_status = job_doc.get('report_status') if job_doc else None
+        if job_doc is None:
+            to_skip.append({'distribuidora': dist})
+            continue
 
+        report_status = job_doc.get('report_status')
         if report_status == 'completed':
             to_skip.append({'distribuidora': dist})
         else:

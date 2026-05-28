@@ -9,6 +9,7 @@ from pwdlib import PasswordHash
 from sqlalchemy import Select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.core.audit_log import Operation
 from backend.database import get_session
 from backend.settings import Settings
 
@@ -44,6 +45,8 @@ async def get_current_user(
     session: AsyncSession = Depends(get_session),
     token: str | None = Cookie(None, alias='access_token'),
 ):
+    from backend.services.audit_log_service import write_log  # evita circular import
+
     credentials_exception = HTTPException(
         status_code=HTTPStatus.UNAUTHORIZED,
         detail='Could not validate credentials',
@@ -56,14 +59,45 @@ async def get_current_user(
         )
         username = payload.get('sub')
         if not username:
+            await write_log(
+                operation=Operation.SECURITY_TOKEN_INVALID,
+                user_id='0',
+                entity_name='JWT',
+            )
             raise credentials_exception
 
     except (PyJWTError, ExpiredSignatureError):
+        await write_log(
+            operation=Operation.SECURITY_TOKEN_INVALID,
+            user_id='0',
+            entity_name='JWT',
+        )
         raise credentials_exception
 
     user_db = await session.scalar(Select(User).where(User.email == username))
 
     if user_db is None:
+        await write_log(
+            operation=Operation.SECURITY_UNAUTHORIZED,
+            user_id='0',
+            entity_name='User',
+        )
         raise credentials_exception
 
     return user_db
+
+
+async def get_optional_current_user(
+    session: AsyncSession = Depends(get_session),
+    token: str | None = Cookie(None, alias='access_token'),
+) -> User | None:
+    """Retorna o usuário autenticado ou None sem levantar exceção.
+
+    Usado em endpoints que devem funcionar com ou sem sessão ativa (ex: logout).
+    """
+    if not token:
+        return None
+    try:
+        return await get_current_user(session=session, token=token)
+    except HTTPException:
+        return None

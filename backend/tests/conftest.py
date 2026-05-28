@@ -34,14 +34,6 @@ class UserFactory(factory.Factory):
     is_verified = True
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_celery_test_config():
-    """Configura o Celery para modo síncrono durante os testes."""
-    celery_app.conf.update(
-        task_always_eager=True,     
-        task_eager_propagates=True, 
-    )
-
 @pytest_asyncio.fixture
 async def triggered_job(session, setup_distribuidora):
     """Aciona o trigger_pipeline_flow isolando a rede e retorna o job_id gerado."""
@@ -144,6 +136,20 @@ async def consent_policy(session):
     policy = ConsentPolicy(
         version=f'1.0-{uuid.uuid4().hex[:8]}',
         content='Esta plataforma coleta seus dados pessoais conforme a LGPD.',
+        is_mandatory=True,
+    )
+    session.add(policy)
+    await session.flush()
+    await session.refresh(policy)
+    return policy
+
+
+@pytest_asyncio.fixture()
+async def optional_consent_policy(session):
+    policy = ConsentPolicy(
+        version=f'1.0-marketing-{uuid.uuid4().hex[:8]}',
+        content='Autorizo o envio de comunicações de marketing por e-mail.',
+        is_mandatory=False,
     )
     session.add(policy)
     await session.flush()
@@ -226,7 +232,12 @@ def mock_mongo_db():
     mock_db.jobs.insert_one = AsyncMock()
     mock_db.jobs.find_one = AsyncMock(return_value=None)
     mock_db.jobs.update_one = AsyncMock()
-    with patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db:
+    mock_collection = AsyncMock()
+    mock_db.__getitem__ = MagicMock(return_value=mock_collection)
+    with (
+        patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db,
+        patch("backend.services.audit_log_service.get_mongo_async_db", return_value=mock_db),
+    ):
         mocked_get_db.return_value = mock_db
         yield mocked_get_db
 
@@ -337,3 +348,13 @@ def setup_celery_test_config():
 def mock_time_sleep():
     with patch('time.sleep'):
         yield
+
+
+@pytest.fixture(autouse=True)
+def close_matplotlib_figures():
+    yield
+    try:
+        import matplotlib.pyplot as plt
+        plt.close('all')
+    except Exception:
+        pass

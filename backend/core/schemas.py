@@ -13,7 +13,22 @@ class ConsentPolicyPublic(BaseModel):
     id: int
     version: str
     content: str
+    is_mandatory: bool
     model_config = ConfigDict(from_attributes=True)
+
+
+class ConsentPoliciesPublic(BaseModel):
+    mandatory: ConsentPolicyPublic
+    optional: ConsentPolicyPublic | None = None
+
+
+class UserConsentPublic(BaseModel):
+    consent_policy_id: int
+    policy_version: str
+    policy_content: str
+    is_mandatory: bool
+    accepted: bool
+    consented_at: datetime
 
 
 class UserSchema(BaseModel):
@@ -24,6 +39,7 @@ class UserSchema(BaseModel):
 
 class UserCreateSchema(UserSchema):
     consented: bool
+    optional_consented: bool = False
 
 
 class UserPublic(BaseModel):

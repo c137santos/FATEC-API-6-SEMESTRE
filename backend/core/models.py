@@ -13,7 +13,25 @@ class ConsentPolicy:
     id: Mapped[int] = mapped_column(init=False, primary_key=True)
     version: Mapped[str] = mapped_column(Text, unique=True)
     content: Mapped[str] = mapped_column(Text)
+    is_mandatory: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(
+        init=False, server_default=func.now()
+    )
+
+
+@table_registry.mapped_as_dataclass
+class UserConsent:
+    __tablename__ = 'user_consents'
+
+    id: Mapped[int] = mapped_column(init=False, primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey('users.id', ondelete='CASCADE'), nullable=False
+    )
+    consent_policy_id: Mapped[int] = mapped_column(
+        ForeignKey('consent_policies.id'), nullable=False
+    )
+    accepted: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    consented_at: Mapped[datetime] = mapped_column(
         init=False, server_default=func.now()
     )
 

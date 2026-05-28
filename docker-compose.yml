@@ -93,6 +93,18 @@ services:
       - mongo_data:/data/db
     mem_limit: 2G
 
+  backup:
+    build:
+      context: ./backup
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+      - mongodb
+    restart: unless-stopped
+
   frontend:
     image: nginx:alpine
     ports:

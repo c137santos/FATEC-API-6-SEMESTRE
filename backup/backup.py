@@ -233,17 +233,21 @@ def restore_postgres(s3, bucket: str, dump_key: str) -> None:
         s3.download_file(bucket, dump_key, tmp_path)
         log.info("downloaded %s", dump_key)
 
+        proc = subprocess.Popen(
+            ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+        )
         with gzip.open(tmp_path, "rb") as gz:
-            proc = subprocess.Popen(
-                ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db],
-                stdin=gz,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env,
-            )
-            _, stderr = proc.communicate()
-            if proc.returncode != 0:
-                raise RuntimeError(f"psql restore failed: {stderr.decode()}")
+            while chunk := gz.read(64 * 1024):
+                proc.stdin.write(chunk)
+        proc.stdin.close()
+        stderr = proc.stderr.read()
+        proc.wait()
+        if proc.returncode != 0:
+            raise RuntimeError(f"psql restore failed: {stderr.decode()}")
 
         log.info("postgres restore done")
         _apply_deleted_users_cleanup(s3, bucket, env, pg_host, pg_user, pg_db)

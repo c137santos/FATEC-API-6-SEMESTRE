@@ -91,6 +91,7 @@ async def trigger_batch(
 @router.get('/batch/status', response_model=BatchStatusResponse)
 async def get_batch_status(
     mongo_db: AsyncIOMotorDatabase = Depends(get_mongo_async_database),
+    current_user: User = Depends(get_current_user),
 ):
     last_batch = await get_last_batch(mongo_db)
     if last_batch is None:

@@ -1083,4 +1083,19 @@ def task_finalizar(
             )
         except Exception:
             pass
+        try:
+            job_info = _get_collection('jobs').find_one(
+                {'job_id': job_id}, {'batch_id': 1, 'distribuidora_id': 1}
+            )
+            if job_info and job_info.get('batch_id'):
+                from backend.services.pipeline_batch import _update_batch_dist_status
+                _update_batch_dist_status(
+                    get_mongo_sync_db(),
+                    job_info['batch_id'],
+                    job_info.get('distribuidora_id', distribuidora_id),
+                    'failed',
+                    str(exc),
+                )
+        except Exception:
+            pass
         raise

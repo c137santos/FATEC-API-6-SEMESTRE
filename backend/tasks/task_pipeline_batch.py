@@ -7,7 +7,7 @@ from backend.tasks.celery_app import celery_app
 logger = logging.getLogger(__name__)
 
 
-@celery_app.task(bind=True, name='pipeline.run_batch')
+@celery_app.task(bind=True, name='etl.run_batch')
 def task_run_batch(self, batch_id: str, params_dict: dict, user_email: str, distribuidoras: list[dict]) -> dict:
     logger.info('[task_run_batch] Iniciando lote. batch_id=%s', batch_id)
     params = BatchTriggerRequest(**params_dict)

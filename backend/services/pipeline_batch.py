@@ -11,12 +11,17 @@ from sqlalchemy.orm import Session
 
 from backend.core.models import Distribuidora, DistribuidoraCnpj
 from backend.core.schemas import BatchTriggerRequest
-from backend.database import engine, get_mongo_sync_db, sync_engine
+from backend.database import celery_sync_engine, get_mongo_sync_db
 from backend.services.pipeline_trigger import ARCGIS_DOWNLOAD_URL, DOWNLOAD_DIR
 from backend.tasks.task_descompact_gdb import task_descompact_gdb
 from backend.tasks.task_download_gdb import task_download_gdb
 
 logger = logging.getLogger(__name__)
+
+
+# Exceção customizada para caso conhecido
+class DistribuidoraSemCNPJError(Exception):
+    pass
 
 # ---------------------------------------------------------------------------
 # Async helpers — used by FastAPI routes
@@ -90,7 +95,7 @@ def _classify_distribuidoras(
 
 
 def _pg_ops_for_batch(dist_id: str, ano: int, job_id: str) -> str | None:
-    with Session(sync_engine) as session:
+    with Session(celery_sync_engine) as session:
         cnpj = session.execute(
             select(DistribuidoraCnpj.cnpj).where(
                 DistribuidoraCnpj.dist_id == dist_id,
@@ -154,15 +159,10 @@ def _trigger_pipeline_sync(
     job_id = str(uuid.uuid4())
     zip_path = str(DOWNLOAD_DIR / f'{job_id}.zip')
 
+
     cnpj = _pg_ops_for_batch(dist_id, ano, job_id)
-
     if cnpj is None:
-        raise LookupError(f'Distribuidora {dist_id} sem CNPJ associado')
-
-    chain(
-        task_download_gdb.si(job_id, ARCGIS_DOWNLOAD_URL.format(item_id=dist_id), dist_id),
-        task_descompact_gdb.si(job_id, zip_path, dist_id),
-    ).delay()
+        raise DistribuidoraSemCNPJError(f'Distribuidora {dist_id} sem CNPJ associado')
 
     if old_job_id:
         for col_name in (
@@ -185,6 +185,12 @@ def _trigger_pipeline_sync(
         'created_at': datetime.now(timezone.utc),
     })
 
+    from backend.tasks.task_on_calculation_failure import task_on_calculation_failure
+    chain(
+        task_download_gdb.si(job_id, ARCGIS_DOWNLOAD_URL.format(item_id=dist_id), dist_id),
+        task_descompact_gdb.si(job_id, zip_path, dist_id),
+    ).on_error(task_on_calculation_failure.si(job_id, batch_id, dist_id)).delay()
+
     logger.info('[batch] Pipeline disparada. job_id=%s dist_id=%s', job_id, dist_id)
     return job_id
 
@@ -193,7 +199,7 @@ def _run_batch(
     batch_id: str,
     params: BatchTriggerRequest,
     user_email: str,
-    distribuidoras: list[Distribuidora],
+    distribuidoras: list[dict],
 ) -> None:
     db = get_mongo_sync_db()
     logger.info('[batch] Iniciando execução. batch_id=%s', batch_id)
@@ -243,6 +249,9 @@ def _run_batch(
         try:
             _trigger_pipeline_sync(dist, user_email, db, batch_id)
             logger.info('[batch] Pipeline disparada. dist_id=%s batch_id=%s', dist_id, batch_id)
+        except DistribuidoraSemCNPJError as exc:
+            logger.warning('[batch] Distribuidora ignorada por falta de CNPJ. dist_id=%s motivo=%s', dist_id, exc)
+            _update_batch_dist_status(db, batch_id, dist_id, 'skipped', str(exc))
         except Exception as exc:
             logger.exception('[batch] Falha ao disparar dist_id=%s', dist_id)
             _update_batch_dist_status(db, batch_id, dist_id, 'failed', str(exc))

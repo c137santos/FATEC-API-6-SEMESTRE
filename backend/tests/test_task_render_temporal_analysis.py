@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from backend.tasks.task_render_prophet_forecast import (
+from backend.tasks.task_render_temporal_analysis import (
     task_render_prophet_forecast,
 )
 

@@ -1,7 +1,10 @@
+import csv
 import logging
+import os
 import secrets
 from datetime import datetime, UTC, timedelta
 from http import HTTPStatus
+from pathlib import Path
 from typing import Annotated
 
 from backend.core.audit_log import Operation
@@ -253,6 +256,8 @@ async def delete_user(
     await session.delete(current_user)
     await session.commit()
 
+    _append_deleted_user_id(deleted_id)
+
     await write_log(
         operation=Operation.ACCOUNT_DELETION,
         user_id=deleted_id,
@@ -260,3 +265,12 @@ async def delete_user(
     )
 
     return {'message': 'User deleted'}
+
+
+_DELETED_IDS_PATH = Path(os.getenv('DELETED_IDS_PATH', '/app/data/deleted_users.csv'))
+
+
+def _append_deleted_user_id(user_id: str) -> None:
+    _DELETED_IDS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with _DELETED_IDS_PATH.open('a', newline='') as f:
+        csv.writer(f).writerow([user_id])

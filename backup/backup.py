@@ -1,3 +1,4 @@
+import csv
 import gzip
 import json
 import logging
@@ -8,6 +9,7 @@ import sys
 import tempfile
 from datetime import datetime, timezone
 from email.mime.text import MIMEText
+from pathlib import Path
 
 import boto3
 from bson import ObjectId
@@ -117,6 +119,46 @@ def backup_mongo_audit_logs(s3, bucket: str, timestamp: str) -> None:
     log.info("mongo audit_logs backup done → %s", s3_key)
 
 
+def restore_mongo_audit_logs(s3, bucket: str, dump_key: str) -> None:
+    """Restaura audit logs do MongoDB a partir de um dump JSON.gz no S3."""
+    mongo_db = os.environ.get("MONGO_DB", "fatec_api")
+
+    with tempfile.NamedTemporaryFile(suffix=".json.gz", delete=False) as tmp:
+        tmp_path = tmp.name
+
+    try:
+        s3.download_file(bucket, dump_key, tmp_path)
+        log.info("downloaded %s", dump_key)
+
+        with gzip.open(tmp_path, "rt", encoding="utf-8") as gz:
+            docs = json.load(gz)
+
+        if not docs:
+            log.info("dump is empty, nothing to restore")
+            return
+
+        for doc in docs:
+            if "_id" in doc and isinstance(doc["_id"], str):
+                from bson import ObjectId
+                doc["_id"] = ObjectId(doc["_id"])
+
+        with MongoClient(os.environ["MONGO_URI"]) as client:
+            collection = client[mongo_db][AUDIT_LOG_COLLECTION]
+            inserted = 0
+            skipped = 0
+            for doc in docs:
+                try:
+                    collection.insert_one(doc)
+                    inserted += 1
+                except Exception:
+                    skipped += 1
+
+        log.info("mongo restore done: %d inserted, %d skipped (duplicates)", inserted, skipped)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
 def _write_failure_marker(s3, bucket: str, timestamp: str, errors: list[str]) -> None:
     key = f"failures/{timestamp}.txt"
     try:
@@ -154,6 +196,85 @@ def send_failure_email(errors: list[str]) -> None:
         log.exception("could not send failure email — failure marker in S3 is the fallback")
 
 
+DELETED_IDS_PATH = Path(os.getenv("DELETED_IDS_PATH", "/data/deleted_users.csv"))
+DELETED_IDS_S3_KEY = "deleted-users/deleted_users.csv"
+
+
+def backup_deleted_user_ids(s3, bucket: str) -> None:
+    if not DELETED_IDS_PATH.exists():
+        log.info("no deleted_users.csv found, skipping")
+        return
+
+    s3.upload_file(str(DELETED_IDS_PATH), bucket, DELETED_IDS_S3_KEY)
+    log.info("deleted_users.csv uploaded → s3://%s/%s", bucket, DELETED_IDS_S3_KEY)
+
+
+def restore_postgres(s3, bucket: str, dump_key: str) -> None:
+    """Restaura um dump do S3 e remove usuários deletados em seguida."""
+    env = os.environ.copy()
+    env["PGPASSWORD"] = os.environ["POSTGRES_PASSWORD"]
+    pg_host = os.environ.get("POSTGRES_HOST", "db")
+    pg_user = os.environ["POSTGRES_USER"]
+    pg_db = os.environ["POSTGRES_DB"]
+
+    with tempfile.NamedTemporaryFile(suffix=".dump.gz", delete=False) as tmp:
+        tmp_path = tmp.name
+
+    try:
+        s3.download_file(bucket, dump_key, tmp_path)
+        log.info("downloaded %s", dump_key)
+
+        with gzip.open(tmp_path, "rb") as gz:
+            proc = subprocess.run(
+                ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db],
+                input=gz.read(),
+                env=env,
+                capture_output=True,
+            )
+            if proc.returncode != 0:
+                raise RuntimeError(f"psql restore failed: {proc.stderr.decode()}")
+
+        log.info("postgres restore done")
+        _apply_deleted_users_cleanup(s3, bucket, env, pg_host, pg_user, pg_db)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
+def _apply_deleted_users_cleanup(s3, bucket, env, pg_host, pg_user, pg_db) -> None:
+    with tempfile.NamedTemporaryFile(suffix=".csv", delete=False, mode="w") as tmp:
+        tmp_path = tmp.name
+
+    try:
+        s3.download_file(bucket, DELETED_IDS_S3_KEY, tmp_path)
+    except Exception:
+        log.info("no deleted_users.csv in S3, skipping cleanup")
+        os.unlink(tmp_path)
+        return
+
+    try:
+        with open(tmp_path, newline="") as f:
+            ids = [row[0] for row in csv.reader(f) if row]
+
+        if not ids:
+            log.info("deleted_users.csv is empty, nothing to clean")
+            return
+
+        ids_literal = ",".join(ids)
+        sql = f"DELETE FROM users WHERE id IN ({ids_literal});"
+        proc = subprocess.run(
+            ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db, "-c", sql],
+            env=env,
+            capture_output=True,
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(f"cleanup failed: {proc.stderr.decode()}")
+
+        log.info("removed %d deleted user(s) after restore", len(ids))
+    finally:
+        os.unlink(tmp_path)
+
+
 def main() -> None:
     missing = [k for k in REQUIRED_ENV_VARS if k not in os.environ]
     if missing:
@@ -177,6 +298,12 @@ def main() -> None:
         log.exception("mongo audit_logs backup failed")
         errors.append(f"MongoDB audit_logs: {exc}")
 
+    try:
+        backup_deleted_user_ids(s3, bucket)
+    except Exception as exc:
+        log.exception("deleted_users.csv backup failed")
+        errors.append(f"Deleted IDs: {exc}")
+
     if errors:
         _write_failure_marker(s3, bucket, timestamp, errors)
         send_failure_email(errors)
@@ -184,4 +311,23 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--restore", metavar="S3_KEY", help="Restore a Postgres dump from S3 (e.g. postgres/2026-05-28T03-00-00.dump.gz)")
+    parser.add_argument("--restore-mongo", metavar="S3_KEY", help="Restore a MongoDB audit log dump from S3 (e.g. mongo-audit-logs/2026-05-28T03-00-00.json.gz)")
+    args = parser.parse_args()
+
+    missing = [k for k in REQUIRED_ENV_VARS if k not in os.environ]
+    if missing:
+        sys.exit(f"missing required env vars: {', '.join(missing)}")
+
+    bucket = os.environ["S3_BUCKET_NAME"]
+    s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "sa-east-1"))
+
+    if args.restore:
+        restore_postgres(s3, bucket, args.restore)
+    elif args.restore_mongo:
+        restore_mongo_audit_logs(s3, bucket, args.restore_mongo)
+    else:
+        main()

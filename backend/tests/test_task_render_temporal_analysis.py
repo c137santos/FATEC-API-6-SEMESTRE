@@ -23,7 +23,7 @@ def _mock_db():
 
 def _patch_db(db):
     return patch(
-        'backend.tasks.task_render_prophet_forecast.get_mongo_sync_db',
+        'backend.tasks.task_render_temporal_analysis.get_mongo_sync_db',
         return_value=db,
     )
 
@@ -35,7 +35,7 @@ def _patch_service(render_paths=None, skipped=None):
         'skipped': skipped if skipped is not None else [],
     }
     return patch(
-        'backend.tasks.task_render_prophet_forecast.render_prophet_forecast',
+        'backend.tasks.task_render_temporal_analysis.task_render_prophet_forecast',
         return_value=result,
     )
 
@@ -93,7 +93,7 @@ def test_propaga_excecao_do_service():
     db = _mock_db()
     with (
         patch(
-            'backend.tasks.task_render_prophet_forecast.render_prophet_forecast',
+            'backend.tasks.task_render_temporal_analysis.task_render_prophet_forecast',
             side_effect=RuntimeError('Arquivo pickle não encontrado'),
         ),
         _patch_db(db),

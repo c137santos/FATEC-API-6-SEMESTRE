@@ -6,6 +6,23 @@ from backend.tasks.task_render_temporal_analysis import (
     task_render_prophet_forecast,
 )
 
+@pytest.fixture(scope='session')
+def postgres_container():
+    yield None
+
+@pytest.fixture(scope='session', autouse=True)
+def configure_sync_session(postgres_container):
+    yield
+
+
+@pytest.fixture(scope='session', autouse=True)
+def setup_celery_test_config():
+    yield
+
+@pytest.fixture(autouse=True)
+def mock_time_sleep():
+    yield
+
 JOB_ID = 'abc-123'
 SIG_AGENTE = 'COSERN'
 
@@ -35,10 +52,9 @@ def _patch_service(render_paths=None, skipped=None):
         'skipped': skipped if skipped is not None else [],
     }
     return patch(
-        'backend.tasks.task_render_temporal_analysis.task_render_prophet_forecast',
+        'backend.tasks.task_render_temporal_analysis.render_prophet_forecast',
         return_value=result,
     )
-
 
 def test_retorna_done_quando_graficos_gerados():
     db = _mock_db()
@@ -93,7 +109,7 @@ def test_propaga_excecao_do_service():
     db = _mock_db()
     with (
         patch(
-            'backend.tasks.task_render_temporal_analysis.task_render_prophet_forecast',
+            'backend.tasks.task_render_temporal_analysis.render_prophet_forecast',
             side_effect=RuntimeError('Arquivo pickle não encontrado'),
         ),
         _patch_db(db),

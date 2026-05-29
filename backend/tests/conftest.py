@@ -358,8 +358,4 @@ def close_matplotlib_figures():
         plt.close('all')
     except Exception:
         pass
-
-@pytest.fixture(scope='session')
-def postgres_container():
-    yield None
  

@@ -13,6 +13,14 @@ DOWNLOAD_DIR = Path(os.getenv('DOWNLOAD_DIR', '/data/downloads/'))
 TMP_DIR = Path(os.getenv('TMP_DIR', '/data/tmp/'))
 
 
+def _iter_render_paths(render_paths: dict):
+    for value in render_paths.values():
+        if isinstance(value, dict):
+            yield from value.values()
+        else:
+            yield value
+
+
 @celery_app.task(bind=True, name='etl.cleanup_files')
 def task_cleanup_files(self, job_id: str) -> dict:
     logger.info('[task_cleanup_files] Inicio. job_id=%s', job_id)
@@ -43,7 +51,7 @@ def task_cleanup_files(self, job_id: str) -> dict:
     try:
         db = get_mongo_sync_db()
         job_doc = db['jobs'].find_one({'job_id': job_id}, {'render_paths': 1, '_id': 0})
-        for img_path_str in ((job_doc or {}).get('render_paths') or {}).values():
+        for img_path_str in _iter_render_paths((job_doc or {}).get('render_paths') or {}):
             if not img_path_str:
                 continue
             img_path = Path(img_path_str)

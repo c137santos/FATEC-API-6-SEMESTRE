@@ -271,6 +271,9 @@ _DELETED_IDS_PATH = Path(os.getenv('DELETED_IDS_PATH', '/app/data/deleted_users.
 
 
 def _append_deleted_user_id(user_id: str) -> None:
-    _DELETED_IDS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with _DELETED_IDS_PATH.open('a', newline='') as f:
-        csv.writer(f).writerow([user_id])
+    try:
+        _DELETED_IDS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with _DELETED_IDS_PATH.open('a', newline='') as f:
+            csv.writer(f).writerow([user_id])
+    except OSError:
+        logger.warning('could not write deleted user id %s to %s', user_id, _DELETED_IDS_PATH)

@@ -5,7 +5,7 @@ Execution (inside the container):
     docker-compose exec api python backend/scripts/contain.py
 
 What it does:
-    1. Revokes all active OAuth2 tokens (sets revoked_at to current epoch)
+    1. Revokes all active OAuth2 tokens (sets access_token_revoked_at and refresh_token_revoked_at to current epoch)
     2. Removes all pending authorization codes
     3. Clears email_token from all users
     4. Records the containment action in the MongoDB audit log

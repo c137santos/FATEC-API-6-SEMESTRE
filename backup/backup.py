@@ -7,6 +7,7 @@ import smtplib
 import subprocess
 import sys
 import tempfile
+import threading
 from datetime import datetime, timezone
 from email.mime.text import MIMEText
 from pathlib import Path
@@ -14,6 +15,7 @@ from pathlib import Path
 import boto3
 from bson import ObjectId
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -78,11 +80,18 @@ def backup_postgres(s3, bucket: str, timestamp: str) -> None:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
+            stderr_chunks: list[bytes] = []
+            stderr_thread = threading.Thread(
+                target=lambda: stderr_chunks.extend(iter(lambda: proc.stderr.read(4096), b""))
+            )
+            stderr_thread.start()
             for chunk in iter(lambda: proc.stdout.read(64 * 1024), b""):
                 gz.write(chunk)
-            _, stderr = proc.communicate()
+            proc.stdout.close()
+            stderr_thread.join()
+            proc.wait()
             if proc.returncode != 0:
-                raise RuntimeError(f"pg_dump failed: {stderr.decode()}")
+                raise RuntimeError(f"pg_dump failed: {b''.join(stderr_chunks).decode()}")
 
         _upload_and_verify(s3, tmp_path, s3_key, bucket)
     finally:
@@ -150,7 +159,7 @@ def restore_mongo_audit_logs(s3, bucket: str, dump_key: str) -> None:
                 try:
                     collection.insert_one(doc)
                     inserted += 1
-                except Exception:
+                except DuplicateKeyError:
                     skipped += 1
 
         log.info("mongo restore done: %d inserted, %d skipped (duplicates)", inserted, skipped)
@@ -205,7 +214,7 @@ def backup_deleted_user_ids(s3, bucket: str) -> None:
         log.info("no deleted_users.csv found, skipping")
         return
 
-    s3.upload_file(str(DELETED_IDS_PATH), bucket, DELETED_IDS_S3_KEY)
+    _upload_and_verify(s3, str(DELETED_IDS_PATH), DELETED_IDS_S3_KEY, bucket)
     log.info("deleted_users.csv uploaded → s3://%s/%s", bucket, DELETED_IDS_S3_KEY)
 
 
@@ -225,14 +234,16 @@ def restore_postgres(s3, bucket: str, dump_key: str) -> None:
         log.info("downloaded %s", dump_key)
 
         with gzip.open(tmp_path, "rb") as gz:
-            proc = subprocess.run(
+            proc = subprocess.Popen(
                 ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db],
-                input=gz.read(),
+                stdin=gz,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 env=env,
-                capture_output=True,
             )
+            _, stderr = proc.communicate()
             if proc.returncode != 0:
-                raise RuntimeError(f"psql restore failed: {proc.stderr.decode()}")
+                raise RuntimeError(f"psql restore failed: {stderr.decode()}")
 
         log.info("postgres restore done")
         _apply_deleted_users_cleanup(s3, bucket, env, pg_host, pg_user, pg_db)
@@ -254,13 +265,20 @@ def _apply_deleted_users_cleanup(s3, bucket, env, pg_host, pg_user, pg_db) -> No
 
     try:
         with open(tmp_path, newline="") as f:
-            ids = [row[0] for row in csv.reader(f) if row]
+            raw = [row[0] for row in csv.reader(f) if row]
+
+        ids = []
+        for raw_id in raw:
+            try:
+                ids.append(int(raw_id))
+            except ValueError:
+                log.warning("skipping non-integer id in deleted_users.csv: %r", raw_id)
 
         if not ids:
             log.info("deleted_users.csv is empty, nothing to clean")
             return
 
-        ids_literal = ",".join(ids)
+        ids_literal = ",".join(str(i) for i in ids)
         sql = f"DELETE FROM users WHERE id IN ({ids_literal});"
         proc = subprocess.run(
             ["psql", "-h", pg_host, "-U", pg_user, "-d", pg_db, "-c", sql],

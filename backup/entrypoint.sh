@@ -1,9 +1,14 @@
 #!/bin/sh
 set -e
 
-# run once on startup so you can test with: docker-compose run backup
+# pass-through: docker compose run backup python /backup.py --restore ...
+if [ "$#" -gt 0 ]; then
+    exec "$@"
+fi
+
+# run once on startup: docker compose run -e RUN_NOW=1 backup
 if [ "${RUN_NOW:-0}" = "1" ]; then
-    exec python /backup.py
+    exec /usr/local/bin/python /backup.py
 fi
 
 # daily at 03:00 UTC

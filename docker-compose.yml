@@ -19,6 +19,7 @@ services:
       - ./output:/app/output
       - /var/run/docker.sock:/var/run/docker.sock
       - setup_data:/app/setup_flag
+      - deleted_ids_data:/app/data
     cpus: '2.0'
     mem_limit: 4G
 
@@ -93,6 +94,20 @@ services:
       - mongo_data:/data/db
     mem_limit: 2G
 
+  backup:
+    build:
+      context: ./backup
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+      - mongodb
+    restart: unless-stopped
+    volumes:
+      - deleted_ids_data:/data
+
   frontend:
     image: nginx:alpine
     ports:
@@ -105,6 +120,7 @@ volumes:
   postgres_data:
   gdb_data:
   setup_data:
+  deleted_ids_data:
 
 networks:
   default:

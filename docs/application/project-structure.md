@@ -68,6 +68,7 @@ backend/
 │   ├── calculate_pt_and_pnt.py      # Loss calculation
 │   ├── calculate_sam.py             # SAM calculation
 │   ├── calculo_tam.py               # TAM calculation
+│   ├── cnpj_enrichment.py           # CNPJ data enrichment
 │   ├── criticidade.py               # Criticality logic
 │   ├── distribuidoras.py            # Distribution management
 │   ├── etl_download.py              # ANEEL data download
@@ -75,7 +76,8 @@ backend/
 │   ├── render_criticidade.py        # Visualization generation
 │   ├── render_tam.py                # TAM chart generation
 │   ├── report.py                    # Report generation
-│   └── render_pt_and_pnt.py         # PT/PNT chart generation
+│   ├── render_pt_and_pnt.py         # PT/PNT chart generation
+│   └── temporal_analysis.py         # Temporal indicator analysis
 │
 ├── tasks/                   # Celery tasks (async processing)
 │   ├── __init__.py
@@ -86,6 +88,7 @@ backend/
 │   ├── task_criticidade.py          # Task: Criticality
 │   ├── task_descompact_gdb.py       # Task: GDB decompression
 │   ├── task_download_gdb.py         # Task: GDB download
+│   ├── task_enrich_cnpj.py          # Task: CNPJ enrichment
 │   ├── task_load_dec_fec.py         # Task: Load indicators
 │   ├── task_pipeline_error.py       # Task: Error handling
 │   ├── task_process_layers.py       # Task: Process geographic layers
@@ -93,6 +96,7 @@ backend/
 │   ├── task_render_pt_and_pnt.py    # Task: Render PT/PNT
 │   ├── task_render_sam.py           # Task: Render SAM
 │   ├── task_render_tam.py           # Task: Render TAM
+│   ├── task_render_temporal_analysis.py # Task: Render temporal analysis
 │   ├── task_report.py               # Task: Generate report
 │   └── task_tam.py                  # Task: TAM
 │

@@ -30,6 +30,8 @@ _CHARTS = [
     ('tabela_score', 'Score de Criticidade'),
     ('mapa_calor', 'Mapa de Calor de Criticidade'),
     ('grafico_sam', 'Gráfico de todos os Conjuntos (SAM)'),
+    ('prophet_DEC', 'Análise Temporal — Previsão DEC (Prophet)'),
+    ('prophet_FEC', 'Análise Temporal — Previsão FEC (Prophet)'),
 ]
 
 _PAGE_W = A4[0]
@@ -70,15 +72,10 @@ def _safe_filename(name: str) -> str:
 
 
 def _image_flowables(img_path: Path, max_width: float, first_chunk_height: float) -> list:
-    """
-    Returns one or more Image flowables slicing img_path vertically so each
-    chunk fits within the available page height. The first chunk is shorter
-    because the section title already consumed some space.
-    """
+
     pil_img = PilImage.open(str(img_path)).convert('RGB')
 
-    # Scan from the bottom one row at a time to avoid a full NumPy copy of the
-    # image (charts can be thousands of pixels tall).
+
     w, h = pil_img.size
     last_content_row = h - 1
     for y in range(h - 1, -1, -1):
@@ -90,18 +87,16 @@ def _image_flowables(img_path: Path, max_width: float, first_chunk_height: float
 
     iw, ih = pil_img.size
 
-    # Scale so image fills page width
     scale = max_width / iw
     scaled_h = ih * scale
 
-    # If it fits in the first chunk, return as-is
     if scaled_h <= first_chunk_height:
         buf = io.BytesIO()
         pil_img.save(buf, format='PNG')
         buf.seek(0)
         return [Image(buf, width=iw * scale, height=scaled_h)]
     flowables = []
-    chunk_heights = [first_chunk_height, _USABLE_H]  # first page shorter, rest full
+    chunk_heights = [first_chunk_height, _USABLE_H]
     y_px = 0
     chunk_idx = 0
 
@@ -159,6 +154,13 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
         leftMargin=_MARGIN_LR, rightMargin=_MARGIN_LR,
     )
 
+    prophet_paths = render_paths.get('prophet') or {}
+    render_paths = {
+        **render_paths,
+        'prophet_DEC': prophet_paths.get('DEC'),
+        'prophet_FEC': prophet_paths.get('FEC'),
+    }
+
     story = [
         Paragraph(f'Relatório de Análise — {dist_name}', title_style),
         Paragraph(f'Ano: {ano} | Job ID: {job_id}', meta_style),
@@ -169,7 +171,6 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
         HRFlowable(width='100%', thickness=1, color=colors.lightgrey, spaceAfter=20),
     ]
 
-    # Height available after section title + spacer on the first page of each chart
     title_overhead = 50
     first_chunk_h = _USABLE_H - title_overhead
 

@@ -21,8 +21,10 @@ def dirs(tmp_path, monkeypatch):
     return downloads, tmp_dir
 
 
-def _mock_db():
+def _mock_db(render_paths=None):
+    job_doc = {'render_paths': render_paths} if render_paths is not None else {}
     db = MagicMock()
+    db['jobs'].find_one.return_value = job_doc
     db['jobs'].update_one.return_value = MagicMock()
     return db
 
@@ -95,8 +97,6 @@ def test_erro_ao_remover_zip_registrado_em_errors(dirs, monkeypatch):
     zip_file = downloads / f'{JOB_ID}.zip'
     zip_file.write_bytes(b'PK fake zip')
 
-    original_unlink = Path.unlink
-
     def _raise(self, *args, **kwargs):
         raise OSError('permission denied')
 
@@ -119,3 +119,99 @@ def test_mongo_falha_nao_propaga_excecao(dirs):
 
     assert not zip_file.exists()
     assert result['removed']
+
+
+def test_remove_imagens_flat_do_render_paths(dirs, tmp_path):
+    img = tmp_path / 'grafico_tam.png'
+    img.write_bytes(b'\x89PNG')
+
+    render_paths = {'grafico_tam': str(img)}
+    db = _mock_db(render_paths=render_paths)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        result = task_cleanup_files.run(JOB_ID)
+
+    assert not img.exists()
+    assert str(img) in result['removed']
+
+
+def test_remove_imagens_prophet_aninhadas(dirs, tmp_path):
+    dec = tmp_path / 'prophet_ENEL_DEC.png'
+    fec = tmp_path / 'prophet_ENEL_FEC.png'
+    dec.write_bytes(b'\x89PNG')
+    fec.write_bytes(b'\x89PNG')
+
+    render_paths = {
+        'prophet': {
+            'DEC': str(dec),
+            'FEC': str(fec),
+        }
+    }
+    db = _mock_db(render_paths=render_paths)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        result = task_cleanup_files.run(JOB_ID)
+
+    assert not dec.exists()
+    assert not fec.exists()
+    assert str(dec) in result['removed']
+    assert str(fec) in result['removed']
+    assert result['errors'] == []
+
+
+def test_remove_render_paths_mistos(dirs, tmp_path):
+    img_tam = tmp_path / 'grafico_tam.png'
+    img_sam = tmp_path / 'grafico_sam.png'
+    dec = tmp_path / 'prophet_ENEL_DEC.png'
+    fec = tmp_path / 'prophet_ENEL_FEC.png'
+    for f in [img_tam, img_sam, dec, fec]:
+        f.write_bytes(b'\x89PNG')
+
+    render_paths = {
+        'grafico_tam': str(img_tam),
+        'grafico_sam': str(img_sam),
+        'prophet': {
+            'DEC': str(dec),
+            'FEC': str(fec),
+        },
+    }
+    db = _mock_db(render_paths=render_paths)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        result = task_cleanup_files.run(JOB_ID)
+
+    for f in [img_tam, img_sam, dec, fec]:
+        assert not f.exists()
+        assert str(f) in result['removed']
+    assert result['errors'] == []
+
+
+def test_render_paths_prophet_none_nao_quebra(dirs):
+    render_paths = {'prophet': None}
+    db = _mock_db(render_paths=render_paths)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        result = task_cleanup_files.run(JOB_ID)
+
+    assert result['errors'] == []
+
+
+def test_atualiza_mongo_com_status_failed_quando_imagem_nao_remove(dirs, tmp_path, monkeypatch):
+    img = tmp_path / 'grafico_tam.png'
+    img.write_bytes(b'\x89PNG')
+
+    render_paths = {'grafico_tam': str(img)}
+    db = _mock_db(render_paths=render_paths)
+
+    def _raise(self, *args, **kwargs):
+        raise OSError('permission denied')
+
+    monkeypatch.setattr(Path, 'unlink', _raise)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        result = task_cleanup_files.run(JOB_ID)
+
+    assert str(img) in result['errors']
+    update_call = db['jobs'].update_one.call_args
+    _, update_doc = update_call.args
+    assert update_doc['$set']['cleanup_status'] == 'failed'

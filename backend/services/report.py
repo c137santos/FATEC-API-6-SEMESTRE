@@ -165,7 +165,7 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle(
         'ReportTitle', parent=styles['Title'], fontSize=18, spaceAfter=10,
-        alignment=0  
+        alignment=0
     )
     meta_style = ParagraphStyle(
         'ReportMeta', parent=styles['Normal'], fontSize=9,
@@ -177,9 +177,12 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
     )
     
     logo_text_style = ParagraphStyle(
-        'LogoText', parent=styles['Normal'], fontSize=8,
-        fontName='Helvetica-Bold', textColor=colors.HexColor('#222222'),
-        alignment=1  
+        'LogoText',
+         parent=styles['Normal'],
+         fontSize=8,
+         fontName='Helvetica-Bold',
+         textColor=colors.HexColor('#222222'),
+         alignment=1,
     )
 
     dist_name = job_meta.get('dist_name', 'Distribuidora')
@@ -221,8 +224,8 @@ def gerar_pdf_report(job_id: str, render_paths: dict, job_meta: dict) -> str:
     
     header_table = Table([[col_esquerda, col_direita]], colWidths=[largura_esq, largura_dir])
     header_table.setStyle(TableStyle([
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),   
-        ('ALIGN', (1, 0), (1, 0), 'CENTER'),      
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('ALIGN', (1, 0), (1, 0), 'CENTER'),    
         ('LEFTPADDING', (0, 0), (-1, -1), 0),
         ('RIGHTPADDING', (0, 0), (-1, -1), 0),
         ('TOPPADDING', (0, 0), (-1, -1), 0),

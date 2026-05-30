@@ -27,11 +27,11 @@ _CATEGORIA_COR = {
 
 
 def _cor_score(score: float) -> str:
-    if score > 50:          
-        return '#ffcdd2'  
-    if score > 0: 
+    if score > 50:
+        return '#ffcdd2'
+    if score > 0:
         return '#fff9c4'    
-    return '#c8e6c9'        
+    return '#c8e6c9'    
 
 
 def _output_dir() -> Path:

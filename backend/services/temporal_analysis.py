@@ -16,7 +16,7 @@ _HIERARCHICAL_AGG_PATH = _MODEL_DIR / 'df_hierarchical_agg.pkl'
 
 _INDICATORS = ['DEC', 'FEC']
 _COR_HISTORICO = '#4CAF50'
-_COR_PREVISAO = "red"
+_COR_PREVISAO = 'red'
 _ALPHA_IC = 0.2
 
 

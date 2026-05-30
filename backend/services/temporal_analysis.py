@@ -15,8 +15,8 @@ _PROPHET_FORECASTS_PATH = _MODEL_DIR / 'prophet_forecasts.pkl'
 _HIERARCHICAL_AGG_PATH = _MODEL_DIR / 'df_hierarchical_agg.pkl'
 
 _INDICATORS = ['DEC', 'FEC']
-_COR_HISTORICO = 'blue'
-_COR_PREVISAO = 'red'
+_COR_HISTORICO = '#4CAF50'
+_COR_PREVISAO = "red"
 _ALPHA_IC = 0.2
 
 
@@ -63,13 +63,6 @@ def _render_forecast_chart(
         label='Intervalo de Confiança',
     )
 
-    ax.set_title(
-        f'Previsão para {sig_agente} — Indicador: {indicador}',
-        fontsize=11,
-        color='#222222',
-        pad=14,
-        loc='left',
-    )
     ax.set_xlabel('Data', fontsize=9, color='#555555')
     ax.set_ylabel('VlrIndiceEnviado', fontsize=9, color='#555555')
     ax.legend(fontsize=9, framealpha=0.9, edgecolor='#cccccc')

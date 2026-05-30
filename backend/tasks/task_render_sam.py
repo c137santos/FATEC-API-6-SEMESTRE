@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 WAIT_COUNTDOWN = 30
 MAX_WAIT_RETRIES = 60
 
-_COR_SAM = '#1565C0'
+_COR_SAM = '#4CAF50'
 
 
 def _output_dir() -> Path:
@@ -99,14 +99,6 @@ def task_render_sam(
     ax.spines['bottom'].set_color('#cccccc')
     ax.grid(axis='x', color='#eeeeee', linewidth=0.8, zorder=0)
 
-    ax.set_title(
-        f'Gráfico de todos os Conjuntos (SAM)\n'
-        f'{sig_agente} |  Ano: {ano}',
-        fontsize=11,
-        color='#222222',
-        pad=14,
-        loc='left',
-    )
 
     plt.tight_layout()
 

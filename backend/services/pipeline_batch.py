@@ -14,6 +14,7 @@ from backend.core.schemas import BatchTriggerRequest
 from backend.database import celery_sync_engine, get_mongo_sync_db
 from backend.services.pipeline_trigger import ARCGIS_DOWNLOAD_URL, DOWNLOAD_DIR
 from backend.tasks.task_descompact_gdb import task_descompact_gdb
+from backend.tasks.task_dispatch_next_in_batch import task_dispatch_next_in_batch
 from backend.tasks.task_download_gdb import task_download_gdb
 
 logger = logging.getLogger(__name__)
@@ -124,9 +125,9 @@ def _update_batch_dist_status(
     dist_id: str,
     status: str,
     error: str | None = None,
-) -> None:
+) -> bool:
     result = db.batch_runs.find_one_and_update(
-        {'batch_id': batch_id},
+        {'batch_id': batch_id, 'distribuidoras': {'$elemMatch': {'id': dist_id, 'status': 'pending'}}},
         {
             '$set': {
                 f'distribuidoras.$[elem].status': status,
@@ -137,11 +138,14 @@ def _update_batch_dist_status(
         array_filters=[{'elem.id': dist_id}],
         return_document=True,
     )
-    if result and result['counts'].get('pending', 0) <= 0:
+    if result is None:
+        return False
+    if result['counts'].get('pending', 0) <= 0:
         db.batch_runs.update_one(
             {'batch_id': batch_id},
             {'$set': {'is_running': False, 'finished_at': datetime.now(timezone.utc)}},
         )
+    return True
 
 
 def _trigger_pipeline_sync(
@@ -212,11 +216,13 @@ def _run_batch(
 
     dist_list = [
         {'id': item['distribuidora']['id'], 'nome': item['distribuidora']['dist_name'],
-         'ano': item['distribuidora']['date_gdb'], 'status': 'pending', 'error': None}
+         'ano': item['distribuidora']['date_gdb'], 'job_id': item['distribuidora'].get('job_id'),
+         'status': 'pending', 'error': None}
         for item in to_process
     ] + [
         {'id': item['distribuidora']['id'], 'nome': item['distribuidora']['dist_name'],
-         'ano': item['distribuidora']['date_gdb'], 'status': 'skipped', 'error': None}
+         'ano': item['distribuidora']['date_gdb'], 'job_id': item['distribuidora'].get('job_id'),
+         'status': 'skipped', 'error': None}
         for item in to_skip
     ]
 
@@ -243,15 +249,16 @@ def _run_batch(
         logger.info('[batch] Nenhuma distribuidora para processar. batch_id=%s', batch_id)
         return
 
-    for item in to_process:
-        dist = item['distribuidora']
-        dist_id = dist['id']
-        try:
-            _trigger_pipeline_sync(dist, user_email, db, batch_id)
-            logger.info('[batch] Pipeline disparada. dist_id=%s batch_id=%s', dist_id, batch_id)
-        except DistribuidoraSemCNPJError as exc:
-            logger.warning('[batch] Distribuidora ignorada por falta de CNPJ. dist_id=%s motivo=%s', dist_id, exc)
-            _update_batch_dist_status(db, batch_id, dist_id, 'skipped', str(exc))
-        except Exception as exc:
-            logger.exception('[batch] Falha ao disparar dist_id=%s', dist_id)
-            _update_batch_dist_status(db, batch_id, dist_id, 'failed', str(exc))
+    first = to_process[0]['distribuidora']
+    first_id = first['id']
+    try:
+        _trigger_pipeline_sync(first, user_email, db, batch_id)
+        logger.info('[batch] Primeira distribuidora disparada. dist_id=%s batch_id=%s', first_id, batch_id)
+    except DistribuidoraSemCNPJError as exc:
+        logger.warning('[batch] Primeira distribuidora sem CNPJ. dist_id=%s motivo=%s', first_id, exc)
+        if _update_batch_dist_status(db, batch_id, first_id, 'skipped', str(exc)):
+            task_dispatch_next_in_batch.apply_async(args=[batch_id])
+    except Exception as exc:
+        logger.exception('[batch] Falha ao disparar primeira dist_id=%s', first_id)
+        if _update_batch_dist_status(db, batch_id, first_id, 'failed', str(exc)):
+            task_dispatch_next_in_batch.apply_async(args=[batch_id])

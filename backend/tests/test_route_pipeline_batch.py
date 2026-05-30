@@ -9,7 +9,7 @@ from backend.app import app
 from backend.core.models import User
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_current_user
-from backend.services.pipeline_batch import _classify_distribuidoras
+from backend.services.pipeline_batch import _classify_distribuidoras, _update_batch_dist_status
 
 _FAKE_USER = User(username='testuser', email='test@test.com', password='hashed')
 
@@ -232,3 +232,50 @@ async def test_get_batch_status_retorna_200_lote_em_execucao(client, mock_batch_
     assert body['is_running'] is True
     assert body['finished_at'] is None
     assert body['distribuidoras'][0]['status'] == 'processing'
+
+
+# --- _update_batch_dist_status ---
+
+def _sync_db(find_result):
+    db = MagicMock()
+    db.batch_runs.find_one_and_update.return_value = find_result
+    return db
+
+
+def test_update_status_retorna_true_quando_elemento_pendente():
+    db = _sync_db({'counts': {'pending': 1, 'completed': 1}})
+    result = _update_batch_dist_status(db, 'batch-1', 'dist-1', 'completed')
+    assert result is True
+
+
+def test_update_status_retorna_false_quando_elemento_nao_pendente():
+    """MongoDB não encontrou doc com $elemMatch status='pending' → no-op."""
+    db = _sync_db(None)
+    result = _update_batch_dist_status(db, 'batch-1', 'dist-1', 'failed')
+    assert result is False
+    db.batch_runs.update_one.assert_not_called()
+
+
+def test_update_status_filter_exige_status_pending():
+    """O filtro deve conter $elemMatch com status='pending' para evitar
+    duplo-decremento de counts.pending em itens já finalizados."""
+    db = _sync_db({'counts': {'pending': 0}})
+    _update_batch_dist_status(db, 'batch-1', 'dist-1', 'completed')
+    call_filter = db.batch_runs.find_one_and_update.call_args[0][0]
+    assert 'distribuidoras' in call_filter
+    assert call_filter['distribuidoras']['$elemMatch']['status'] == 'pending'
+
+
+def test_update_status_fecha_batch_quando_pending_zero():
+    db = _sync_db({'counts': {'pending': 0, 'completed': 3}})
+    _update_batch_dist_status(db, 'batch-1', 'dist-1', 'completed')
+    db.batch_runs.update_one.assert_called_once()
+    update_doc = db.batch_runs.update_one.call_args[0][1]
+    assert update_doc['$set']['is_running'] is False
+    assert 'finished_at' in update_doc['$set']
+
+
+def test_update_status_nao_fecha_batch_quando_ha_pendentes():
+    db = _sync_db({'counts': {'pending': 2, 'completed': 1}})
+    _update_batch_dist_status(db, 'batch-1', 'dist-1', 'completed')
+    db.batch_runs.update_one.assert_not_called()

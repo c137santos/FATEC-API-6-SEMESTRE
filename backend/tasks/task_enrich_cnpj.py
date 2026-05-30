@@ -21,6 +21,10 @@ def task_enrich_cnpj(self) -> dict:
     logger.info('[task_enrich_cnpj] Iniciando enriquecimento CNPJ')
 
     async def _run() -> dict:
+        # Descarta conexões herdadas do processo pai (fork) para evitar
+        # "Future attached to a different loop" no novo event loop do worker.
+        # Deve rodar dentro do asyncio.run para que o asyncpg feche conexões no contexto async correto.
+        await engine.dispose()
         mongo_client = AsyncIOMotorClient(_settings.MONGO_URI)
         try:
             mongo_db = mongo_client[_settings.MONGO_DB]

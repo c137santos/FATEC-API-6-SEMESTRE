@@ -3,6 +3,9 @@ from datetime import datetime, timezone
 
 from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
+from backend.tasks.task_cleanup_files import task_cleanup_files
+from backend.tasks.task_dispatch_next_in_batch import task_dispatch_next_in_batch
+from backend.services.pipeline_batch import _update_batch_dist_status
 
 logger = logging.getLogger(__name__)
 
@@ -22,6 +25,8 @@ def task_on_calculation_failure(
             'report_generated_at': datetime.now(timezone.utc),
         }},
     )
+    task_cleanup_files.apply_async(args=[job_id])
     if batch_id and dist_id:
-        from backend.services.pipeline_batch import _update_batch_dist_status
-        _update_batch_dist_status(db, batch_id, dist_id, 'failed')
+        updated = _update_batch_dist_status(db, batch_id, dist_id, 'failed')
+        if updated:
+            task_dispatch_next_in_batch.apply_async(args=[batch_id])

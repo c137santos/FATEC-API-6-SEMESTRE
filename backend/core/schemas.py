@@ -158,3 +158,39 @@ class OAuthClientCreate(BaseModel):
 
 class OAuthClientCreatedResponse(BaseModel):
     client_id: str
+
+
+class BatchTriggerRequest(BaseModel):
+    year: int | None = None
+
+
+class BatchTriggerResponse(BaseModel):
+    batch_id: str
+
+
+class BatchDistribuidoraStatus(BaseModel):
+    id: str
+    nome: str
+    ano: int
+    status: str
+    error: str | None = None
+
+
+class BatchCounts(BaseModel):
+    total: int
+    pending: int
+    processing: int
+    completed: int
+    failed: int
+    skipped: int
+
+
+class BatchStatusResponse(BaseModel):
+    batch_id: str
+    is_running: bool
+    started_at: datetime
+    finished_at: datetime | None
+    params: BatchTriggerRequest
+    user_email: str
+    counts: BatchCounts
+    distribuidoras: list[BatchDistribuidoraStatus]

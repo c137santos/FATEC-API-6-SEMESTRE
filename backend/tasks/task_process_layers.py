@@ -14,7 +14,6 @@ from shapely.ops import transform
 
 from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
-from backend.tasks.task_tam import task_calcular_tam
 
 
 logger = logging.getLogger(__name__)
@@ -1017,53 +1016,38 @@ def task_finalizar(
             tmp_dir,
         )
 
+        zip_p = Path(zip_path)
+        if zip_p.exists():
+            zip_p.unlink(missing_ok=True)
+            logger.info(
+                '[task_finalizar] ZIP removido. job_id=%s path=%s',
+                job_id,
+                zip_path,
+            )
+
         try:
             job_info = _get_collection('jobs').find_one({'job_id': job_id})
-
-            if not job_info:
-                logger.error(
-                    '[task_finalizar] Metadados do job não encontrados para disparar TAM. job_id=%s',
-                    job_id,
+            if job_info and job_info.get('trigger_calculations'):
+                from backend.tasks.task_trigger_calculations import (
+                    task_trigger_calculations,
                 )
-            else:
-                dist_name = job_info.get('dist_name')
-                date_gdb = job_info.get('ano_gdb')
 
-                if not dist_name:
-                    logger.error(
-                        '[task_finalizar] Campo obrigatório ausente para disparar TAM: dist_name. job_id=%s',
-                        job_id,
-                    )
-                elif date_gdb is None:
-                    logger.error(
-                        '[task_finalizar] Campo obrigatório ausente para disparar TAM: ano_gdb. job_id=%s',
-                        job_id,
-                    )
-                else:
-                    try:
-                        date_gdb_int = int(date_gdb)
-                    except (TypeError, ValueError):
-                        logger.error(
-                            '[task_finalizar] Campo ano_gdb inválido para disparar TAM. job_id=%s ano_gdb=%r',
-                            job_id,
-                            date_gdb,
-                        )
-                    else:
-                        metadados_dist = {
-                            'id': distribuidora_id,
-                            'dist_name': dist_name,
-                            'date_gdb': date_gdb_int,
-                        }
-                        logger.info(
-                            '[task_finalizar] Disparando cálculo automático do TAM. job_id=%s',
-                            job_id,
-                        )
-
-        except Exception as tam_exc:
+                task_trigger_calculations.delay(
+                    job_id,
+                    job_info.get('distribuidora_id'),
+                    job_info.get('dist_name', ''),
+                    job_info.get('ano_gdb'),
+                    job_info.get('cnpj'),
+                    job_info.get('batch_id'),
+                )
+                logger.info(
+                    '[task_finalizar] Fase 2 disparada. job_id=%s', job_id
+                )
+        except Exception as exc:
             logger.error(
-                '[task_finalizar] Falha ao disparar task do TAM. job_id=%s erro=%s',
+                '[task_finalizar] Falha ao disparar fase 2. job_id=%s erro=%s',
                 job_id,
-                tam_exc,
+                exc,
             )
 
         return {
@@ -1110,6 +1094,24 @@ def task_finalizar(
                 },
                 upsert=True,
             )
+        except Exception:
+            pass
+        try:
+            job_info = _get_collection('jobs').find_one(
+                {'job_id': job_id}, {'batch_id': 1, 'distribuidora_id': 1}
+            )
+            if job_info and job_info.get('batch_id'):
+                from backend.services.pipeline_batch import (
+                    _update_batch_dist_status,
+                )
+
+                _update_batch_dist_status(
+                    get_mongo_sync_db(),
+                    job_info['batch_id'],
+                    job_info.get('distribuidora_id', distribuidora_id),
+                    'failed',
+                    str(exc),
+                )
         except Exception:
             pass
         raise

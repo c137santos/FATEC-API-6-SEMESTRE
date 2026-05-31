@@ -121,3 +121,9 @@ volumes:
   gdb_data:
   setup_data:
   deleted_ids_data:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1450"

@@ -20,6 +20,14 @@ def _push_request():
     task_descompact_gdb.pop_request()
 
 
+@pytest.fixture(autouse=True)
+def _mock_mongo_sync():
+    mock_db = MagicMock()
+    mock_db.jobs.find_one.return_value = None
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=mock_db):
+        yield mock_db
+
+
 @pytest.fixture
 def tmp_dir(tmp_path, monkeypatch):
     """Redireciona TMP_DIR para diretório temporário."""

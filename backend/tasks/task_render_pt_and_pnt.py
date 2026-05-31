@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 WAIT_COUNTDOWN = 30
 MAX_WAIT_RETRIES = 60
 
-_COR_PT = '#4DB6AC'
-_COR_PNT = '#1565C0'
+_COR_PT = '#4CAF50'
+_COR_PNT = '#FFFF00'
 _PCT_MIN_LABEL = 8
 _MILHARES = 1000
 
@@ -43,7 +43,7 @@ def _adicionar_labels_percentual(ax, pt_vals, pnt_vals, totais):
                 ha='center',
                 va='center',
                 fontsize=7,
-                color='white',
+                color='black',
                 fontweight='bold',
                 zorder=4,
             )
@@ -55,7 +55,7 @@ def _adicionar_labels_percentual(ax, pt_vals, pnt_vals, totais):
                 ha='center',
                 va='center',
                 fontsize=7,
-                color='white',
+                color='black',
                 fontweight='bold',
                 zorder=4,
             )
@@ -144,15 +144,6 @@ def task_render_pt_pnt(
     ax.set_yticklabels(conjuntos, fontsize=9, color='#333333')
     ax.legend(
         loc='lower right', fontsize=9, framealpha=0.9, edgecolor='#cccccc'
-    )
-
-    ax.set_title(
-        f'Gráfico de Perdas Técnicas e Não Técnicas\n'
-        f'Todos os conjuntos da Distribuidora {sig_agente}  |  {ano}',
-        fontsize=11,
-        color='#222222',
-        pad=14,
-        loc='left',
     )
 
     plt.tight_layout()

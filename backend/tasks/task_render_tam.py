@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 WAIT_COUNTDOWN = 30
 MAX_WAIT_RETRIES = 60
-BAR_COLOR = '#2196F3'
+BAR_COLOR = '#4CAF50'
 TEXT_COLOR = '#263238'
 
 def _output_dir() -> Path:
@@ -58,9 +58,6 @@ def task_render_grafico_tam(job_id: str) -> dict:
         df['eixo_y'] = pd.to_numeric(df['COMP_KM'], errors='coerce').fillna(0)
         
         df = df.sort_values(by='eixo_y', ascending=False).head(10)
-        
-        titulo_dist = df['dist_name'].iloc[0] if 'dist_name' in df.columns else 'Relatório de Distâncias'
-
         n_rows = len(df)
         fig, ax = plt.subplots(figsize=(12, 7))
 
@@ -71,11 +68,6 @@ def task_render_grafico_tam(job_id: str) -> dict:
             alpha=0.85,
             edgecolor='white',
             linewidth=0.5
-        )
-
-        ax.set_title(
-            f'Top 10 Maiores Trechos (TAM) - {titulo_dist}', 
-            fontsize=14, pad=20, fontweight='bold', color=TEXT_COLOR
         )
         
         ax.set_ylabel('Comprimento (KM)', fontsize=11, fontweight='bold', color=TEXT_COLOR)

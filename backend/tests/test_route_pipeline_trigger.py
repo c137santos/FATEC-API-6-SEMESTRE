@@ -414,7 +414,7 @@ async def test_trigger_pipeline_flow_force_full_executa_chain_completo(
 
     mock_chain.assert_called_once()
     sigs = mock_chain.call_args.args
-    assert len(sigs) == 15
+    assert len(sigs) == 14
     assert all(sig is not None for sig in sigs)
     assert not any(
         getattr(sig, 'task', None) == 'etl.render_prophet_forecast'

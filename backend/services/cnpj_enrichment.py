@@ -56,7 +56,10 @@ async def enrich_distribuidoras(
 
     already_enriched = select(DistribuidoraCnpj.dist_id)
     stmt = (
-        select(Distribuidora.id, func.min(Distribuidora.dist_name).label('dist_name'))
+        select(
+            Distribuidora.id,
+            func.min(Distribuidora.dist_name).label('dist_name'),
+        )
         .where(Distribuidora.id.not_in(already_enriched))
         .group_by(Distribuidora.id)
     )
@@ -109,18 +112,20 @@ async def enrich_distribuidoras(
             )
             matched += 1
         else:
-            best_norm_key, score = (best[0], best[1]) if best is not None else (None, 0)
-            orig_key, orig_cnpj = lower_map[best_norm_key] if best_norm_key else (None, None)
-            await mongo_db['cnpj_enrichment_log'].insert_one(
-                {
-                    'dist_id': dist_id,
-                    'dist_name': dist_name,
-                    'mongo_sig_agente': orig_key,
-                    'mongo_cnpj': orig_cnpj,
-                    'match_score': round(score / 100.0, 4),
-                    'attempted_at': datetime.utcnow(),
-                }
+            best_norm_key, score = (
+                (best[0], best[1]) if best is not None else (None, 0)
             )
+            orig_key, orig_cnpj = (
+                lower_map[best_norm_key] if best_norm_key else (None, None)
+            )
+            await mongo_db['cnpj_enrichment_log'].insert_one({
+                'dist_id': dist_id,
+                'dist_name': dist_name,
+                'mongo_sig_agente': orig_key,
+                'mongo_cnpj': orig_cnpj,
+                'match_score': round(score / 100.0, 4),
+                'attempted_at': datetime.utcnow(),
+            })
             await session.execute(
                 insert(DistribuidoraCnpj)
                 .values(
@@ -148,4 +153,8 @@ async def enrich_distribuidoras(
         no_match,
         pending_count,
     )
-    return {'matched': matched, 'no_match': no_match, 'pending': int(pending_count)}
+    return {
+        'matched': matched,
+        'no_match': no_match,
+        'pending': int(pending_count),
+    }

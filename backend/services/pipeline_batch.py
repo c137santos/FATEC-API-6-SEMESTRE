@@ -17,19 +17,10 @@ from backend.tasks.task_descompact_gdb import task_descompact_gdb
 from backend.tasks.task_dispatch_next_in_batch import (
     task_dispatch_next_in_batch,
 )
+from backend.exceptions import DistribuidoraSemCNPJError
 from backend.tasks.task_download_gdb import task_download_gdb
 
 logger = logging.getLogger(__name__)
-
-
-# Exceção customizada para caso conhecido
-class DistribuidoraSemCNPJError(Exception):
-    pass
-
-
-# ---------------------------------------------------------------------------
-# Async helpers — used by FastAPI routes
-# ---------------------------------------------------------------------------
 
 
 async def get_last_batch(mongo_db: AsyncIOMotorDatabase) -> dict | None:

@@ -1,4 +1,3 @@
-from pathlib import Path
 from unittest.mock import patch, AsyncMock, MagicMock
 from backend.services.render_tam import render_grafico_barras_tam
 

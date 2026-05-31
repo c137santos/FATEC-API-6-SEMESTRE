@@ -1,7 +1,9 @@
 import uuid
 from datetime import datetime, timezone
 
-from backend.tasks.task_render_temporal_analysis import task_render_prophet_forecast
+from backend.tasks.task_render_temporal_analysis import (
+    task_render_prophet_forecast,
+)
 from backend.tasks.task_render_sam import task_render_sam
 from celery import chain
 from sqlalchemy import select, update
@@ -174,13 +176,13 @@ async def init_tam_metadata(
     db = get_mongo_async_db()
 
     await db.jobs.insert_one({
-        "job_id": job_id,
-        "distribuidora_id": distribuidora_id,
-        "dist_name": dist_name,
-        "ano_gdb": ano,
-        "status": "started",
-        "user_email": user_email,
-        "created_at": datetime.utcnow()
+        'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
+        'dist_name': dist_name,
+        'ano_gdb': ano,
+        'status': 'started',
+        'user_email': user_email,
+        'created_at': datetime.utcnow(),
     })
 
 
@@ -192,15 +194,24 @@ async def trigger_pipeline_flow(
     force_full: bool = False,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
-    existing_job_id = await _get_existing_job_id(session, distribuidora_id, ano)
+    existing_job_id = await _get_existing_job_id(
+        session, distribuidora_id, ano
+    )
 
     if existing_job_id is not None:
         db = get_mongo_async_db()
-        job_doc = await db.jobs.find_one({'job_id': existing_job_id}, {'_id': 0})
+        job_doc = await db.jobs.find_one(
+            {'job_id': existing_job_id}, {'_id': 0}
+        )
         if job_doc and job_doc.get('report_status') in ('completed', 'failed'):
             if not (force_full and job_doc.get('report_status') == 'failed'):
                 return await _trigger_replot_flow(
-                    session, distribuidora_id, ano, user_email, existing_job_id, job_doc
+                    session,
+                    distribuidora_id,
+                    ano,
+                    user_email,
+                    existing_job_id,
+                    job_doc,
                 )
         else:
             raise ValueError(
@@ -226,12 +237,13 @@ async def trigger_pipeline_flow(
         task_calculate_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
         task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
         task_calculate_sam.si(job_id, distribuidora_id, sig_agente, ano),
-        task_mapa_criticidade.si(job_id, distribuidora_id, sig_agente, ano, cnpj),
-        task_calcular_tam.si(job_id, {
-            "id": distribuidora_id,
-            "dist_name": sig_agente,
-            "date_gdb": ano
-        }),
+        task_mapa_criticidade.si(
+            job_id, distribuidora_id, sig_agente, ano, cnpj
+        ),
+        task_calcular_tam.si(
+            job_id,
+            {'id': distribuidora_id, 'dist_name': sig_agente, 'date_gdb': ano},
+        ),
         task_render_grafico_tam.si(job_id),
         task_render_tabela_score.si(job_id, sig_agente, ano),
         task_render_mapa_calor.si(job_id, sig_agente, ano),

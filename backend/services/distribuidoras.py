@@ -1,5 +1,4 @@
 import logging
-import ssl
 from datetime import datetime
 from typing import NamedTuple
 

@@ -1019,12 +1019,19 @@ def task_finalizar(
         zip_p = Path(zip_path)
         if zip_p.exists():
             zip_p.unlink(missing_ok=True)
-            logger.info('[task_finalizar] ZIP removido. job_id=%s path=%s', job_id, zip_path)
+            logger.info(
+                '[task_finalizar] ZIP removido. job_id=%s path=%s',
+                job_id,
+                zip_path,
+            )
 
         try:
             job_info = _get_collection('jobs').find_one({'job_id': job_id})
             if job_info and job_info.get('trigger_calculations'):
-                from backend.tasks.task_trigger_calculations import task_trigger_calculations
+                from backend.tasks.task_trigger_calculations import (
+                    task_trigger_calculations,
+                )
+
                 task_trigger_calculations.delay(
                     job_id,
                     job_info.get('distribuidora_id'),
@@ -1033,9 +1040,15 @@ def task_finalizar(
                     job_info.get('cnpj'),
                     job_info.get('batch_id'),
                 )
-                logger.info('[task_finalizar] Fase 2 disparada. job_id=%s', job_id)
+                logger.info(
+                    '[task_finalizar] Fase 2 disparada. job_id=%s', job_id
+                )
         except Exception as exc:
-            logger.error('[task_finalizar] Falha ao disparar fase 2. job_id=%s erro=%s', job_id, exc)
+            logger.error(
+                '[task_finalizar] Falha ao disparar fase 2. job_id=%s erro=%s',
+                job_id,
+                exc,
+            )
 
         return {
             'job_id': job_id,
@@ -1088,7 +1101,10 @@ def task_finalizar(
                 {'job_id': job_id}, {'batch_id': 1, 'distribuidora_id': 1}
             )
             if job_info and job_info.get('batch_id'):
-                from backend.services.pipeline_batch import _update_batch_dist_status
+                from backend.services.pipeline_batch import (
+                    _update_batch_dist_status,
+                )
+
                 _update_batch_dist_status(
                     get_mongo_sync_db(),
                     job_info['batch_id'],

@@ -54,7 +54,7 @@ def task_download_gdb(
             follow_redirects=True,
             timeout=300,
             headers={'User-Agent': 'fatec-etl-downloader/1.0'},
-            verify=False
+            verify=False,
         ) as r:
             r.raise_for_status()
             headers = getattr(r, 'headers', {}) or {}

@@ -14,7 +14,9 @@ from backend.services.cnpj_enrichment import enrich_distribuidoras
 from backend.services.distribuidoras import upsert_distribuidoras
 
 ANEEL_MODULE = 'backend.clients.aneel'
-_PATCH_MAP = 'backend.services.cnpj_enrichment._build_sig_agente_map_from_mongo'
+_PATCH_MAP = (
+    'backend.services.cnpj_enrichment._build_sig_agente_map_from_mongo'
+)
 
 
 def _aneel_response(records: list[dict], total: int | None = None) -> dict:
@@ -55,7 +57,9 @@ async def test_fetch_aneel_cnpj_map_retorna_dict():
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=_aneel_response(records))
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         result = await fetch_aneel_cnpj_map(client=client)
 
     assert result['COPEL-DIS'] == '76535764000143'
@@ -77,7 +81,9 @@ async def test_fetch_aneel_cnpj_map_pagina_multiplas_paginas():
             return httpx.Response(200, json=_aneel_response(page1, total=2))
         return httpx.Response(200, json=_aneel_response(page2, total=2))
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         result = await fetch_aneel_cnpj_map(client=client)
 
     assert len(result) == 2
@@ -93,7 +99,9 @@ async def test_fetch_aneel_cnpj_map_normaliza_cnpj():
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=_aneel_response(records))
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         result = await fetch_aneel_cnpj_map(client=client)
 
     assert result['DIST-X'] == '76535764000143'
@@ -102,12 +110,16 @@ async def test_fetch_aneel_cnpj_map_normaliza_cnpj():
 @pytest.mark.asyncio
 async def test_fetch_aneel_strip_espacos_sig_agente():
     """SigAgente com espaços no retorno da API deve ser normalizado via strip."""
-    records = [{'SigAgente': 'AME                 ', 'NumCNPJ': '12345678000195'}]
+    records = [
+        {'SigAgente': 'AME                 ', 'NumCNPJ': '12345678000195'}
+    ]
 
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(200, json=_aneel_response(records))
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         result = await fetch_aneel_cnpj_map(client=client)
 
     assert 'AME' in result
@@ -120,7 +132,9 @@ async def test_fetch_aneel_cnpj_map_levanta_em_falha_http():
     def handler(request: httpx.Request) -> httpx.Response:
         return httpx.Response(500)
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         with pytest.raises(httpx.HTTPError):
             await fetch_aneel_cnpj_map(client=client)
 
@@ -140,10 +154,16 @@ async def test_enrich_match_aceito(session, mongo_mock, patch_sig_agente_map):
 
     assert counts['matched'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-1')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'e-1'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj == '76535764000143'
     assert cnpj_row.cnpj_match == 1.0
@@ -152,7 +172,9 @@ async def test_enrich_match_aceito(session, mongo_mock, patch_sig_agente_map):
 
 
 @pytest.mark.asyncio
-async def test_enrich_match_case_insensitive(session, mongo_mock, patch_sig_agente_map):
+async def test_enrich_match_case_insensitive(
+    session, mongo_mock, patch_sig_agente_map
+):
     await upsert_distribuidoras(
         session,
         [DistribuidoraPayload(id='e-2', dist_name='copel-dis', date_gdb=2024)],
@@ -163,18 +185,30 @@ async def test_enrich_match_case_insensitive(session, mongo_mock, patch_sig_agen
 
     assert counts['matched'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-2')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'e-2'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
     assert cnpj_row.cnpj_enrichment_status == 'matched'
 
 
 @pytest.mark.asyncio
-async def test_enrich_sem_match_marca_no_match(session, mongo_mock, patch_sig_agente_map):
+async def test_enrich_sem_match_marca_no_match(
+    session, mongo_mock, patch_sig_agente_map
+):
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='e-3', dist_name='DIST-DESCONHECIDA', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='e-3', dist_name='DIST-DESCONHECIDA', date_gdb=2024
+            )
+        ],
     )
 
     patch_sig_agente_map.return_value = {'COPEL-DIS': '76535764000143'}
@@ -182,10 +216,16 @@ async def test_enrich_sem_match_marca_no_match(session, mongo_mock, patch_sig_ag
 
     assert counts['no_match'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'e-3')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'e-3'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj is None
     assert cnpj_row.cnpj_enrichment_status == 'no_match'
@@ -194,7 +234,9 @@ async def test_enrich_sem_match_marca_no_match(session, mongo_mock, patch_sig_ag
 
 
 @pytest.mark.asyncio
-async def test_enrich_idempotente_nao_reprocessa_matched(session, mongo_mock, patch_sig_agente_map):
+async def test_enrich_idempotente_nao_reprocessa_matched(
+    session, mongo_mock, patch_sig_agente_map
+):
     await upsert_distribuidoras(
         session,
         [DistribuidoraPayload(id='e-4', dist_name='COPEL-DIS', date_gdb=2024)],
@@ -210,7 +252,9 @@ async def test_enrich_idempotente_nao_reprocessa_matched(session, mongo_mock, pa
 
 
 @pytest.mark.asyncio
-async def test_enrich_idempotente_nao_reprocessa_no_match(session, mongo_mock, patch_sig_agente_map):
+async def test_enrich_idempotente_nao_reprocessa_no_match(
+    session, mongo_mock, patch_sig_agente_map
+):
     await upsert_distribuidoras(
         session,
         [DistribuidoraPayload(id='e-5', dist_name='DIST-X', date_gdb=2024)],
@@ -247,7 +291,9 @@ async def test_sync_retorna_totais_corretos(session):
             },
         )
 
-    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+    async with httpx.AsyncClient(
+        transport=httpx.MockTransport(handler)
+    ) as client:
         result = await sync_distribuidoras(
             session=session,
             initial_url='https://example.test/search',
@@ -285,7 +331,11 @@ async def test_fuzzy_match_aceito(session, mongo_mock, patch_sig_agente_map):
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-1', dist_name='COPEL DISTRIBUICAO', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-1', dist_name='COPEL DISTRIBUICAO', date_gdb=2024
+            )
+        ],
     )
     patch_sig_agente_map.return_value = {'COPEL-DIS': '76535764000143'}
 
@@ -295,10 +345,16 @@ async def test_fuzzy_match_aceito(session, mongo_mock, patch_sig_agente_map):
 
     assert counts['matched'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-1')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'fz-1'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj == '76535764000143'
     assert cnpj_row.cnpj_match == pytest.approx(0.97)
@@ -307,11 +363,17 @@ async def test_fuzzy_match_aceito(session, mongo_mock, patch_sig_agente_map):
 
 
 @pytest.mark.asyncio
-async def test_fuzzy_match_rejeitado(session, mongo_mock, patch_sig_agente_map):
+async def test_fuzzy_match_rejeitado(
+    session, mongo_mock, patch_sig_agente_map
+):
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-2', dist_name='DIST-TOTALMENTE-DIFERENTE', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-2', dist_name='DIST-TOTALMENTE-DIFERENTE', date_gdb=2024
+            )
+        ],
     )
     patch_sig_agente_map.return_value = {'COPEL-DIS': '76535764000143'}
 
@@ -321,10 +383,16 @@ async def test_fuzzy_match_rejeitado(session, mongo_mock, patch_sig_agente_map):
 
     assert counts['no_match'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-2')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'fz-2'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj is None
     assert cnpj_row.cnpj_enrichment_status == 'no_match'
@@ -336,7 +404,11 @@ async def test_fuzzy_rejeitado_grava_log_mongo(session, patch_sig_agente_map):
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-3', dist_name='DIST-DIFERENTE', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-3', dist_name='DIST-DIFERENTE', date_gdb=2024
+            )
+        ],
     )
     patch_sig_agente_map.return_value = {'COPEL-DIS': '76535764000143'}
 
@@ -360,12 +432,18 @@ async def test_fuzzy_rejeitado_grava_log_mongo(session, patch_sig_agente_map):
 
 
 @pytest.mark.asyncio
-async def test_no_match_sem_candidato_grava_zero_no_postgres(session, mongo_mock, patch_sig_agente_map):
+async def test_no_match_sem_candidato_grava_zero_no_postgres(
+    session, mongo_mock, patch_sig_agente_map
+):
     """Quando dec_fec_realizado está vazio (nenhum candidato fuzzy), cnpj_match deve ser 0.0."""
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-5', dist_name='DIST-SEM-CANDIDATO', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-5', dist_name='DIST-SEM-CANDIDATO', date_gdb=2024
+            )
+        ],
     )
 
     patch_sig_agente_map.return_value = {}
@@ -373,10 +451,16 @@ async def test_no_match_sem_candidato_grava_zero_no_postgres(session, mongo_mock
 
     assert counts['no_match'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == 'fz-5')
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == 'fz-5'
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj is None
     assert cnpj_row.cnpj_enrichment_status == 'no_match'
@@ -384,12 +468,18 @@ async def test_no_match_sem_candidato_grava_zero_no_postgres(session, mongo_mock
 
 
 @pytest.mark.asyncio
-async def test_no_match_sem_candidato_grava_log_mongo_com_zero(session, patch_sig_agente_map):
+async def test_no_match_sem_candidato_grava_log_mongo_com_zero(
+    session, patch_sig_agente_map
+):
     """Quando não há candidato fuzzy, o log Mongo deve ter match_score=0.0 e campos nulos."""
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-6', dist_name='DIST-SEM-CANDIDATO-MONGO', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-6', dist_name='DIST-SEM-CANDIDATO-MONGO', date_gdb=2024
+            )
+        ],
     )
 
     patch_sig_agente_map.return_value = {}
@@ -410,14 +500,23 @@ async def test_no_match_sem_candidato_grava_log_mongo_com_zero(session, patch_si
     assert 'attempted_at' in doc
 
 
-@pytest.mark.parametrize('dist_id,dist_name,aneel_key,expected_cnpj', [
-    ('cp-1', 'CPFL_PAULISTA',  'CPFL-PAULISTA',   '33050196000188'),
-    ('ca-1', 'COOPERALIANCA',  'COOPERALIANÇA',   '83647990000181'),
-    ('rge-1', 'RGE_SUL',       'RGE SUL',         '02016440000162'),
-])
+@pytest.mark.parametrize(
+    'dist_id,dist_name,aneel_key,expected_cnpj',
+    [
+        ('cp-1', 'CPFL_PAULISTA', 'CPFL-PAULISTA', '33050196000188'),
+        ('ca-1', 'COOPERALIANCA', 'COOPERALIANÇA', '83647990000181'),
+        ('rge-1', 'RGE_SUL', 'RGE SUL', '02016440000162'),
+    ],
+)
 @pytest.mark.asyncio
 async def test_enrich_match_normalization(
-    session, mongo_mock, patch_sig_agente_map, dist_id, dist_name, aneel_key, expected_cnpj
+    session,
+    mongo_mock,
+    patch_sig_agente_map,
+    dist_id,
+    dist_name,
+    aneel_key,
+    expected_cnpj,
 ):
     await _drain_pending(session)
     await upsert_distribuidoras(
@@ -430,10 +529,16 @@ async def test_enrich_match_normalization(
 
     assert counts['matched'] == 1
     cnpj_row = (
-        await session.execute(
-            select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == dist_id)
+        (
+            await session.execute(
+                select(DistribuidoraCnpj).where(
+                    DistribuidoraCnpj.dist_id == dist_id
+                )
+            )
         )
-    ).scalars().one()
+        .scalars()
+        .one()
+    )
 
     assert cnpj_row.cnpj == expected_cnpj
     assert cnpj_row.cnpj_match == 1.0
@@ -441,11 +546,17 @@ async def test_enrich_match_normalization(
 
 
 @pytest.mark.asyncio
-async def test_no_match_nao_retentado_em_novo_sync(session, mongo_mock, patch_sig_agente_map):
+async def test_no_match_nao_retentado_em_novo_sync(
+    session, mongo_mock, patch_sig_agente_map
+):
     await _drain_pending(session)
     await upsert_distribuidoras(
         session,
-        [DistribuidoraPayload(id='fz-4', dist_name='DIST-SEM-MATCH', date_gdb=2024)],
+        [
+            DistribuidoraPayload(
+                id='fz-4', dist_name='DIST-SEM-MATCH', date_gdb=2024
+            )
+        ],
     )
     patch_sig_agente_map.return_value = {'COPEL-DIS': '76535764000143'}
 

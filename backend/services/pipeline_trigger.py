@@ -248,7 +248,7 @@ async def trigger_pipeline_flow(
         task_render_tabela_score.si(job_id, sig_agente, ano),
         task_render_mapa_calor.si(job_id, sig_agente, ano),
         task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
-        task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
+        task_render_prophet_forecast.si(job_id, sig_agente),
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
     ]

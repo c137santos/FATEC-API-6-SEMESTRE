@@ -8,14 +8,14 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(name='etl.render_prophet_forecast')
-def task_render_prophet_forecast(job_id: str, cnpj: str) -> dict:
+def task_render_prophet_forecast(job_id: str, sig_agente: str) -> dict:
     logger.info(
-        '[task_render_prophet_forecast] Inicio. job_id=%s cnpj=%s',
+        '[task_render_prophet_forecast] Inicio. job_id=%s sig_agente=%s',
         job_id,
-        cnpj,
+        sig_agente,
     )
 
-    result = render_prophet_forecast(cnpj=cnpj)
+    result = render_prophet_forecast(sig_agente=sig_agente)
 
     db = get_mongo_sync_db()
 

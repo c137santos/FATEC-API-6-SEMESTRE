@@ -37,5 +37,5 @@ class Settings(BaseSettings):
 
     frontend_url: str = 'http://localhost:3000'
 
-    dec_fec_realizado: str
-    dec_fec_limite: str
+    dec_fec_realizado: str = "https://www.dropbox.com/scl/fi/ewx30e3h31336h3plhuzi/indicadores-continuidade-coletivos-2020-2029.csv?rlkey=jmjiiaf44k91qv5v3mi2bg4qg&st=ncyisy70&dl=1&utm_source=chatgpt.com"
+    dec_fec_limite: str = "https://drive.google.com/uc?export=download&id=1h1LVJHSyCZnZCYEiu40LTxfnjqYhAWwI&utm_source=chatgpt.com"

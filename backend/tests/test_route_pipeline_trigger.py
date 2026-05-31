@@ -178,7 +178,7 @@ async def test_pipeline_trigger_chain_contem_todas_as_tasks(
     assert sigs[11].args == (job_id, 'item-chain', 'DIST CHAIN', 2026)
 
     assert sigs[12].task == 'etl.render_prophet_forecast'
-    assert sigs[12].args == (job_id, '76535764000143')
+    assert sigs[12].args == (job_id, 'DIST CHAIN')
 
     assert sigs[13].task == 'etl.gerar_report'
     assert sigs[13].args == (job_id,)

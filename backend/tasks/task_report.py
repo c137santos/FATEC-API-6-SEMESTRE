@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 WAIT_COUNTDOWN = 30
 MAX_WAIT_RETRIES = 120
 
-_REQUIRED_RENDER_KEYS = {'grafico_tam', 'pt_pnt', 'tabela_score', 'mapa_calor', 'grafico_sam'}
+_REQUIRED_RENDER_KEYS = {'grafico_tam', 'pt_pnt', 'tabela_score', 'mapa_calor', 'grafico_sam', 'prophet'}
 
 
 EMAIL_RETRY_DELAY = 60

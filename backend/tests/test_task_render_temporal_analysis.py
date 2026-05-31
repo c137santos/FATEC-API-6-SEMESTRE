@@ -24,6 +24,7 @@ def mock_time_sleep():
     yield
 
 JOB_ID = 'abc-123'
+CNPJ = '08324196000151'
 SIG_AGENTE = 'COSERN'
 
 RENDER_PATHS = {
@@ -59,7 +60,7 @@ def _patch_service(render_paths=None, skipped=None):
 def test_retorna_done_quando_graficos_gerados():
     db = _mock_db()
     with _patch_service(), _patch_db(db):
-        result = task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+        result = task_render_prophet_forecast(JOB_ID, CNPJ)
 
     assert result['status'] == 'done'
     assert result['job_id'] == JOB_ID
@@ -69,7 +70,7 @@ def test_retorna_done_quando_graficos_gerados():
 def test_persiste_render_paths_no_mongo():
     db = _mock_db()
     with _patch_service(), _patch_db(db):
-        task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+        task_render_prophet_forecast(JOB_ID, CNPJ)
 
     db['jobs'].update_one.assert_called_once_with(
         {'job_id': JOB_ID},
@@ -80,7 +81,7 @@ def test_persiste_render_paths_no_mongo():
 def test_retorna_skipped_quando_sem_graficos():
     db = _mock_db()
     with _patch_service(render_paths={}), _patch_db(db):
-        result = task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+        result = task_render_prophet_forecast(JOB_ID, CNPJ)
 
     assert result['status'] == 'skipped'
     assert result['reason'] == 'no_render_paths'
@@ -89,7 +90,7 @@ def test_retorna_skipped_quando_sem_graficos():
 def test_persiste_none_no_mongo_quando_sem_graficos():
     db = _mock_db()
     with _patch_service(render_paths={}), _patch_db(db):
-        task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+        task_render_prophet_forecast(JOB_ID, CNPJ)
 
     db['jobs'].update_one.assert_called_once_with(
         {'job_id': JOB_ID},
@@ -100,7 +101,7 @@ def test_persiste_none_no_mongo_quando_sem_graficos():
 def test_repassa_skipped_no_retorno():
     db = _mock_db()
     with _patch_service(skipped=['FEC']), _patch_db(db):
-        result = task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+        result = task_render_prophet_forecast(JOB_ID, CNPJ)
 
     assert result['skipped'] == ['FEC']
 
@@ -115,4 +116,4 @@ def test_propaga_excecao_do_service():
         _patch_db(db),
     ):
         with pytest.raises(RuntimeError, match='Arquivo pickle não encontrado'):
-            task_render_prophet_forecast(JOB_ID, SIG_AGENTE)
+            task_render_prophet_forecast(JOB_ID, CNPJ)

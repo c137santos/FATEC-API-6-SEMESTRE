@@ -79,22 +79,27 @@ def _render_forecast_chart(
     return out_path
 
 
-def render_prophet_forecast(sig_agente: str) -> dict:
-    if sig_agente is None:
-        logger.warning('[prophet_service] SigAgente não informado, pulando geração de gráficos.')
+def render_prophet_forecast(cnpj: str) -> dict:
+    if cnpj is None:
+        logger.warning('[prophet_service] CNPJ não informado, pulando geração de gráficos.')
         return {'sig_agente': None, 'render_paths': {}, 'skipped': _INDICATORS}
 
-    sig_agente = sig_agente.strip()
+    try:
+        cnpj_int = int(cnpj)
+    except (ValueError, TypeError):
+        logger.warning('[prophet_service] CNPJ inválido, pulando geração de gráficos. cnpj=%s', cnpj)
+        return {'sig_agente': None, 'render_paths': {}, 'skipped': _INDICATORS}
+
     try:
         prophet_forecasts = _load_pickle(_PROPHET_FORECASTS_PATH)
         df_hierarchical_agg = _load_pickle(_HIERARCHICAL_AGG_PATH)
     except FileNotFoundError as exc:
         raise RuntimeError(f'Arquivo pickle não encontrado: {exc}') from exc
 
-    agente_data = df_hierarchical_agg[df_hierarchical_agg['SigAgente'].str.strip() == sig_agente]
+    agente_data = df_hierarchical_agg[df_hierarchical_agg['NumCNPJ'] == cnpj_int]
 
     if agente_data.empty:
-        logger.warning('[prophet_service] SigAgente não encontrado. sig_agente=%s', sig_agente)
+        logger.warning('[prophet_service] CNPJ não encontrado no pickle. cnpj=%s', cnpj)
         return {'sig_agente': None, 'render_paths': {}, 'skipped': _INDICATORS}
 
     sig_agente = agente_data['SigAgente'].iloc[0].strip()

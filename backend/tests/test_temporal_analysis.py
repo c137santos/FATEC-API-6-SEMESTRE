@@ -8,6 +8,8 @@ from backend.services.temporal_analysis import render_prophet_forecast
 
 SIG_AGENTE = 'COSERN'
 PADDED_AGENTE = SIG_AGENTE.ljust(20)
+CNPJ = '08324196000151'
+CNPJ_INT = int(CNPJ)
 
 
 def _make_df_hierarchical_agg() -> pd.DataFrame:
@@ -15,6 +17,7 @@ def _make_df_hierarchical_agg() -> pd.DataFrame:
     for indicador in ['DEC', 'FEC']:
         for mes in pd.date_range('2022-01-01', periods=12, freq='MS'):
             rows.append({
+                'NumCNPJ': CNPJ_INT,
                 'SigAgente': SIG_AGENTE,
                 'SigIndicador': indicador,
                 'AnoMes': mes,
@@ -65,7 +68,7 @@ def test_retorna_done_com_dois_indicadores(tmp_path):
         _patch_pickles(),
         patch('backend.services.temporal_analysis._output_dir', return_value=tmp_path),
     ):
-        result = render_prophet_forecast(SIG_AGENTE)
+        result = render_prophet_forecast(CNPJ)
 
     assert result['sig_agente'] == SIG_AGENTE
     assert 'DEC' in result['render_paths']
@@ -78,35 +81,32 @@ def test_salva_arquivos_png(tmp_path):
         _patch_pickles(),
         patch('backend.services.temporal_analysis._output_dir', return_value=tmp_path),
     ):
-        result = render_prophet_forecast(SIG_AGENTE)
+        result = render_prophet_forecast(CNPJ)
 
     for path_str in result['render_paths'].values():
         assert Path(path_str).exists()
         assert path_str.endswith('.png')
 
 
-def test_agente_com_espacos_e_normalizado(tmp_path):
-    """sig_agente com espaços extras é normalizado corretamente via .strip()."""
-    with (
-        _patch_pickles(),
-        patch('backend.services.temporal_analysis._output_dir', return_value=tmp_path),
-    ):
-        result = render_prophet_forecast(f'  {SIG_AGENTE}  ')
-
-    assert result['sig_agente'] == SIG_AGENTE
-
-
-def test_agente_nao_encontrado_retorna_skipped():
+def test_cnpj_nao_encontrado_retorna_skipped():
     with _patch_pickles():
-        result = render_prophet_forecast('AGENTE_INEXISTENTE')
+        result = render_prophet_forecast('99999999999999')
 
     assert result['sig_agente'] is None
     assert result['render_paths'] == {}
     assert set(result['skipped']) == {'DEC', 'FEC'}
 
 
-def test_sig_agente_none_retorna_skipped():
+def test_cnpj_none_retorna_skipped():
     result = render_prophet_forecast(None)
+
+    assert result['sig_agente'] is None
+    assert result['render_paths'] == {}
+    assert set(result['skipped']) == {'DEC', 'FEC'}
+
+
+def test_cnpj_invalido_retorna_skipped():
+    result = render_prophet_forecast('nao-e-numero')
 
     assert result['sig_agente'] is None
     assert result['render_paths'] == {}
@@ -120,7 +120,7 @@ def test_indicador_sem_chave_vai_para_skipped(tmp_path):
         _patch_pickles(forecasts=forecasts),
         patch('backend.services.temporal_analysis._output_dir', return_value=tmp_path),
     ):
-        result = render_prophet_forecast(SIG_AGENTE)
+        result = render_prophet_forecast(CNPJ)
 
     assert 'DEC' in result['render_paths']
     assert 'FEC' in result['skipped']
@@ -132,7 +132,7 @@ def test_pickle_nao_encontrado_levanta_runtime_error():
         side_effect=FileNotFoundError('arquivo.pkl'),
     ):
         with pytest.raises(RuntimeError, match='Arquivo pickle não encontrado'):
-            render_prophet_forecast(SIG_AGENTE)
+            render_prophet_forecast(CNPJ)
 
 
 def test_nome_arquivo_contem_agente_e_indicador(tmp_path):
@@ -140,7 +140,7 @@ def test_nome_arquivo_contem_agente_e_indicador(tmp_path):
         _patch_pickles(),
         patch('backend.services.temporal_analysis._output_dir', return_value=tmp_path),
     ):
-        result = render_prophet_forecast(SIG_AGENTE)
+        result = render_prophet_forecast(CNPJ)
 
     for indicador, path_str in result['render_paths'].items():
         assert SIG_AGENTE in path_str

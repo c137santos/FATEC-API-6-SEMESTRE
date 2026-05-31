@@ -162,6 +162,7 @@ async def init_tam_metadata(
     ano: int,
     job_id: str,
     user_email: str,
+    cnpj: str | None = None,
 ) -> None:
     """Inicializa os dados do Job no MongoDB para que as tasks futuras tenham acesso."""
 
@@ -175,6 +176,9 @@ async def init_tam_metadata(
 
     db = get_mongo_async_db()
 
+    # Sem CNPJ, prophet é pulado na chain — pré-popula None para task_gerar_report não entrar em loop
+    render_paths = {} if cnpj else {'prophet': None}
+
     await db.jobs.insert_one({
         'job_id': job_id,
         'distribuidora_id': distribuidora_id,
@@ -183,6 +187,7 @@ async def init_tam_metadata(
         'status': 'started',
         'user_email': user_email,
         'created_at': datetime.utcnow(),
+        'render_paths': render_paths,
     })
 
 
@@ -248,7 +253,7 @@ async def trigger_pipeline_flow(
         task_render_tabela_score.si(job_id, sig_agente, ano),
         task_render_mapa_calor.si(job_id, sig_agente, ano),
         task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
-        task_render_prophet_forecast.si(job_id, sig_agente) if cnpj else None,
+        task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
     ]
@@ -268,6 +273,7 @@ async def trigger_pipeline_flow(
         ano=ano,
         job_id=job_id,
         user_email=user_email,
+        cnpj=cnpj,
     )
 
     return {

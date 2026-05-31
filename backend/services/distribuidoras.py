@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import NamedTuple
 
 import httpx
-from sqlalchemy import func
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +12,7 @@ from backend.core.models import Distribuidora
 from backend.core.schemas import DistribuidoraPayload
 
 logger = logging.getLogger(__name__)
+
 
 class SyncCounts(NamedTuple):
     total_recebidas: int
@@ -80,7 +81,9 @@ async def fetch_paginated_resources(
         if client is not None:
             return await _fetch_pages(initial_url, client)
 
-        async with httpx.AsyncClient(timeout=30.0, verify=False)as managed_client:
+        async with httpx.AsyncClient(
+            timeout=30.0, verify=False
+        ) as managed_client:
             return await _fetch_pages(initial_url, managed_client)
     except (httpx.HTTPError, ValueError) as exc:
         raise RuntimeError('Falha ao consumir API ArcGIS Hub') from exc
@@ -117,6 +120,42 @@ async def upsert_distribuidoras(
     await session.execute(stmt)
     await session.commit()
     return len(rows)
+
+
+async def get_latest_job_id(
+    session: AsyncSession,
+    distribuidora_id: str,
+) -> str | None:
+    stmt = (
+        select(Distribuidora.job_id)
+        .where(
+            Distribuidora.id == distribuidora_id,
+            Distribuidora.job_id.isnot(None),
+        )
+        .order_by(Distribuidora.processed_at.desc())
+        .limit(1)
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+async def get_distribuidoras_for_batch(
+    session: AsyncSession,
+    year: int | None = None,
+) -> list[dict]:
+    stmt = select(Distribuidora)
+    if year is not None:
+        stmt = stmt.where(Distribuidora.date_gdb == year)
+    result = await session.execute(stmt)
+    return [
+        {
+            'id': d.id,
+            'job_id': d.job_id,
+            'dist_name': d.dist_name,
+            'date_gdb': d.date_gdb,
+        }
+        for d in result.scalars().all()
+    ]
 
 
 async def sync_distribuidoras(

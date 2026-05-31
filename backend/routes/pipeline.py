@@ -68,6 +68,7 @@ async def trigger_batch(
     request: BatchTriggerRequest,
     session: AsyncSession = Depends(get_session),
     mongo_db: AsyncIOMotorDatabase = Depends(get_mongo_async_database),
+    current_user: User = Depends(get_current_user),
 ):
     existing = await mongo_db.batch_runs.find_one(
         {'is_running': True}, {'_id': 0}
@@ -81,11 +82,11 @@ async def trigger_batch(
 
     batch_id = await start_batch(
         params=request,
-        user_email="clarasantos@gmail.com",
+        user_email=current_user.email,
         mongo_db=mongo_db,
     )
     task_run_batch.delay(
-        batch_id, request.model_dump(), "clarasantos@gmail.com", distribuidoras
+        batch_id, request.model_dump(), current_user.email, distribuidoras
     )
     return BatchTriggerResponse(batch_id=batch_id)
 

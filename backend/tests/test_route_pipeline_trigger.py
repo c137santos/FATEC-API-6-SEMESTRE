@@ -390,7 +390,14 @@ async def test_trigger_pipeline_flow_force_full_executa_chain_completo(
         }
     )
 
-    with patch(_CHAIN_PATH) as mock_chain:
+    with (
+        patch(
+            'backend.services.pipeline_trigger._get_distribuidora_cnpj',
+            new_callable=AsyncMock,
+            return_value=None,
+        ),
+        patch(_CHAIN_PATH) as mock_chain,
+    ):
         mock_chain.return_value.delay.return_value = MagicMock(
             id='chain-force-full'
         )
@@ -408,6 +415,11 @@ async def test_trigger_pipeline_flow_force_full_executa_chain_completo(
     mock_chain.assert_called_once()
     sigs = mock_chain.call_args.args
     assert len(sigs) == 14
+    assert all(sig is not None for sig in sigs)
+    assert not any(
+        getattr(sig, 'task', None) == 'etl.render_prophet_forecast'
+        for sig in sigs
+    )
 
     persisted = (
         (

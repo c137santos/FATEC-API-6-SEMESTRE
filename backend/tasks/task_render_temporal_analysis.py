@@ -50,5 +50,3 @@ def task_render_prophet_forecast(job_id: str, cnpj: str) -> dict:
         'paths': result['render_paths'],
         'skipped': result['skipped'],
     }
-
-Equatorial MA

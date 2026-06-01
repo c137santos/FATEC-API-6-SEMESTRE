@@ -102,21 +102,30 @@ async def _trigger_replot_flow(
     dist_name = job_doc.get('dist_name', '')
     sig_agente = dist_name.replace('_', ' ')
 
+    cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
+
     db = get_mongo_async_db()
     await db.jobs.update_one(
         {'job_id': job_id},
-        {'$set': {'report_status': 'pending', 'user_email': user_email}},
+        {'$set': {
+            'report_status': 'pending',
+            'user_email': user_email,
+            'render_paths': {} if cnpj else {'prophet': None},
+        }},
     )
 
-    result = chain(
+    replot_tasks = [
         task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
         task_render_grafico_tam.si(job_id),
         task_render_tabela_score.si(job_id, sig_agente, ano),
         task_render_mapa_calor.si(job_id, sig_agente, ano),
         task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
-    ).delay()
+    ]
+
+    result = chain(*[t for t in replot_tasks if t is not None]).delay()
 
     await save_distribuidora_job_tracking(
         session=session,

@@ -1,0 +1,2 @@
+class DistribuidoraSemCNPJError(Exception):
+    pass

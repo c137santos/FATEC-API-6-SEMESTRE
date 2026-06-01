@@ -18,6 +18,11 @@ services:
       - gdb_data:/data
       - ./output:/app/output
       - /var/run/docker.sock:/var/run/docker.sock
+      - setup_data:/app/setup_flag
+      - deleted_ids_data:/app/data
+    cpus: '2.0'
+    mem_limit: 4G
+
 
   worker:
     build: .
@@ -45,8 +50,8 @@ services:
     volumes:
       - gdb_data:/data
       - ./output:/app/output
-    cpus: ${WORKER_CPUS:-4.0}
-    mem_limit: ${WORKER_MEMORY:-8g}
+    cpus: '4.0'
+    mem_limit: 12g
 
   redis:
     image: redis:7-alpine
@@ -87,6 +92,21 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    mem_limit: 2G
+
+  backup:
+    build:
+      context: ./backup
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+      - mongodb
+    restart: unless-stopped
+    volumes:
+      - deleted_ids_data:/data
 
   frontend:
     image: nginx:alpine
@@ -99,3 +119,11 @@ volumes:
   mongo_data:
   postgres_data:
   gdb_data:
+  setup_data:
+  deleted_ids_data:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: "1450"

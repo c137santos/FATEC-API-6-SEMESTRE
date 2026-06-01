@@ -1,16 +1,18 @@
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.database import get_session
+from backend.core.models import Distribuidora, DistribuidoraCnpj
 from backend.core.schemas import (
-    SyncDistribuidorasResponse,
+    CnpjLookupResponse,
     DistributorResponse,
+    SyncDistribuidorasResponse,
 )
-from backend.core.models import Distribuidora
+from backend.database import get_session
 from backend.services.distribuidoras import INITIAL_URL, sync_distribuidoras
+from backend.tasks.task_enrich_cnpj import task_enrich_cnpj
 
 router = APIRouter(tags=['distribuidoras'])
 logger = logging.getLogger(__name__)
@@ -64,8 +66,33 @@ async def sync_distribuidoras_endpoint(
     session: AsyncSession = Depends(get_session),
 ):
     try:
-        return await sync_distribuidoras(
-            session=session, initial_url=INITIAL_URL
+        counts = await sync_distribuidoras(session=session, initial_url=INITIAL_URL)
+        task = task_enrich_cnpj.delay()
+        return SyncDistribuidorasResponse(
+            total_recebidas=counts.total_recebidas,
+            total_persistidas=counts.total_persistidas,
+            enrichment_task_id=task.id,
         )
     except RuntimeError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@router.post('/distribuidoras/{dist_id}/cnpj-lookup', response_model=CnpjLookupResponse)
+async def cnpj_lookup(
+    dist_id: str,
+    session: AsyncSession = Depends(get_session),
+):
+    stmt = select(Distribuidora).where(Distribuidora.id == dist_id).limit(1)
+    result = await session.execute(stmt)
+    dist = result.scalar_one_or_none()
+    if dist is None:
+        raise HTTPException(status_code=404, detail='Distribuidora não encontrada')
+
+    stmt = select(DistribuidoraCnpj).where(DistribuidoraCnpj.dist_id == dist_id)
+    result = await session.execute(stmt)
+    cnpj_record = result.scalar_one_or_none()
+
+    if cnpj_record and cnpj_record.cnpj_enrichment_status == 'matched':
+        raise HTTPException(status_code=409, detail='Distribuidora já possui CNPJ resolvido')
+
+    raise HTTPException(status_code=501, detail='External CNPJ lookup not yet configured')

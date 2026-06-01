@@ -1,8 +1,32 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl
 
 
 class Message(BaseModel):
     message: str
+
+
+class ConsentPolicyPublic(BaseModel):
+    id: int
+    version: str
+    content: str
+    is_mandatory: bool
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ConsentPoliciesPublic(BaseModel):
+    mandatory: ConsentPolicyPublic
+    optional: ConsentPolicyPublic | None = None
+
+
+class UserConsentPublic(BaseModel):
+    consent_policy_id: int
+    policy_version: str
+    policy_content: str
+    is_mandatory: bool
+    accepted: bool
+    consented_at: datetime
 
 
 class UserSchema(BaseModel):
@@ -11,10 +35,17 @@ class UserSchema(BaseModel):
     password: str
 
 
+class UserCreateSchema(UserSchema):
+    consented: bool
+    optional_consented: bool = False
+
+
 class UserPublic(BaseModel):
     id: int
     username: str
     email: EmailStr
+    consented_at: datetime | None = None
+    consent_policy_id: int | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -25,6 +56,10 @@ class UserList(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class ResendVerificationSchema(BaseModel):
+    email: EmailStr
 
 
 class CriticidadeResponse(BaseModel):
@@ -45,6 +80,7 @@ class DistribuidoraPayload(BaseModel):
 class SyncDistribuidorasResponse(BaseModel):
     total_recebidas: int
     total_persistidas: int
+    enrichment_task_id: str
 
 
 class DownloadRequest(BaseModel):
@@ -105,3 +141,56 @@ class TamResponse(BaseModel):
     NOME: str | None
     COMP_KM: float
     model_config = ConfigDict(from_attributes=True)
+
+
+class CnpjLookupResponse(BaseModel):
+    dist_id: str
+    dist_name: str
+    cnpj_enrichment_status: str | None
+    message: str
+
+
+class OAuthClientCreate(BaseModel):
+    client_name: str
+    redirect_uris: list[str]
+    allowed_scopes: list[str]
+
+
+class OAuthClientCreatedResponse(BaseModel):
+    client_id: str
+
+
+class BatchTriggerRequest(BaseModel):
+    year: int | None = None
+
+
+class BatchTriggerResponse(BaseModel):
+    batch_id: str
+
+
+class BatchDistribuidoraStatus(BaseModel):
+    id: str
+    nome: str
+    ano: int
+    status: str
+    error: str | None = None
+
+
+class BatchCounts(BaseModel):
+    total: int
+    pending: int
+    processing: int
+    completed: int
+    failed: int
+    skipped: int
+
+
+class BatchStatusResponse(BaseModel):
+    batch_id: str
+    is_running: bool
+    started_at: datetime
+    finished_at: datetime | None
+    params: BatchTriggerRequest
+    user_email: str
+    counts: BatchCounts
+    distribuidoras: list[BatchDistribuidoraStatus]

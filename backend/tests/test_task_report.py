@@ -1,8 +1,8 @@
 import pytest
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 from celery.exceptions import Retry
 
-from backend.tasks.task_report import task_gerar_report
+from backend.tasks.task_report import task_gerar_report, task_send_report_email
 
 TASK_MODULE = 'backend.tasks.task_report'
 SERVICE_MODULE = 'backend.services.report'
@@ -19,9 +19,12 @@ _JOB_DOC = {
         'tabela_score': '/output/images/tabela_score_ENEL_2024.png',
         'mapa_calor': '/output/images/mapa_calor_ENEL_2024.png',
         'grafico_sam': '/output/images/sam_ENEL_2024.png',
+        'prophet': {
+            'DEC': '/output/images/prophet_ENEL_DEC.png',
+            'FEC': '/output/images/prophet_ENEL_FEC.png',
+        },
     },
 }
-
 
 def _make_db(job_doc=_JOB_DOC):
     jobs_col = MagicMock()
@@ -30,12 +33,6 @@ def _make_db(job_doc=_JOB_DOC):
     db = MagicMock()
     db.__getitem__.side_effect = lambda name: {'jobs': jobs_col}.get(name, MagicMock())
     return db
-
-
-# ---------------------------------------------------------------------------
-# happy path
-# ---------------------------------------------------------------------------
-
 
 def test_task_report_retorna_completed_quando_sucesso(tmp_path):
     db = _make_db()
@@ -74,12 +71,6 @@ def test_task_report_persiste_completed_no_mongo(tmp_path):
     assert update_doc['$set']['report_pdf_path'] == fake_pdf
     assert 'report_generated_at' in update_doc['$set']
 
-
-# ---------------------------------------------------------------------------
-# job not found
-# ---------------------------------------------------------------------------
-
-
 def test_task_report_dispara_retry_quando_job_nao_encontrado():
     db = _make_db(job_doc=None)
 
@@ -87,11 +78,37 @@ def test_task_report_dispara_retry_quando_job_nao_encontrado():
         with pytest.raises(Retry):
             task_gerar_report.run(JOB_ID)
 
+def test_task_report_dispara_retry_quando_render_paths_none():
+    """render_paths None → retry aguardando renders."""
+    job_doc = {**_JOB_DOC, 'render_paths': None}
+    db = _make_db(job_doc=job_doc)
 
-# ---------------------------------------------------------------------------
-# disk write failure
-# ---------------------------------------------------------------------------
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        with pytest.raises(Retry):
+            task_gerar_report.run(JOB_ID)
 
+
+def test_task_report_dispara_retry_quando_render_paths_incompleto():
+    """render_paths sem as chaves obrigatórias → retry aguardando renders."""
+    render_paths_sem_prophet = {
+        k: v for k, v in _JOB_DOC['render_paths'].items() if k != 'prophet'
+    }
+    job_doc = {**_JOB_DOC, 'render_paths': render_paths_sem_prophet}
+    db = _make_db(job_doc=job_doc)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        with pytest.raises(Retry):
+            task_gerar_report.run(JOB_ID)
+
+
+def test_task_report_dispara_retry_quando_render_paths_vazio():
+    """render_paths vazio → retry aguardando renders."""
+    job_doc = {**_JOB_DOC, 'render_paths': {}}
+    db = _make_db(job_doc=job_doc)
+
+    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
+        with pytest.raises(Retry):
+            task_gerar_report.run(JOB_ID)
 
 def test_task_report_persiste_failed_quando_erro_de_escrita():
     db = _make_db()
@@ -113,26 +130,73 @@ def test_task_report_persiste_failed_quando_erro_de_escrita():
     assert update_doc['$set']['report_status'] == 'failed'
     assert 'Permission denied' in update_doc['$set']['report_error']
 
-
-# ---------------------------------------------------------------------------
-# render_paths absent (dados insuficientes)
-# ---------------------------------------------------------------------------
-
-
-def test_task_report_dispara_retry_quando_render_paths_incompleto():
-    """render_paths ausente ou sem as chaves obrigatórias → retry aguardando renders."""
-    job_doc_sem_paths = {**_JOB_DOC, 'render_paths': None}
-    db = _make_db(job_doc=job_doc_sem_paths)
-
-    with patch(f'{TASK_MODULE}.get_mongo_sync_db', return_value=db):
-        with pytest.raises(Retry):
-            task_gerar_report.run(JOB_ID)
+SEND_EMAIL_MODULE = 'backend.tasks.task_report'
+JOB_ID_EMAIL = 'job-email-abc'
+RECIPIENT = 'user@example.com'
+PDF = '/output/reports/job-email-abc/report.pdf'
 
 
-# ---------------------------------------------------------------------------
-# GET /pipeline/report/{distribuidora_id} route
-# ---------------------------------------------------------------------------
+def _make_email_db():
+    jobs_col = MagicMock()
+    db = MagicMock()
+    db.__getitem__.side_effect = lambda name: {'jobs': jobs_col}.get(name, MagicMock())
+    return db
 
+
+def test_send_report_email_persiste_sent_quando_sucesso():
+    db = _make_email_db()
+
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync') as mock_send,
+    ):
+        result = task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+
+    assert result == {'job_id': JOB_ID_EMAIL, 'email_status': 'sent'}
+    mock_send.assert_called_once_with(recipient_email=RECIPIENT, pdf_path=PDF)
+    update_call = db['jobs'].update_one.call_args
+    _, update_doc = update_call.args
+    assert update_doc['$set']['email_status'] == 'sent'
+
+
+def test_send_report_email_dispara_retry_quando_smtp_falha():
+    """Falha de SMTP em tentativa intermediária chama retry sem persistir email_status."""
+    db = _make_email_db()
+
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync', side_effect=Exception('timeout')),
+        patch.object(task_send_report_email, 'retry', side_effect=Retry()) as mock_retry,
+    ):
+        task_send_report_email.push_request(retries=0)
+        try:
+            with pytest.raises(Retry):
+                task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+        finally:
+            task_send_report_email.pop_request()
+
+    mock_retry.assert_called_once()
+    db['jobs'].update_one.assert_not_called()
+
+
+def test_send_report_email_persiste_failed_apos_max_retries():
+    db = _make_email_db()
+
+    with (
+        patch(f'{SEND_EMAIL_MODULE}.get_mongo_sync_db', return_value=db),
+        patch(f'{SEND_EMAIL_MODULE}.send_email_sync', side_effect=Exception('conexão recusada')),
+    ):
+        task_send_report_email.push_request(retries=task_send_report_email.max_retries)
+        try:
+            result = task_send_report_email.run(JOB_ID_EMAIL, RECIPIENT, PDF)
+        finally:
+            task_send_report_email.pop_request()
+
+    assert result == {'job_id': JOB_ID_EMAIL, 'email_status': 'failed'}
+    update_call = db['jobs'].update_one.call_args
+    _, update_doc = update_call.args
+    assert update_doc['$set']['email_status'] == 'failed'
+    assert 'conexão recusada' in update_doc['$set']['email_error']
 
 @pytest.mark.asyncio
 async def test_get_report_status_retorna_404_quando_job_nao_existe(client):
@@ -141,9 +205,7 @@ async def test_get_report_status_retorna_404_quando_job_nao_existe(client):
 
 
 @pytest.mark.asyncio
-async def test_get_report_status_retorna_pending_quando_report_nao_gerado(
-    session,
-):
+async def test_get_report_status_retorna_pending_quando_report_nao_gerado(session):
     from unittest.mock import AsyncMock
 
     from httpx import ASGITransport, AsyncClient

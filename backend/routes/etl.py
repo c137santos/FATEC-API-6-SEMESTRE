@@ -2,13 +2,15 @@ import uuid
 
 from fastapi import APIRouter, HTTPException
 
-from backend.core.schemas import DecFecRequest, DownloadRequest
+from backend.core.schemas import DownloadRequest
 from backend.tasks.task_download_gdb import task_download_gdb
 from backend.tasks.task_load_dec_fec import (
     task_load_dec_fec_limite,
     task_load_dec_fec_realizado,
 )
+from backend.settings import Settings
 
+settings = Settings()
 router = APIRouter()
 
 
@@ -27,14 +29,17 @@ def download_gdb(request: DownloadRequest):
 
 
 @router.post('/load-dec-fec')
-def load_dec_fec(request: DecFecRequest):
+def load_dec_fec():
     job_id = str(uuid.uuid4())
+    url_realizado = settings.dec_fec_realizado
+    url_limite = settings.dec_fec_limite
+
     try:
         task_r = task_load_dec_fec_realizado.delay(
-            job_id, str(request.url_realizado)
+            job_id, str(url_realizado)
         )
         task_l = task_load_dec_fec_limite.delay(
-            job_id, str(request.url_limite)
+            job_id, str(url_limite)
         )
         return {
             'job_id': job_id,

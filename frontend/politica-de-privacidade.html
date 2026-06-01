@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidade - Thunderstone</title>
+  <link rel="stylesheet" href="./style.css?v=7" />
+  <style>
+    .policy-container {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 24px 60px;
+    }
+    .policy-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .policy-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #DD7230;
+    }
+    .policy-version {
+      font-size: 13px;
+      color: #888;
+      margin-top: 4px;
+    }
+    .policy-content {
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #333;
+      background: #f9f9f9;
+      border-radius: 8px;
+      padding: 24px;
+      border: 1px solid #eee;
+    }
+    .policy-loading {
+      text-align: center;
+      color: #888;
+      margin-top: 60px;
+    }
+    .policy-error {
+      text-align: center;
+      color: #ff4a4a;
+      margin-top: 60px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #DD7230;
+      font-size: 14px;
+      text-decoration: none;
+      margin-bottom: 24px;
+    }
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div v-scope @vue:mounted="fetchPolicies()" class="policy-container">
+    <a href="register.html" class="back-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      Voltar ao cadastro
+    </a>
+
+    <div class="policy-header">
+      <img src="./assets/raichu-logo.svg" alt="Raichu Logo" style="width: 40px; height: auto;">
+      <div>
+        <div class="policy-title">Termos e Políticas</div>
+      </div>
+    </div>
+
+    <div v-if="loading" class="policy-loading">Carregando políticas...</div>
+    <div v-else-if="error" class="policy-error">{{ error }}</div>
+    <div v-else>
+      <!-- Política obrigatória -->
+      <div v-if="mandatory" style="margin-bottom: 32px;">
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+          <h2 style="font-size: 18px; font-weight: bold; color: #DD7230; margin: 0;">Política de Privacidade</h2>
+          <span class="policy-version">Versão {{ mandatory.version }}</span>
+          <span style="font-size: 11px; background: #DD7230; color: #fff; border-radius: 4px; padding: 2px 7px;">Obrigatória</span>
+        </div>
+        <pre class="policy-content">{{ mandatory.content }}</pre>
+      </div>
+
+      <!-- Política opcional -->
+      <div v-if="optional">
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px;">
+          <h2 style="font-size: 18px; font-weight: bold; color: #555; margin: 0;">Comunicações de Marketing</h2>
+          <span class="policy-version">Versão {{ optional.version }}</span>
+          <span style="font-size: 11px; background: #888; color: #fff; border-radius: 4px; padding: 2px 7px;">Opcional</span>
+        </div>
+        <pre class="policy-content">{{ optional.content }}</pre>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createApp } from 'https://unpkg.com/petite-vue?module'
+
+    const app = {
+      mandatory: null,
+      optional: null,
+      loading: true,
+      error: null,
+
+      async fetchPolicies() {
+        try {
+          const res = await fetch('http://localhost:8000/consent-policy/latest-all')
+          if (!res.ok) {
+            this.error = 'Não foi possível carregar as políticas.'
+            return
+          }
+          const data = await res.json()
+          this.mandatory = data.mandatory
+          this.optional = data.optional || null
+        } catch {
+          this.error = 'Erro de conexão. Tente novamente mais tarde.'
+        } finally {
+          this.loading = false
+        }
+      }
+    }
+
+    createApp(app).mount()
+  </script>
+</body>
+</html>

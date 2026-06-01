@@ -1,22 +1,76 @@
+import csv
+import logging
+import os
+import secrets
+from datetime import datetime, UTC, timedelta
 from http import HTTPStatus
+from pathlib import Path
 from typing import Annotated
+
+from backend.core.audit_log import Operation
+from backend.email.envio_email import send_confirmation_email
+from backend.services.audit_log_service import write_log
+from backend.settings import Settings
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import Select, desc
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_session
 from backend.security import get_current_user, get_password_hash
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import Select
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.models import User
-from ..core.schemas import Message, UserList, UserPublic, UserSchema
+from ..core.models import ConsentPolicy, User, UserConsent
+from ..core.schemas import (
+    Message,
+    ResendVerificationSchema,
+    UserConsentPublic,
+    UserCreateSchema,
+    UserList,
+    UserPublic,
+    UserSchema,
+)
+
+logger = logging.getLogger(__name__)
+settings = Settings()
 
 router = APIRouter(prefix='/users', tags=['users'])
 T_Session = Annotated[AsyncSession, Depends(get_session)]
 T_Current_user = Annotated[User, Depends(get_current_user)]
 
 
+@router.get('/me', response_model=UserPublic)
+async def get_current_user_profile(current_user: T_Current_user):
+    return current_user
+
+
+@router.get('/me/consents', response_model=list[UserConsentPublic])
+async def get_my_consents(current_user: T_Current_user, session: T_Session):
+    rows = await session.execute(
+        Select(UserConsent, ConsentPolicy)
+        .join(ConsentPolicy, UserConsent.consent_policy_id == ConsentPolicy.id)
+        .where(UserConsent.user_id == current_user.id)
+        .order_by(ConsentPolicy.is_mandatory.desc(), UserConsent.consented_at)
+    )
+    return [
+        UserConsentPublic(
+            consent_policy_id=uc.consent_policy_id,
+            policy_version=cp.version,
+            policy_content=cp.content,
+            is_mandatory=cp.is_mandatory,
+            accepted=uc.accepted,
+            consented_at=uc.consented_at,
+        )
+        for uc, cp in rows.all()
+    ]
+
+
 @router.post('/', status_code=HTTPStatus.CREATED, response_model=UserPublic)
-async def create_user(user: UserSchema, session: T_Session):
+async def create_user(user: UserCreateSchema, session: T_Session):
+
+    if not user.consented:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Consent is required',
+        )
 
     db_user = await session.scalar(
         Select(User).where(
@@ -36,17 +90,113 @@ async def create_user(user: UserSchema, session: T_Session):
                 detail='Email already exists',
             )
 
+    mandatory_policy = await session.scalar(
+        Select(ConsentPolicy)
+        .where(ConsentPolicy.is_mandatory.is_(True))
+        .order_by(desc(ConsentPolicy.id))
+        .limit(1)
+    )
+    optional_policy = await session.scalar(
+        Select(ConsentPolicy)
+        .where(ConsentPolicy.is_mandatory.is_(False))
+        .order_by(desc(ConsentPolicy.id))
+        .limit(1)
+    )
+
+    email_token = secrets.token_urlsafe(32)
+    email_token_expires_at = datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=24)
+
     db_user = User(
         username=user.username,
         email=user.email,
         password=get_password_hash(user.password),
+        consented_at=datetime.now(UTC).replace(tzinfo=None),
+        consent_policy_id=mandatory_policy.id if mandatory_policy else None,
+        is_verified=False,
+        email_token=email_token,
+        email_token_expires_at=email_token_expires_at,
     )
 
     session.add(db_user)
+    await session.flush()
+
+    if mandatory_policy:
+        session.add(
+            UserConsent(
+                user_id=db_user.id,
+                consent_policy_id=mandatory_policy.id,
+                accepted=True,
+            )
+        )
+
+    if optional_policy:
+        session.add(
+            UserConsent(
+                user_id=db_user.id,
+                consent_policy_id=optional_policy.id,
+                accepted=user.optional_consented,
+            )
+        )
+
     await session.commit()
     await session.refresh(db_user)
 
+    try:
+        await send_confirmation_email(db_user.email, email_token, settings.frontend_url)
+    except Exception:
+        logger.exception('[create_user] Falha ao enviar email de confirmação para %s', db_user.email)
+
+    await write_log(
+        operation=Operation.ACCOUNT_CREATED,
+        user_id=db_user.id,
+        entity_name='User',
+        to_value={
+            'policy_version': mandatory_policy.version if mandatory_policy else None,
+            'acceptance_method': 'click-wrap',
+        },
+    )
+    await write_log(
+        operation=Operation.CONSENT_ACCEPTED,
+        user_id=db_user.id,
+        entity_name='ConsentPolicy',
+        to_value={'policy_version': mandatory_policy.version if mandatory_policy else None},
+    )
+
     return db_user
+
+
+@router.get('/verify-email', response_model=Message)
+async def verify_email(session: T_Session, token: str = Query(...)):
+    user = await session.scalar(Select(User).where(User.email_token == token))
+
+    if not user:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail='Token inválido')
+
+    if user.email_token_expires_at is None or user.email_token_expires_at < datetime.now(UTC).replace(tzinfo=None):
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail='Token expirado')
+
+    user.is_verified = True
+    user.email_token = None
+    user.email_token_expires_at = None
+    await session.commit()
+
+    return {'message': 'Email confirmado com sucesso'}
+
+
+@router.post('/resend-verification', response_model=Message)
+async def resend_verification(body: ResendVerificationSchema, session: T_Session):
+    user = await session.scalar(Select(User).where(User.email == body.email))
+
+    if user and not user.is_verified:
+        user.email_token = secrets.token_urlsafe(32)
+        user.email_token_expires_at = datetime.now(UTC).replace(tzinfo=None) + timedelta(hours=24)
+        await session.commit()
+        try:
+            await send_confirmation_email(user.email, user.email_token, settings.frontend_url)
+        except Exception:
+            logger.exception('[resend_verification] Falha ao enviar email para %s', user.email)
+
+    return {'message': 'Email de confirmação reenviado'}
 
 
 @router.get('/', response_model=UserList)
@@ -68,12 +218,26 @@ async def update_user(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission'
         )
 
+    fields_updated = []
+    if user.username != current_user.username:
+        fields_updated.append('username')
+    if user.email != current_user.email:
+        fields_updated.append('email')
+    fields_updated.append('password')
+
     current_user.email = user.email
     current_user.username = user.username
     current_user.password = get_password_hash(user.password)
 
     await session.commit()
     await session.refresh(current_user)
+
+    await write_log(
+        operation=Operation.ACCOUNT_UPDATED,
+        user_id=current_user.id,
+        entity_name='User',
+        to_value={'fields_updated': fields_updated},
+    )
 
     return current_user
 
@@ -88,7 +252,28 @@ async def delete_user(
             status_code=HTTPStatus.FORBIDDEN, detail='Not enough permission'
         )
 
+    deleted_id = str(current_user.id)
     await session.delete(current_user)
     await session.commit()
 
+    _append_deleted_user_id(deleted_id)
+
+    await write_log(
+        operation=Operation.ACCOUNT_DELETION,
+        user_id=deleted_id,
+        entity_name='User',
+    )
+
     return {'message': 'User deleted'}
+
+
+_DELETED_IDS_PATH = Path(os.getenv('DELETED_IDS_PATH', '/app/data/deleted_users.csv'))
+
+
+def _append_deleted_user_id(user_id: str) -> None:
+    try:
+        _DELETED_IDS_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with _DELETED_IDS_PATH.open('a', newline='') as f:
+            csv.writer(f).writerow([user_id])
+    except OSError:
+        logger.warning('could not write deleted user id %s to %s', user_id, _DELETED_IDS_PATH)

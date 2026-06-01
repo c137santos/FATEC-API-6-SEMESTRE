@@ -1,10 +1,11 @@
 import asyncio
+import logging
+from pathlib import Path
+
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
-from fastapi import HTTPException
-from backend.core.models import User
 from backend.settings import Settings
 
-
+logger = logging.getLogger(__name__)
 settings = Settings()
 
 
@@ -22,40 +23,69 @@ def get_mail_config():
     )
 
 
-async def send_email(user: User):
-    """
-    Envia o e-mail para o endereço do usuário (user.email).
-    :param user: Objeto que contém o atributo 'email'
-    """
+async def send_email(recipient_email: str, pdf_path: str) -> None:
+    conf = get_mail_config()
+
+    pdf_file = Path(pdf_path)
+    attachments = [
+        {
+            'file': pdf_path,
+            'filename': pdf_file.name,
+            'mime_type': 'application',
+            'mime_subtype': 'pdf',
+        }
+    ]
+
+    message = MessageSchema(
+        subject='Seu relatório está pronto — Thunderstone',
+        recipients=[recipient_email],
+        body=(
+            'Olá,\n\n'
+            'Seu relatório foi gerado com sucesso no sistema Thunderstone.\n'
+            'O arquivo PDF está em anexo.\n\n'
+            'Atenciosamente,\nEquipe Thunderstone'
+        ),
+        subtype=MessageType.plain,
+        attachments=attachments,
+    )
+
+    fm = FastMail(conf)
+    
     try:
-        conf = get_mail_config()
-
-        message = MessageSchema(
-            subject='Relatório automático',
-            recipients=[user.email],
-            body='Olá, seu relatório foi gerado com sucesso no sistema.',
-            subtype=MessageType.plain,
-        )
-
-        fm = FastMail(conf)
         await fm.send_message(message)
+        logger.info('[send_email] E-mail enviado para %s', recipient_email)
+    except Exception:
+        logger.exception('[send_email] Falha ao enviar e-mail para %s', recipient_email)
+        raise
 
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f'Ocorreu um erro ao enviar o e-mail: {str(e)}',
-        )
+def send_email_sync(recipient_email: str, pdf_path: str) -> None:
+    asyncio.run(send_email(recipient_email, pdf_path))
 
 
-if __name__ == '__main__':
+async def send_confirmation_email(recipient_email: str, token: str, base_url: str) -> None:
+    conf = get_mail_config()
 
-    class MockUser:
-        def __init__(self, email):
-            self.email = email
+    verification_link = f'{base_url}/verify-email.html?token={token}'
 
-    test_user = MockUser(email='yan_teste@exemplo.com')
+    message = MessageSchema(
+        subject='Confirme seu e-mail — Thunderstone',
+        recipients=[recipient_email],
+        body=(
+            'Olá,\n\n'
+            'Obrigado por se cadastrar no sistema Thunderstone.\n'
+            'Clique no link abaixo para confirmar seu e-mail:\n\n'
+            f'{verification_link}\n\n'
+            'O link é válido por 24 horas.\n\n'
+            'Atenciosamente,\nEquipe Thunderstone'
+        ),
+        subtype=MessageType.plain,
+    )
+
+    fm = FastMail(conf)
 
     try:
-        asyncio.run(send_email(user=test_user))
-    finally:
-        pass
+        await fm.send_message(message)
+        logger.info('[send_confirmation_email] E-mail de confirmação enviado para %s', recipient_email)
+    except Exception:
+        logger.exception('[send_confirmation_email] Falha ao enviar e-mail para %s', recipient_email)
+        raise

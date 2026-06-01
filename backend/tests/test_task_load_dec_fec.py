@@ -454,3 +454,100 @@ def test_limite_arquivo_temporario_removido_apos_erro(
         task_load_dec_fec_limite.run('lim-clean', URL_LIMITE)
 
     assert not (tmp_dir / 'lim-clean_limite.csv').exists()
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# num_cnpj normalização e índice
+# ═════════════════════════════════════════════════════════════════════════════
+
+
+def test_realizado_num_cnpj_normalizado_no_documento(tmp_dir, mock_mongo):
+    csv_formatado = _csv_bytes(
+        COLUNAS_REALIZADO,
+        [
+            [
+                '2026-03-05',
+                'COPEL-DIS',
+                '76.535.764/0001-43',
+                'PR-CRT-001',
+                'Curitiba Centro',
+                'DEC',
+                '2023',
+                '1',
+                '5,23',
+            ],
+        ],
+    )
+    with patch(f'{TASK_MODULE}.httpx.stream', return_value=_FakeStream(csv_formatado)):
+        result = task_load_dec_fec_realizado.run('job-norm', URL_REALIZADO)
+
+    assert result['rows_loaded'] == 1
+    op = mock_mongo.bulk_write.call_args[0][0][0]
+    assert op._doc['$set']['num_cnpj'] == '76535764000143'
+
+
+def test_realizado_cnpj_invalido_e_ignorado(tmp_dir, mock_mongo):
+    csv_invalido = _csv_bytes(
+        COLUNAS_REALIZADO,
+        [
+            [
+                '2026-03-05',
+                'COPEL-DIS',
+                'INVALIDO',
+                'PR-CRT-001',
+                'Curitiba Centro',
+                'DEC',
+                '2023',
+                '1',
+                '5,23',
+            ],
+        ],
+    )
+    with patch(f'{TASK_MODULE}.httpx.stream', return_value=_FakeStream(csv_invalido)):
+        result = task_load_dec_fec_realizado.run('job-inv', URL_REALIZADO)
+
+    assert result['rows_loaded'] == 0
+    assert result['rows_skipped'] == 1
+    mock_mongo.bulk_write.assert_not_called()
+
+
+def test_realizado_filtro_upsert_usa_num_cnpj(tmp_dir, mock_mongo):
+    with patch(f'{TASK_MODULE}.httpx.stream', return_value=_FakeStream(CSV_REALIZADO)):
+        task_load_dec_fec_realizado.run('job-filter', URL_REALIZADO)
+
+    op = mock_mongo.bulk_write.call_args[0][0][0]
+    assert 'num_cnpj' in op._filter
+    assert 'sig_agente' not in op._filter
+
+
+def test_limite_num_cnpj_normalizado_no_documento(tmp_dir, mock_mongo):
+    csv_formatado = _csv_bytes(
+        COLUNAS_LIMITE,
+        [
+            [
+                '2026-03-05',
+                'COPEL-DIS',
+                '76.535.764/0001-43',
+                'PR-CRT-001',
+                'Curitiba Centro',
+                'DEC',
+                '2023',
+                '6,50',
+            ],
+        ],
+    )
+    with patch(f'{TASK_MODULE}.httpx.stream', return_value=_FakeStream(csv_formatado)):
+        result = task_load_dec_fec_limite.run('lim-norm', URL_LIMITE)
+
+    assert result['rows_loaded'] == 1
+    op = mock_mongo.bulk_write.call_args[0][0][0]
+    assert op._doc['$set']['num_cnpj'] == '76535764000143'
+
+
+def test_limite_filtro_upsert_usa_num_cnpj(tmp_dir, mock_mongo):
+    with patch(f'{TASK_MODULE}.httpx.stream', return_value=_FakeStream(CSV_LIMITE)):
+        task_load_dec_fec_limite.run('lim-filter', URL_LIMITE)
+
+    op = mock_mongo.bulk_write.call_args[0][0][0]
+    assert 'num_cnpj' in op._filter
+    assert 'sig_agente' not in op._filter

@@ -1,5 +1,6 @@
 import logging
 
+from backend.core.utils import normalize_cnpj
 from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
@@ -23,14 +24,19 @@ def _classificar_criticidade(score: float) -> str:
     return 'Vermelho'
 
 
-def _buscar_realizados(db, ano: int, distribuidora: str) -> list[dict]:
+def _build_match(ano_field: str, ano: int, distribuidora: str, cnpj: str | None) -> dict:
+    base = {'sig_indicador': {'$in': ['DEC', 'FEC']}, ano_field: ano}
+    if cnpj:
+        base['num_cnpj'] = cnpj
+    else:
+        base['sig_agente'] = distribuidora.upper()
+    return base
+
+
+def _buscar_realizados(db, ano: int, distribuidora: str, cnpj: str | None = None) -> list[dict]:
     pipeline = [
         {
-            '$match': {
-                'ano_indice': ano,
-                'sig_agente': distribuidora.upper(),
-                'sig_indicador': {'$in': ['DEC', 'FEC']},
-            }
+            '$match': _build_match('ano_indice', ano, distribuidora, cnpj)
         },
         {
             '$group': {
@@ -57,14 +63,10 @@ def _buscar_realizados(db, ano: int, distribuidora: str) -> list[dict]:
     return list(db['dec_fec_realizado'].aggregate(pipeline))
 
 
-def _buscar_limites(db, ano: int, distribuidora: str) -> list[dict]:
+def _buscar_limites(db, ano: int, distribuidora: str, cnpj: str | None = None) -> list[dict]:
     pipeline = [
         {
-            '$match': {
-                'ano_limite': ano,
-                'sig_agente': distribuidora.upper(),
-                'sig_indicador': {'$in': ['DEC', 'FEC']},
-            }
+            '$match': _build_match('ano_limite', ano, distribuidora, cnpj)
         },
         {
             '$project': {
@@ -84,17 +86,22 @@ def _buscar_limites(db, ano: int, distribuidora: str) -> list[dict]:
     bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.score_criticidade'
 )
 def task_score_criticidade(
-    self, job_id: str, distribuidora: str, ano: int
+    self, job_id: str, distribuidora: str, ano: int, cnpj: str | None = None
 ) -> dict:
     logger.info('[task_score_criticidade] Inicio. job_id=%s', job_id)
+
+    try:
+        cnpj = normalize_cnpj(cnpj) if cnpj else None
+    except ValueError:
+        cnpj = None
 
     db = get_mongo_sync_db()
     job = db['jobs'].find_one({'job_id': job_id})
     if not job or job.get('status') != 'completed':
         raise self.retry(countdown=WAIT_COUNTDOWN)
 
-    dados_realizados = _buscar_realizados(db, ano, distribuidora)
-    dados_limites = _buscar_limites(db, ano, distribuidora)
+    dados_realizados = _buscar_realizados(db, ano, distribuidora, cnpj)
+    dados_limites = _buscar_limites(db, ano, distribuidora, cnpj)
 
     if not dados_realizados or not dados_limites:
         msg = (
@@ -203,16 +210,21 @@ def task_score_criticidade(
     bind=True, max_retries=MAX_WAIT_RETRIES, name='etl.mapa_criticidade'
 )
 def task_mapa_criticidade(
-    self, job_id: str, distribuidora_id: str, distribuidora: str, ano: int
+    self, job_id: str, distribuidora_id: str, distribuidora: str, ano: int, cnpj: str | None = None
 ) -> dict:
     logger.info('[task_mapa_criticidade] Inicio. job_id=%s', job_id)
+
+    try:
+        cnpj = normalize_cnpj(cnpj) if cnpj else None
+    except ValueError:
+        cnpj = None
 
     db = get_mongo_sync_db()
     job = db['jobs'].find_one({'job_id': job_id})
     if not job or job.get('status') != 'completed':
         raise self.retry(countdown=WAIT_COUNTDOWN)
 
-    dados_realizados = _buscar_realizados(db, ano, distribuidora)
+    dados_realizados = _buscar_realizados(db, ano, distribuidora, cnpj)
     if not dados_realizados:
         msg = (
             '\n'
@@ -231,7 +243,7 @@ def task_mapa_criticidade(
         logger.error(msg)
         raise RuntimeError(msg)
 
-    dados_limites = _buscar_limites(db, ano, distribuidora)
+    dados_limites = _buscar_limites(db, ano, distribuidora, cnpj)
 
     realizados_dict = {
         (r['sig_agente'], r['ide_conj'], r['sig_indicador']): (

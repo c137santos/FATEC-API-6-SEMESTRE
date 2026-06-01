@@ -7,6 +7,7 @@ import fiona
 from celery import chord, signature
 from celery.exceptions import Ignore
 
+from backend.database import get_mongo_sync_db
 from backend.tasks.celery_app import celery_app
 
 logger = logging.getLogger(__name__)
@@ -224,6 +225,15 @@ def task_descompact_gdb(
             job_id,
             len(header_tasks),
         )
+
+        db = get_mongo_sync_db()
+        job_doc = db.jobs.find_one({'job_id': job_id}, {'batch_id': 1})
+        batch_id = job_doc.get('batch_id') if job_doc else None
+
+        from backend.tasks.task_on_calculation_failure import (
+            task_on_calculation_failure,
+        )
+
         raise self.replace(
             chord(
                 header_tasks,
@@ -231,6 +241,10 @@ def task_descompact_gdb(
                     'etl.finalizar',
                     args=(job_id, zip_path, str(tmp_dir), distribuidora_id),
                 ),
+            ).on_error(
+                task_on_calculation_failure.si(
+                    job_id, batch_id, distribuidora_id
+                )
             )
         )
     except Ignore:

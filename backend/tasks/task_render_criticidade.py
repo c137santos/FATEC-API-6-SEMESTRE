@@ -1,6 +1,5 @@
 import logging
 import time
-from functools import lru_cache
 from pathlib import Path
 
 import geopandas as gpd
@@ -28,14 +27,13 @@ _CATEGORIA_COR = {
 
 
 def _cor_score(score: float) -> str:
-    if score == 0:
-        return '#c8e6c9'
-    if score <= 50:
-        return '#fff9c4'
-    return '#ffcdd2'
+    if score > 50:
+        return '#ffcdd2'
+    if score > 0:
+        return '#fff9c4'    
+    return '#c8e6c9'    
 
 
-@lru_cache(maxsize=None)
 def _output_dir() -> Path:
     path = Path(__file__).resolve().parent.parent.parent / 'output' / 'images'
     path.mkdir(parents=True, exist_ok=True)
@@ -118,18 +116,22 @@ def task_render_tabela_score(
         ]
         for rank, c in enumerate(conjuntos, start=1)
     ]
-
     n_rows = len(linhas)
     fig_height = max(4, 0.45 * n_rows + 1.5)
     fig, ax = plt.subplots(figsize=(18, fig_height))
     ax.set_axis_off()
 
+    larguras_colunas = [0.04, 0.24, 0.09, 0.09, 0.09, 0.09, 0.14, 0.14, 0.08]
+
     table = ax.table(
-        cellText=linhas, colLabels=colunas, loc='center', cellLoc='center'
+        cellText=linhas, 
+        colLabels=colunas, 
+        loc='upper center', 
+        cellLoc='center',
+        colWidths=larguras_colunas  
     )
     table.auto_set_font_size(False)
-    table.set_fontsize(8)
-    table.auto_set_column_width(col=list(range(len(colunas))))
+    table.set_fontsize(9) 
 
     for col_idx in range(len(colunas)):
         cell = table[0, col_idx]
@@ -144,13 +146,6 @@ def task_render_tabela_score(
         )
 
     sig = score_doc.get('distribuidora', distribuidora.upper())
-    ax.set_title(
-        f'Score de Criticidade — {sig} ({ano})\n'
-        f'Score médio: {score_doc.get("score_criticidade", 0):.2f} | '
-        f'Total conjuntos: {score_doc.get("quantidade_conjuntos", n_rows)}',
-        fontsize=11,
-        pad=12,
-    )
 
     out_path = _output_dir() / f'tabela_score_{sig}_{ano}.png'
     plt.savefig(out_path, dpi=150, bbox_inches='tight')
@@ -278,7 +273,6 @@ def task_render_mapa_calor(
 
     fig, ax = plt.subplots(1, 1, figsize=(15, 15))
     gdf.plot(color=gdf['cor'], linewidth=0.8, ax=ax, edgecolor='0.8')
-    ax.set_title(f'Heatmap de Criticidade — {sig} ({ano})', fontsize=15)
     ax.set_axis_off()
     ax.legend(
         handles=[

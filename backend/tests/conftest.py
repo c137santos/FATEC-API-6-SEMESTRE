@@ -8,14 +8,16 @@ import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
-from sqlalchemy import text
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from testcontainers.postgres import PostgresContainer
 
 from backend.app import app
 from backend.core import models as _models  # noqa: F401
-from backend.core.models import User, table_registry
+from backend.core import oauth_models as _oauth_models  # noqa: F401
+from backend.core.models import ConsentPolicy, User, table_registry
 from backend.database import get_mongo_async_database, get_session
 from backend.security import get_password_hash
 from backend.services.pipeline_trigger import trigger_pipeline_flow
@@ -29,15 +31,8 @@ class UserFactory(factory.Factory):
     username = factory.Sequence(lambda n: f'test{n}')
     email = factory.LazyAttribute(lambda obj: f'{obj.username}@test.com')
     password = factory.LazyAttribute(lambda obj: f'{obj.username}+senha')
+    is_verified = True
 
-
-@pytest.fixture(scope="session", autouse=True)
-def setup_celery_test_config():
-    """Configura o Celery para modo síncrono durante os testes."""
-    celery_app.conf.update(
-        task_always_eager=True,     
-        task_eager_propagates=True, 
-    )
 
 @pytest_asyncio.fixture
 async def triggered_job(session, setup_distribuidora):
@@ -86,6 +81,16 @@ def postgres_container():
         yield postgres
 
 
+@pytest.fixture(scope='session', autouse=True)
+def configure_sync_session(postgres_container):
+    import backend.database as db_module
+    sync_url = postgres_container.get_connection_url()
+    sync_engine = create_engine(sync_url, poolclass=NullPool)
+    db_module.SyncSession = sessionmaker(
+        sync_engine, expire_on_commit=False
+    )
+
+
 @pytest_asyncio.fixture(scope='session', loop_scope='session')
 async def engine(postgres_container):
     url = postgres_container.get_connection_url().replace(
@@ -127,6 +132,32 @@ async def client(session, mongo_db):
 
 
 @pytest_asyncio.fixture()
+async def consent_policy(session):
+    policy = ConsentPolicy(
+        version=f'1.0-{uuid.uuid4().hex[:8]}',
+        content='Esta plataforma coleta seus dados pessoais conforme a LGPD.',
+        is_mandatory=True,
+    )
+    session.add(policy)
+    await session.flush()
+    await session.refresh(policy)
+    return policy
+
+
+@pytest_asyncio.fixture()
+async def optional_consent_policy(session):
+    policy = ConsentPolicy(
+        version=f'1.0-marketing-{uuid.uuid4().hex[:8]}',
+        content='Autorizo o envio de comunicações de marketing por e-mail.',
+        is_mandatory=False,
+    )
+    session.add(policy)
+    await session.flush()
+    await session.refresh(policy)
+    return policy
+
+
+@pytest_asyncio.fixture()
 async def user(session):
     pwd = 'testeste'
     user_obj = UserFactory(password=get_password_hash(pwd))
@@ -135,6 +166,17 @@ async def user(session):
     await session.commit()
     await session.refresh(user_obj)
 
+    user_obj.clean_password = pwd
+    return user_obj
+
+
+@pytest_asyncio.fixture()
+async def unverified_user(session):
+    pwd = 'testeste'
+    user_obj = UserFactory(password=get_password_hash(pwd), is_verified=False)
+    session.add(user_obj)
+    await session.commit()
+    await session.refresh(user_obj)
     user_obj.clean_password = pwd
     return user_obj
 
@@ -151,12 +193,25 @@ async def other_user(session):
 
 
 @pytest_asyncio.fixture()
-async def token(client, user):
+async def oauth_client(client):
     response = await client.post(
+        '/oauth/clients',
+        json={
+            'client_name': 'Test Client',
+            'redirect_uris': ['http://localhost/callback'],
+            'allowed_scopes': ['openid', 'email', 'profile'],
+        },
+    )
+    return response.json()
+
+
+@pytest_asyncio.fixture()
+async def token(client, user):
+    await client.post(
         '/auth/token',
         data={'username': user.email, 'password': user.clean_password},
     )
-    return response.json()['access_token']
+    return client.cookies['access_token']
 
 
 @pytest_asyncio.fixture
@@ -175,7 +230,14 @@ async def mongo_db():
 def mock_mongo_db():
     mock_db = MagicMock()
     mock_db.jobs.insert_one = AsyncMock()
-    with patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db:
+    mock_db.jobs.find_one = AsyncMock(return_value=None)
+    mock_db.jobs.update_one = AsyncMock()
+    mock_collection = AsyncMock()
+    mock_db.__getitem__ = MagicMock(return_value=mock_collection)
+    with (
+        patch("backend.services.pipeline_trigger.get_mongo_async_db") as mocked_get_db,
+        patch("backend.services.audit_log_service.get_mongo_async_db", return_value=mock_db),
+    ):
         mocked_get_db.return_value = mock_db
         yield mocked_get_db
 
@@ -254,6 +316,7 @@ def pytest_sessionstart(session):
     Executa antes da coleta dos testes.
     Define variáveis de ambiente mínimas para evitar erros de validação do Pydantic.
     """
+    os.environ.setdefault('AUTHLIB_INSECURE_TRANSPORT', '1')
     os.environ.setdefault('MAIL_USERNAME', 'test_user')
     os.environ.setdefault('MAIL_PASSWORD', 'test_password')
     os.environ.setdefault('MAIL_SERVER', 'smtp.test.com')
@@ -285,3 +348,14 @@ def setup_celery_test_config():
 def mock_time_sleep():
     with patch('time.sleep'):
         yield
+
+
+@pytest.fixture(autouse=True)
+def close_matplotlib_figures():
+    yield
+    try:
+        import matplotlib.pyplot as plt
+        plt.close('all')
+    except Exception:
+        pass
+ 

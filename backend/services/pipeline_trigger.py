@@ -1,13 +1,15 @@
 import uuid
 from datetime import datetime, timezone
 
+from backend.tasks.task_render_temporal_analysis import (
+    task_render_prophet_forecast,
+)
 from backend.tasks.task_render_sam import task_render_sam
-import httpx
 from celery import chain
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from backend.core.models import Distribuidora
+from backend.core.models import Distribuidora, DistribuidoraCnpj
 from backend.tasks.task_calculate_pt_pnt import task_calculate_pt_pnt
 from backend.tasks.task_calculate_sam import task_calculate_sam
 from backend.tasks.task_criticidade import (
@@ -50,6 +52,18 @@ async def _get_distribuidora_name(
     return dist_name
 
 
+async def _get_distribuidora_cnpj(
+    session: AsyncSession,
+    distribuidora_id: str,
+) -> str | None:
+    stmt = select(DistribuidoraCnpj.cnpj).where(
+        DistribuidoraCnpj.dist_id == distribuidora_id,
+        DistribuidoraCnpj.cnpj_enrichment_status == 'matched',
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
 async def distribuidora_job_already_triggered(
     session: AsyncSession,
     distribuidora_id: str,
@@ -61,6 +75,73 @@ async def distribuidora_job_already_triggered(
     )
     result = await session.execute(stmt)
     return result.scalar_one_or_none() is not None
+
+
+async def _get_existing_job_id(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+) -> str | None:
+    stmt = select(Distribuidora.job_id).where(
+        Distribuidora.id == distribuidora_id,
+        Distribuidora.date_gdb == ano,
+    )
+    result = await session.execute(stmt)
+    return result.scalar_one_or_none()
+
+
+async def _trigger_replot_flow(
+    session: AsyncSession,
+    distribuidora_id: str,
+    ano: int,
+    user_email: str,
+    job_id: str,
+    job_doc: dict,
+) -> dict:
+    """Regera imagens a partir dos dados já calculados e remonta o relatório."""
+    dist_name = job_doc.get('dist_name', '')
+    sig_agente = dist_name.replace('_', ' ')
+
+    cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
+
+    db = get_mongo_async_db()
+    await db.jobs.update_one(
+        {'job_id': job_id},
+        {'$set': {
+            'report_status': 'pending',
+            'user_email': user_email,
+            'render_paths': {} if cnpj else {'prophet': None},
+        }},
+    )
+
+    replot_tasks = [
+        task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_grafico_tam.si(job_id),
+        task_render_tabela_score.si(job_id, sig_agente, ano),
+        task_render_mapa_calor.si(job_id, sig_agente, ano),
+        task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
+        task_gerar_report.si(job_id),
+        task_cleanup_files.si(job_id),
+    ]
+
+    result = chain(*[t for t in replot_tasks if t is not None]).delay()
+
+    await save_distribuidora_job_tracking(
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=job_id,
+    )
+
+    return {
+        'job_id': job_id,
+        'task_id': result.id,
+        'status': 'queued',
+        'distribuidora_id': distribuidora_id,
+        'ano': ano,
+        'download_url': ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id),
+    }
 
 
 async def save_distribuidora_job_tracking(
@@ -89,9 +170,11 @@ async def init_tam_metadata(
     distribuidora_id: str,
     ano: int,
     job_id: str,
+    user_email: str,
+    cnpj: str | None = None,
 ) -> None:
     """Inicializa os dados do Job no MongoDB para que as tasks futuras tenham acesso."""
-    
+
     stmt = select(Distribuidora.dist_name).where(
         Distribuidora.id == distribuidora_id,
         Distribuidora.date_gdb == ano,
@@ -101,14 +184,19 @@ async def init_tam_metadata(
     dist_name = result.scalar_one_or_none()
 
     db = get_mongo_async_db()
-    
+
+    # Sem CNPJ, prophet é pulado na chain — pré-popula None para task_gerar_report não entrar em loop
+    render_paths = {} if cnpj else {'prophet': None}
+
     await db.jobs.insert_one({
-        "job_id": job_id,
-        "distribuidora_id": distribuidora_id,
-        "dist_name": dist_name,  
-        "ano_gdb": ano,          
-        "status": "started",
-        "created_at": datetime.utcnow()
+        'job_id': job_id,
+        'distribuidora_id': distribuidora_id,
+        'dist_name': dist_name,
+        'ano_gdb': ano,
+        'status': 'started',
+        'user_email': user_email,
+        'created_at': datetime.utcnow(),
+        'render_paths': render_paths,
     })
 
 
@@ -116,45 +204,70 @@ async def trigger_pipeline_flow(
     session: AsyncSession,
     distribuidora_id: str,
     ano: int,
+    user_email: str,
+    force_full: bool = False,
 ) -> dict:
     """Orquestra todos os passos da pipeline: download + criticidade + render."""
-    if await distribuidora_job_already_triggered(
+    existing_job_id = await _get_existing_job_id(
         session, distribuidora_id, ano
-    ):
-        raise ValueError(
-            'Pipeline já foi acionada para a distribuidora no ano informado'
+    )
+
+    if existing_job_id is not None:
+        db = get_mongo_async_db()
+        job_doc = await db.jobs.find_one(
+            {'job_id': existing_job_id}, {'_id': 0}
         )
+        if job_doc and job_doc.get('report_status') in ('completed', 'failed'):
+            if not (force_full and job_doc.get('report_status') == 'failed'):
+                return await _trigger_replot_flow(
+                    session,
+                    distribuidora_id,
+                    ano,
+                    user_email,
+                    existing_job_id,
+                    job_doc,
+                )
+        else:
+            raise ValueError(
+                'Pipeline já foi acionada para a distribuidora no ano informado'
+            )
 
     dist_name = await _get_distribuidora_name(
         session,
         distribuidora_id,
         ano,
     )
+    cnpj = await _get_distribuidora_cnpj(session, distribuidora_id)
+    sig_agente = dist_name.replace('_', ' ')
 
     download_url = ARCGIS_DOWNLOAD_URL.format(item_id=distribuidora_id)
     job_id = str(uuid.uuid4())
     zip_path = str(DOWNLOAD_DIR / f'{job_id}.zip')
 
-    result = chain(
+    tasks = [
         task_download_gdb.si(job_id, download_url, distribuidora_id),
         task_descompact_gdb.si(job_id, zip_path, distribuidora_id),
-        task_score_criticidade.si(job_id, dist_name, ano),
-        task_calculate_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
-        task_render_pt_pnt.si(job_id, distribuidora_id, dist_name, ano),
-        task_calculate_sam.si(job_id, distribuidora_id, dist_name, ano),
-        task_mapa_criticidade.si(job_id, distribuidora_id, dist_name, ano),
-        task_calcular_tam.si(job_id, {
-            "id": distribuidora_id, 
-            "dist_name": dist_name, 
-            "date_gdb": ano
-        }),       
+        task_score_criticidade.si(job_id, sig_agente, ano, cnpj),
+        task_calculate_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_pt_pnt.si(job_id, distribuidora_id, sig_agente, ano),
+        task_calculate_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_mapa_criticidade.si(
+            job_id, distribuidora_id, sig_agente, ano, cnpj
+        ),
+        task_calcular_tam.si(
+            job_id,
+            {'id': distribuidora_id, 'dist_name': sig_agente, 'date_gdb': ano},
+        ),
         task_render_grafico_tam.si(job_id),
-        task_render_tabela_score.si(job_id, dist_name, ano),
-        task_render_mapa_calor.si(job_id, dist_name, ano),
-        task_render_sam.si(job_id, distribuidora_id, dist_name, ano),
+        task_render_tabela_score.si(job_id, sig_agente, ano),
+        task_render_mapa_calor.si(job_id, sig_agente, ano),
+        task_render_sam.si(job_id, distribuidora_id, sig_agente, ano),
+        task_render_prophet_forecast.si(job_id, cnpj) if cnpj else None,
         task_gerar_report.si(job_id),
         task_cleanup_files.si(job_id),
-    ).delay()
+    ]
+
+    result = chain(*[t for t in tasks if t is not None]).delay()
 
     await save_distribuidora_job_tracking(
         session=session,
@@ -164,10 +277,12 @@ async def trigger_pipeline_flow(
     )
 
     await init_tam_metadata(
-        session=session, 
-        distribuidora_id=distribuidora_id, 
-        ano=ano, 
-        job_id=job_id
+        session=session,
+        distribuidora_id=distribuidora_id,
+        ano=ano,
+        job_id=job_id,
+        user_email=user_email,
+        cnpj=cnpj,
     )
 
     return {

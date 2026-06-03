@@ -3,7 +3,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thunderstone</title>
-  <link rel="stylesheet" href="./style.css?v=12" />
+  <link rel="stylesheet" href="./style.css?v=17" />
 <body>
   <div v-scope class="app">
     <aside class="sidebar">
@@ -22,11 +22,21 @@
     <div v-if="showSuccessModal" class="modal-backdrop">
       <div class="modal">
         <div class="modal-content">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#DD7230"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="modal-icon">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
-          <h2 style="color: #DD7230; font-size: 24px; margin-bottom: 16px; font-weight: bold;"> Sucesso! </h2>
+          <h2 class="modal-title"> Sucesso! </h2>
           <p> Seu relatório está sendo compilado e quando estiver pronto </p>
           <p> será enviado para o e-mail cadastrado. </p>
           <button class="modal-btn" @click="closeSuccessModal">Ok</button>
@@ -36,16 +46,17 @@
 
     <main class="main">
       <div class="screen-wrapper" v-if="screen === 'documents'">
-      <div class="screen-title">Geração de  <span style="color: #DD7230; margin-left: 10px;">Documentação</span></div>
+      <div class="screen-title">
+        Geração de <span class="text-highlight">Documentos</span></div>
       <div class="screen-subtitle">
         <p>Selecione os parâmetros necessários para compilar e gerar os relatórios</p>
         <p>oficiais em formato digital e enviar por e-mail.</p>
         </div>
-      <section class="card" >
+      <section class="card">
         <h1 class="card-title">
           <span class="background-icon">
             <img src="./assets/Icon.svg" alt="" class="nav-icon">
-          </span> Documentação</h1>
+          </span> Documentos</h1>
         <h1 class="card-subtitle">Configuração de exportação de dados</h1>
         <label class="field">
           <span class="field-label">SELECIONE DISTRIBUIDORA</span>
@@ -78,14 +89,14 @@
           </select>
         </label>
 
-        <div class="info-card">
-          <img src="./assets/infoicon.svg" alt="Info" class="info-icon">
-          <div class="info-text">
-            <p style="margin-bottom: 4px;">A geração do documento pode levar um tempo</p>
-            <p style="margin-bottom: 4px;">dependendo do volume de dados processados para a </p>
-            <p style="margin-bottom: 4px;">distribuidora selecionada.</p>
-          </div>
+      <div class="info-card">
+        <span class="info-icon" aria-hidden="true"></span>
+        <div class="info-text">
+          <p class="info-text-line">A geração do documento pode levar um tempo</p>
+          <p class="info-text-line">dependendo do volume de dados processados para a </p>
+          <p class="info-text-line">distribuidora selecionada.</p>
         </div>
+      </div>
 
         <button class="primary-btn" @click="gerarPDF" :disabled="loading">
           <img src="./assets/pdfbutton.svg" alt="" class="nav-icon">

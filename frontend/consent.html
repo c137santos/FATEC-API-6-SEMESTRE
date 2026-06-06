@@ -11,7 +11,18 @@
     <main class="main" style="padding: 0;">
       <div class="login-container">
         <div class="login-header">
-          <img src="./assets/raichu-logo.svg" alt="Raichu Logo" class="login-logo" style="width: 60px; height: auto; margin-bottom: 8px;">
+          <picture class="login-logo-picture">
+            <source
+              srcset="./assets/pikachu-logo.svg"
+              media="(prefers-color-scheme: light)"
+            />
+            <img
+              src="./assets/raichu-logo.svg"
+              alt="Logo principal"
+              class="login-logo"
+              style="width: 60px; height: auto; margin-bottom: 8px;"
+            >
+          </picture>
           <h1 class="login-title">Autorizar Acesso</h1>
           <p class="login-subtitle">O aplicativo <strong>{{ clientName }}</strong> está solicitando acesso à sua conta.</p>
         </div>

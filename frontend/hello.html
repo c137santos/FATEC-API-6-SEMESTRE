@@ -3,10 +3,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thunderstone</title>
-  <link rel="stylesheet" href="./style.css?v=17" />
+  <link rel="stylesheet" href="./style.css?v=20" />
 <body>
   <div v-scope class="app">
     <aside class="sidebar">
+        <picture class="login-logo-picture">
+          <source
+            srcset="./assets/pikachu-logo.svg"
+            media="(prefers-color-scheme: light)"
+          />
+          <img
+            src="./assets/raichu-logo.svg"
+            alt="Logo principal"
+            class="login-logo"
+            style="width: 40px; height: auto; margin-bottom: 16px;"
+          >
+          <h1 class="login-title">
+            <span class="theme-subtitle theme-subtitle--dark">Raichu</span>
+            <span class="theme-subtitle theme-subtitle--light">Pikachu</span>
+          </h1>
+        </picture>
+        <div class="sidebar-divider"></div>
       <nav class="nav">
         <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">
           <img class="nav-icon" src="./assets/profileicon.svg">PERFIL
@@ -28,11 +45,10 @@
           height="48"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#DD7230"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="modal-icon">
+          class="modal-icon modal-icon--success">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>

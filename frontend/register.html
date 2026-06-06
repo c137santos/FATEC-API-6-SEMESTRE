@@ -4,18 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thunderstone</title>
-  <link rel="stylesheet" href="./style.css?v=10" />
+  <link rel="stylesheet" href="./style.css?v=12" />
 </head>
 <body>
   <div v-scope @vue:mounted="fetchPolicies()" class="app">
     <div v-if="showSuccessModal" class="modal-backdrop">
       <div class="modal">
         <div class="modal-content">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="modal-icon modal-icon--success">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
-          <h2 style="color: #DD7230; font-size: 24px; margin-bottom: 16px; font-weight: bold;">Sucesso!</h2>
+          <h2 class="modal-title">Sucesso!</h2>
           <p>Conta criada com sucesso! Enviamos um link de confirmação para o seu e-mail. Confirme antes de fazer o login.</p>
           <button @click="goToLogin" class="modal-btn">Ir para o login</button>
         </div>
@@ -129,7 +138,7 @@
             </div>
           </div>
 
-          <div class="consent-box">
+          <div class="login-field login-field--grow">
             <div class="consent-box__row">
               <input type="checkbox" id="consent" v-model="consented" class="consent-box__checkbox">
               <label for="consent" class="consent-box__label">
@@ -141,11 +150,11 @@
             </div>
             <div v-show="showMandatoryPolicy" class="consent-box__content">
               <div v-if="!mandatoryPolicy" class="consent-box__loading">Carregando...</div>
-              <pre v-else class="consent-box__pre">{{ mandatoryPolicy.content }}</pre>
+              <pre v-else class="consent-content">{{ mandatoryPolicy.content }}</pre>
             </div>
           </div>
 
-          <div class="consent-box" v-if="optionalPolicy">
+          <div class="login-field login-field--grow" v-if="optionalPolicy">
             <div class="consent-box__row">
               <input type="checkbox" id="optional_consent" v-model="optional_consented" class="consent-box__checkbox">
               <label for="optional_consent" class="consent-box__label">
@@ -156,7 +165,7 @@
               </button>
             </div>
             <div v-show="showOptionalPolicy" class="consent-box__content">
-              <pre class="consent-box__pre">{{ optionalPolicy.content }}</pre>
+              <pre class="consent-content">{{ optionalPolicy.content }}</pre>
             </div>
           </div>
 

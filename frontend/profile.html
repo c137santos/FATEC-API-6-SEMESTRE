@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thunderstone</title>
-  <link rel="stylesheet" href="./style.css?v=16" />
+  <link rel="stylesheet" href="./style.css?v=18" />
 </head>
 <body>
   <div v-scope class="app" @vue:mounted="loadUser()">
@@ -56,13 +56,13 @@
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
 
-          <svg v-if="alertType === 'success'"
+          <svg
+          v-if="alertType === 'success'"
           xmlns="http://www.w3.org/2000/svg"
           width="48"
           height="48"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#DD7230"
           stroke-width="2"
           stroke-linecap="round"
           stroke-linejoin="round"
@@ -84,6 +84,23 @@
 
     <!-- BARRA LATERAL -->
     <aside class="sidebar">
+        <picture class="login-logo-picture">
+          <source
+            srcset="./assets/pikachu-logo.svg"
+            media="(prefers-color-scheme: light)"
+          />
+          <img
+            src="./assets/raichu-logo.svg"
+            alt="Logo principal"
+            class="login-logo"
+            style="width: 40px; height: auto; margin-bottom: 16px;"
+          >
+          <h1 class="login-title">
+            <span class="theme-subtitle theme-subtitle--dark">Raichu</span>
+            <span class="theme-subtitle theme-subtitle--light">Pikachu</span>
+          </h1>
+        </picture>
+        <div class="sidebar-divider"></div>
       <nav class="nav">
         <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">
           <img class="nav-icon" src="./assets/profileicon.svg">PERFIL

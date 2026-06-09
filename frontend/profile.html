@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thunderstone</title>
-  <link rel="stylesheet" href="./style.css?v=8" />
+  <link rel="stylesheet" href="./style.css?v=18" />
 </head>
 <body>
   <div v-scope class="app" @vue:mounted="loadUser()">
@@ -12,18 +12,25 @@
     <!-- MODAL DE EXCLUSÃO -->
     <div v-if="showDeleteUserModal" class="modal-backdrop">
       <div class="modal-content">
-        <div class="modal">
-          <!-- Ícone de Atenção (Vermelho) -->
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#da0404" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+        <div class="modal modal-shell">
+          <svg xmlns="http://www.w3.org/2000/svg"
+          width="48" height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#da0404"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="modal-icon modal-icon--danger">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <h2 style="color: #da0404; font-size: 24px; margin-bottom: 16px; font-weight: bold;">Atenção!</h2>
-          <p>Deseja realmente excluir sua conta? Essa ação não tem volta.</p>
-          <div style="display: flex; gap: 16px;">
-            <button @click="showDeleteUserModal = false" class="modal-btn" style="border: 1px solid #353535; background: transparent; padding: 10px;">Cancelar</button>
-            <button @click="deleteUser" class="modal-btn" style="background: #da0404; border: none; padding: 10px;">Excluir</button>
+          <h2 class="modal-title modal-title--danger">Atenção!</h2>
+          <p class="modal-message">Deseja realmente excluir sua conta? Essa ação não tem volta.</p>
+          <div class="modal-actions">
+            <button @click="showDeleteUserModal = false" class="modal-btn modal-btn--ghost">Cancelar</button>
+            <button @click="deleteUser" class="modal-btn modal-btn--danger">Excluir</button>
           </div>
         </div>
       </div>
@@ -32,20 +39,43 @@
     <!-- MODAL DE ALERTA -->
     <div v-if="showAlertModal" class="modal-backdrop">
       <div class="modal-content" >
-        <div class="modal">
-          <svg v-if="alertType === 'error'" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#da0404" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+        <div class="modal modal-shell">
+          <svg v-if="alertType === 'error'"
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#da0404"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="modal-icon modal-icon--danger">
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" y1="8" x2="12" y2="12"></line>
             <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
 
-          <svg v-if="alertType === 'success'" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#DD7230" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 16px;">
+          <svg
+          v-if="alertType === 'success'"
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="modal-icon modal-icon--success">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
 
-          <h2 :style="{ color: alertType === 'error' ? '#da0404' : '#DD7230' }" style="font-size: 24px; margin-bottom: 16px; font-weight: bold;">{{ alertTitle }}</h2>
-          <p style="color: #fff; font-size: 14px; margin-bottom: 24px;">{{ alertMessage }}</p>
+          <h2
+          class="modal-title"
+          :class="alertType === 'error' ? 'modal-title--danger' : 'modal-title--success'">
+          {{ alertTitle }}</h2>
+          <p class="modal-message">{{ alertMessage }}</p>
 
           <button @click="closeAlert" class="modal-btn">OK</button>
         </div>
@@ -54,6 +84,23 @@
 
     <!-- BARRA LATERAL -->
     <aside class="sidebar">
+        <picture class="login-logo-picture">
+          <source
+            srcset="./assets/pikachu-logo.svg"
+            media="(prefers-color-scheme: light)"
+          />
+          <img
+            src="./assets/raichu-logo.svg"
+            alt="Logo principal"
+            class="login-logo"
+            style="width: 40px; height: auto; margin-bottom: 16px;"
+          >
+          <h1 class="login-title">
+            <span class="theme-subtitle theme-subtitle--dark">Raichu</span>
+            <span class="theme-subtitle theme-subtitle--light">Pikachu</span>
+          </h1>
+        </picture>
+        <div class="sidebar-divider"></div>
       <nav class="nav">
         <button :class="{ 'nav-item' : true, 'nav-item--active': screen === 'perfil' }" @click="go('perfil')">
           <img class="nav-icon" src="./assets/profileicon.svg">PERFIL
@@ -70,73 +117,82 @@
     <main class="main main--perfil">
       <!-- TELA DE PERFIL -->
       <div class="screen-wrapper--perfil">
-        <div class="screen-title" style="text-align: left; padding-left: 0px;">Perfil</div>
-        <div class="screen-subtitle" style="text-align: left;">
+        <div class="screen-title screen-title--left">Perfil</div>
+        <div class="screen-subtitle screen-subtitle--left">
           <p>Gerencie suas informações pessoais e as configurações da sua conta.</p>
         </div>
 
         <div class="perfil-grid">
-          <!-- Coluna Esquerda -->
           <div class="perfil-col-left">
-            <!-- Segurança View -->
-            <div class="card" style="width: 100%;">
-              <div class="field-label" style="color: #DD7230; font-size: 10px;">SEGURANÇA</div>
-              <div style="margin-top: 12px;">
+
+            <div class="card card--full">
+              <div class="field-label section-kicker--nocolor">SEGURANÇA</div>
+              <div class="profile-group">
                 <div class="field-label">SENHA</div>
-                <div style="color: #FFF; font-size: 14px;">••••••••••••</div>
+                <div class="profile-value profile-value--password">••••••••••••</div>
               </div>
             </div>
 
             <!-- Dados Pessoais View -->
-            <div class="card" style="width: 100%;" >
-              <div class="field-label" style="color: #DD7230; font-size: 10px;">DADOS PESSOAIS</div>
-              <div style="margin-top: 12px; margin-bottom: 16px;">
-                <div class="field-label" style="margin-bottom: 6px;">NOME COMPLETO</div>
-                <div style="color: #FFF; font-size: 12px; font-family: Arial, Helvetica, sans-serif;">{{ currentUser.username || '-' }}</div>
+            <div class="card card--full">
+              <div class="field-label section-kicker--nocolor">DADOS PESSOAIS</div>
+
+              <div class="profile-group profile-group--spaced">
+                <div class="field-label field-label--spaced">NOME COMPLETO</div>
+                <div class="profile-value">{{ currentUser.username || '-' }}</div>
               </div>
-              <div style="margin-top: 12px; margin-bottom: 16px;">
-                <div class="field-label" style="margin-bottom: 6px;">ENDEREÇO DE EMAIL</div>
-                <div style="color: #FFF; font-size: 12px; font-family: Arial, Helvetica, sans-serif;">{{ currentUser.email || '-' }}</div>
+
+              <div class="profile-group profile-group--spaced">
+                <div class="field-label field-label--spaced">ENDEREÇO DE EMAIL</div>
+                <div class="profile-value">{{ currentUser.email || '-' }}</div>
               </div>
             </div>
 
             <!-- Consentimentos -->
-            <div class="card" style="width: 100%;">
-              <div class="field-label" style="color: #DD7230; font-size: 10px; margin-bottom: 12px;">TERMOS E CONSENTIMENTOS</div>
-              <div v-if="consents.length === 0" style="color: #888; font-size: 12px;">Nenhum consentimento registrado.</div>
-              <div v-for="c in consents" style="margin-bottom: 14px; border-bottom: 1px solid #232323; padding-bottom: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                  <span style="font-size: 11px; font-weight: bold; color: #fff;">
+            <div class="card card--full">
+              <div class="field-label section-kicker--nocolor section-kicker--spaced">TERMOS E CONSENTIMENTOS</div>
+
+              <div v-if="consents.length === 0" class="empty-state-text">
+                Nenhum consentimento registrado.
+              </div>
+
+              <div v-for="c in consents" class="consent-item">
+                <div class="consent-row">
+                  <span class="consent-title">
                     {{ c.is_mandatory ? 'Política de Privacidade' : 'Comunicações de Marketing' }}
                   </span>
-                  <span :style="{ background: c.accepted ? '#1a4a1a' : '#4a1a1a', color: c.accepted ? '#4caf50' : '#f44336', fontSize: '10px', borderRadius: '4px', padding: '1px 6px' }">
+
+                  <span :class="['badge', c.accepted ? 'badge--accepted' : 'badge--rejected']">
                     {{ c.accepted ? 'Aceito' : 'Recusado' }}
                   </span>
-                  <span v-if="c.is_mandatory" style="font-size: 10px; background: rgba(221,114,48,0.15); color: #DD7230; border-radius: 4px; padding: 1px 6px;">Obrigatório</span>
-                  <span v-else style="font-size: 10px; background: #1e1e1e; color: #888; border-radius: 4px; padding: 1px 6px;">Opcional</span>
+
+                  <span v-if="c.is_mandatory" class="badge badge--mandatory">Obrigatório</span>
+                  <span v-else class="badge badge--optional">Opcional</span>
                 </div>
-                <div style="font-size: 11px; color: #888; margin-bottom: 6px;">
+
+                <div class="consent-meta">
                   Versão {{ c.policy_version }} · {{ formatDate(c.consented_at) }}
                 </div>
-                <button type="button" @click="c._expanded = !c._expanded"
-                  style="background: none; border: none; color: #DD7230; font-size: 11px; cursor: pointer; padding: 0;">
+
+                <button type="button" @click="c._expanded = !c._expanded" class="consent-toggle">
                   {{ c._expanded ? 'Ocultar termos' : 'Ver termos' }}
                 </button>
-                <pre v-show="c._expanded" style="white-space: pre-wrap; font-size: 11px; line-height: 1.6; color: #ccc; background: #111; border-radius: 6px; padding: 10px; border: 1px solid #2a2a2a; max-height: 160px; overflow-y: auto; margin-top: 8px; margin-bottom: 0;">{{ c.policy_content }}</pre>
+
+                <pre v-show="c._expanded" class="consent-content">{{ c.policy_content }}</pre>
               </div>
             </div>
-          </div>
-
+            </div>
           <!-- Coluna Direita -->
           <div class="perfil-col-right">
-            <form class="card" style="width: 100%;" @submit.prevent="updateUser">
-              <div class="field-label" style="color: #DD7230; margin-bottom: 16px; font-size: 10px;">ATUALIZAR DETALHES PESSOAIS</div>
+            <form class="card card--full" @submit.prevent="updateUser">
+              <div class="field-label section-kicker--nocolor form-section-title">ATUALIZAR DETALHES PESSOAIS</div>
 
-              <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+              <div class="form-row">
                 <div class="field">
                   <label class="field-label">ATUALIZAR NOME</label>
                   <input type="text" v-model="editUser.username" class="perfil-input" required>
                 </div>
+
                 <div class="field">
                   <label class="field-label">ATUALIZAR EMAIL</label>
                   <input type="email" v-model="editUser.email" class="perfil-input" required>
@@ -153,23 +209,26 @@
                 <input type="password" v-model="editUser.newPassword" class="perfil-input" placeholder="Deixe em branco para não alterar a senha atual">
               </div>
 
-              <div style="display: flex; justify-content: flex-end; gap: 16px; align-items: center;">
-                <a href="#" style="color: #FFF; font-size: 12px; text-decoration: none; font-family: Arial, Helvetica, sans-serif;" @click.prevent="resetEditForm">Cancelar</a>
-                <button type="submit" class="secondary-btn" style="text-transform: none; font-weight: 600; font-size: 12px;">Salvar Alterações</button>
+              <div class="form-actions">
+                <a href="#" class="link-btn" @click.prevent="resetEditForm">Cancelar</a>
+                <button type="submit" class="secondary-btn secondary-btn--compact">Salvar Alterações</button>
               </div>
             </form>
           </div>
-        </div>
-
-        <!-- Zona de perigo -->
-        <div style="width: 100%; border: 1px solid rgba(221, 114, 48, 0.4); border-radius: 8px; padding: 20px; background: rgba(0, 15, 8, 0.5); margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div class="field-label" style="color: #DD7230; font-size: 10px;">ZONA DE PERIGO</div>
-            <p class="field-label" >Remove permanentemente sua conta e todos os dados associados. Essa ação não pode ser desfeita.</p>
-          </div>
-          <button class="secondary-btn" @click="showDeleteUserModal = true" style="background: none; border: 1px solid #da0404; color: #da0404;">Deletar Conta</button>
-        </div>
       </div>
+              <!-- Zona de perigo -->
+          <div class="danger-zone">
+            <div>
+              <div class="field-label section-kicker--nocolor">ZONA DE PERIGO</div>
+              <p class="danger-zone__description">
+                Remove permanentemente sua conta e todos os dados associados. Essa ação não pode ser desfeita.
+              </p>
+            </div>
+
+            <button class="secondary-btn secondary-btn--danger-outline" @click="showDeleteUserModal = true">
+              Deletar Conta
+            </button>
+          </div>
     </main>
   </div>
 

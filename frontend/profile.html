@@ -147,34 +147,7 @@
                 <div class="profile-value">{{ currentUser.email || '-' }}</div>
               </div>
             </div>
-
-            <!-- Consentimentos -->
-            <div class="card" style="width: 100%;">
-              <div class="field-label" style="color: #DD7230; font-size: 10px; margin-bottom: 12px;">TERMOS E CONSENTIMENTOS</div>
-              <div v-if="consents.length === 0" style="color: #888; font-size: 12px;">Nenhum consentimento registrado.</div>
-              <div v-for="c in consents" style="margin-bottom: 14px; border-bottom: 1px solid #232323; padding-bottom: 14px;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                  <span style="font-size: 11px; font-weight: bold; color: #fff;">
-                    {{ c.is_mandatory ? 'Política de Privacidade' : 'Comunicações de Marketing' }}
-                  </span>
-                  <span :style="{ background: c.accepted ? '#1a4a1a' : '#4a1a1a', color: c.accepted ? '#4caf50' : '#f44336', fontSize: '10px', borderRadius: '4px', padding: '1px 6px' }">
-                    {{ c.accepted ? 'Aceito' : 'Recusado' }}
-                  </span>
-                  <span v-if="c.is_mandatory" style="font-size: 10px; background: rgba(221,114,48,0.15); color: #DD7230; border-radius: 4px; padding: 1px 6px;">Obrigatório</span>
-                  <span v-else style="font-size: 10px; background: #1e1e1e; color: #888; border-radius: 4px; padding: 1px 6px;">Opcional</span>
-                </div>
-                <div style="font-size: 11px; color: #888; margin-bottom: 6px;">
-                  Versão {{ c.policy_version }} · {{ formatDate(c.consented_at) }}
-                </div>
-                <button type="button" @click="c._expanded = !c._expanded"
-                  style="background: none; border: none; color: #DD7230; font-size: 11px; cursor: pointer; padding: 0;">
-                  {{ c._expanded ? 'Ocultar termos' : 'Ver termos' }}
-                </button>
-                <pre v-show="c._expanded" style="white-space: pre-wrap; font-size: 11px; line-height: 1.6; color: #ccc; background: #111; border-radius: 6px; padding: 10px; border: 1px solid #2a2a2a; max-height: 160px; overflow-y: auto; margin-top: 8px; margin-bottom: 0;">{{ c.policy_content }}</pre>
-              </div>
-            </div>
-          </div>
-
+            
             <!-- Consentimentos -->
             <div class="card card--full">
               <div class="field-label section-kicker--nocolor section-kicker--spaced">TERMOS E CONSENTIMENTOS</div>
@@ -208,7 +181,8 @@
                 <pre v-show="c._expanded" class="consent-content">{{ c.policy_content }}</pre>
               </div>
             </div>
-            </div>
+          </div>
+          
           <!-- Coluna Direita -->
           <div class="perfil-col-right">
             <form class="card card--full" @submit.prevent="updateUser">
